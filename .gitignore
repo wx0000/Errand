@@ -1,0 +1,21 @@
+# ─── HARD EXCLUDE: company-owned task artifacts ───
+# These must NEVER enter the repo or its history (public repo).
+# Per task spec, these are the ONLY files that are forbidden.
+buggy.apk
+*.apk
+*.apks
+*.aab
+# Task brief (proprietary JJIT material) — any PDF.
+*.pdf
+
+# ─── Session-local Claude state ───
+# .claude/ is gitignored; plans created here are archived to docs/ai-history/
+# at end of session (see CLAUDE.md → End-of-Session Cycle, step 5).
+.claude/
+
+# ─── OS / tooling noise ───
+.DS_Store
+*.log
+
+# NOTE: recon artifacts (Maestro hierarchy dumps, screenshots) are intentionally
+# NOT ignored — they are committed as evidence for the human's BUG/PASS verdicts.
