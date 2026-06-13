@@ -91,6 +91,9 @@ If a step does not apply, **say which and why — never skip silently.**
 7. **Local commit** — conventional commits, one commit = one logical unit (scaffold separate
    from recon), no squash; history tells the process. **Push is the human's call — do not
    commit without explicit consent.**
+   **Never add `Co-Authored-By` or "Generated with Claude Code" trailers to commits or PRs.**
+   (Attribution is disabled in `.claude/settings.local.json`; this line is the backup, since the
+   setting is intermittently ignored — known bug.)
 8. **Handoff prompt** for the next session (what's done, what's next, what to watch, which file
    to read first) + a recommended effort with a one-sentence justification.
 
