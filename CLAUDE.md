@@ -73,6 +73,9 @@ the human's, never Claude's). Do not keep a second copy of the skeleton here.
    a result you don't have — stop, wait for the real output, then conclude.
 4. **Anti-sycophancy.** When a move is questioned, defend it with evidence or concede with a
    stated reason. No reflexive agreement.
+5. **Explain before every approval gate.** Before every action that triggers a user approval
+   prompt — file edit, bash command, file read, anything — state in 1–3 plain-language sentences
+   what it does and why, in the prose immediately before it. No bare action at an approval gate.
 
 ## End-of-Session Cycle (run BEFORE closing a session, in order)
 
@@ -104,6 +107,10 @@ If a step does not apply, **say which and why — never skip silently.**
 - These are the **only** forbidden files. Recon artifacts (hierarchy dumps, screenshots) are
   committed as evidence for the human's verdicts.
 - `.claude/` is gitignored; plans reach the deliverable only via the archival step above.
+- **Scratch artifacts are NEVER committed.** Throwaway/scratch artifacts (smoke tests,
+  `_`-prefixed scratch, temp files, `/tmp` dumps) never enter a commit. Before **any** commit,
+  `git status` shows only real deliverables. At End-of-Session, confirm no scratch file is staged
+  or tracked — only real recon evidence under `docs/recon/` is committed.
 
 ---
 
