@@ -134,15 +134,38 @@ If a step does not apply, **say which and why — never skip silently.**
 
 ## Current Status
 
-- **Phase:** **P0 (scaffold) — DONE.**
-- **Next task:** **P1 recon — BLOCKED** on two prerequisites: (1) toolchain install
-  (modern JDK + Maestro + Android SDK/adb + an `arm64-v8a` emulator + `adb install buggy.apk`),
-  and (2) the human pasting requirements **R1–R5**.
-- **R1–R5 coverage:** none — requirements not yet provided; SPEC MATRIX rows are placeholders.
+- **Phase:** **P1 — DONE** (recon + adjudication). SPEC MATRIX `verdict` filled from the human's
+  ruling; `docs/BUGS.md` records **3 root defects** (BUG-A/B/C — 5 manifestations across R1 list +
+  R3 history). Adjudication committed `cd4bf26`.
+- **Next task:** **P2 — subflows + registration/login.** First real suite flows (reusable
+  subflows: launch + auth helpers → registration → login) against the live emulator, applying the
+  Maestro/selector conventions above. Tests assert the SPEC, never the app.
+- **R1–R5 coverage:** all 5 adjudicated — **R1 BUG** (C1→BUG-A, C2→BUG-B, C3→BUG-C),
+  **R2 PASS**, **R3 BUG** (C4→BUG-B, C5→BUG-C), **R4 PASS**, **R5 PASS**. Per-requirement `flow`
+  assignment still _TBD — P2_.
 
 ## Session Log
 
 > Newest entries at the top. Each entry: date, phase, what was done, decisions, judgment moments.
+
+### 2026-06-14 — P1 — adjudication
+
+- **Done:** human issued the R1–R5 verdicts → recorded in `docs/SPEC-MATRIX.md` (`verdict` column;
+  `actual` left byte-untouched) and created `docs/BUGS.md` — **3 root defects**: BUG-A (multi-loc
+  no separator, R1), BUG-B (missing-salary placeholder, R1 list + R3 history), BUG-C (object salary
+  as raw JSON, R1 list + R3 history); 5 manifestations on 2 surfaces. C1–C5 mapped to bug-ids.
+  Committed `cd4bf26`.
+- **Decisions:** `docs/BUGS.md` written in **English** (repo convention) though the human drafted
+  it in Polish — confirmed with the human before writing. Verdicts are the **human's**; Claude only
+  recorded them (verdict-column rule re-stated to "records, never authors").
+- **Judgment moments:**
+  1. Caught a prompt-internal conflict — verbatim Polish "exact content" vs. the binding "every
+     file in English" rule + "keep repo style" — surfaced it and asked instead of silently choosing.
+  2. Self-audited the diff before commit: confirmed the `actual` column is byte-identical (only the
+     `verdict` cell appended), so no spec-evidence was altered.
+  3. Found `Current Status` stale (still "P0 done / P1 recon blocked") and the recon session left
+     no CLAUDE.md Session Log entry — refreshed Current Status; flagged the recon-entry gap to the
+     human rather than fabricating it.
 
 ### 2026-06-12 — P0 — build
 

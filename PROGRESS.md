@@ -18,6 +18,7 @@ Update at the end of every session: check off what's done, note drift if the pla
   - [x] Per-screen screenshots → `docs/recon/screens/` (17 files)
   - [x] Fill the `actual` column of the SPEC MATRIX from real evidence (R1–R5)
   - [x] List bug **candidates** C1–C5 (R1/R3) with artifacts — **no verdicts**
+  - [x] **Adjudication** — human R1–R5 verdicts → SPEC-MATRIX `verdict` filled + `docs/BUGS.md` (3 root defects BUG-A/B/C); commit `cd4bf26`
 
 - [ ] **P2 — Subflows + registration / login**
   - [ ] Reusable subflows (launch, auth helpers, …)
@@ -33,7 +34,7 @@ Update at the end of every session: check off what's done, note drift if the pla
 
 - [ ] **P5 — Stabilization + delivery**
   - [ ] Run the full suite 3× (stability)
-  - [ ] `BUGS.md` (human verdicts → documented defects)
+  - [ ] `BUGS.md` — **skeleton done in P1 adjudication** (3 root defects, commit `cd4bf26`); P5 finalizes it by linking the P2–P4 red-run Maestro artifacts
   - [ ] `TEST_PLAN`
   - [ ] `README` (clean-clone bring-up)
   - [ ] Fresh-clone verification
@@ -42,6 +43,17 @@ Update at the end of every session: check off what's done, note drift if the pla
 
 > Newest entries at the top. Format:
 > `### YYYY-MM-DD — <phase> — <role>` then bullets: **Done**, **Decisions**, **Drift**.
+
+### 2026-06-14 — P1 — adjudication
+
+- **Done:** human issued R1–R5 verdicts → recorded in `docs/SPEC-MATRIX.md` (`verdict` column;
+  `actual` untouched) + created `docs/BUGS.md`: **3 root defects** BUG-A/B/C, 5 manifestations
+  across R1 list + R3 history. C1–C5 mapped to bug-ids. Commit `cd4bf26`. Next: **P2** (subflows
+  + registration/login).
+- **Decisions:** `BUGS.md` in English (repo convention; human drafted in Polish — confirmed
+  first). Verdicts are the human's; Claude only recorded them.
+- **Drift:** `BUGS.md` landed in P1 (originally a P5 item) — skeleton now; P5 only finalizes it by
+  linking the P2–P4 red-run Maestro artifacts.
 
 ### 2026-06-14 — P1 — recon
 

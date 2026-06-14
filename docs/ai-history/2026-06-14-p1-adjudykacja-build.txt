@@ -1,0 +1,883 @@
+╭─── Claude Code v2.1.173 ─────────────────────────────────────────────────────╮
+│                                                    │ Tips for getting        │
+│                Welcome back Wiktor!                │ started                 │
+│                                                    │ ✔ Run /init to create … │
+│                       ▐▛███▜▌                      │ ─────────────────────── │
+│                      ▝▜█████▛▘                     │ What's new              │
+│                        ▘▘ ▝▝                       │ Fixed Fable 5 model na… │
+│    Opus 4.8 · Claude Max · w.szaron@gmail.com's    │ Fixed a spurious "sand… │
+│    Organization                                    │ Sub-agents can now spa… │
+│               ~/AIAIAI/Claude/Errand               │ /release-notes for more │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+
+❯ /clear                                                                        
+
+❯ Kontekst-load + standby. Przeczytaj na start: CLAUDE.md (cardinal rule +      
+  sekcja                                                                        
+  "Maestro / selector conventions"), PROGRESS.md, docs/SPEC-MATRIX.md,          
+  komentarze                                                                    
+  w recon.yaml.                                                                 
+                                                                                
+  Stan: P1 recon zamkniety i scommitowany (7a15bd4). Nastepne zadanie -         
+  wypelnienie                                                                   
+  kolumny verdict w SPEC-MATRIX + utworzenie BUGS.md, potem P2 flows -          
+  dostaniesz jako                                                               
+  jawny handoff. NIE zaczynaj pisac flowow ani BUGS.md z wlasnej inicjatywy,    
+  czekaj na                                                                     
+  konkretny prompt.                                                             
+                                                                                
+  Reguly obowiazuja: testy assertuja spec nie app; zero werdyktow dopoki        
+  czlowiek nie                                                                  
+  orzekl; scratch w /tmp; commit bez trailera; nie pushuj. Effort: high/Opus    
+  dla P2                                                                        
+  (osad w projekcie testow).                                                    
+  ⎿  ⧉ Selected 150 lines from docs/ai-history/p0-scaffold.md in Visual Studio Code
+
+⏺ Rozumiem — kontekst-load + standby. Czytam wskazane pliki na start.
+
+  Read 3 files (ctrl+o to expand)
+
+⏺ Przeczytane — kontekst załadowany. Standby.
+
+  Stan, który widzę (zgodny z handoffem):
+
+  - P0 done, P1 recon zamknięty i scommitowany (7a15bd4). Drzewo czyste.
+  - SPEC-MATRIX wypełniony: expected per spec (parafraza R1–R5), actual (z
+  realnych dumpów + screenów), kolumna verdict pusta — czeka na człowieka.
+  - Kandydaci C1–C5, wszyscy pod R1/R3 (klaster formatowania salary/location).
+  R2/R4/R5 — bez kandydata w reconie.
+  - recon.yaml — 12 aktów STAGE-parameterized (proof-of-method, nie finalna
+  suite). Evidence: 17 screenów + 12 dumpów w docs/recon/.
+
+  Konwencje P2, które mam w pamięci (z CLAUDE.md + komentarzy recon.yaml):
+  - selektory = regex anchored do pełnego tekstu node'a (DOTALL), kształt
+  "label\nvalue" → .*token.*;
+  - tap w klikalny Button, nie wrapper View;
+  - STAGE tylko przez -e STAGE=, nigdy env: w nagłówku flow (2.6.1 nadpisuje);
+  - snackbar = transient, łapany screenshotem + extendedWaitUntil;
+  - picker = modal, dump out-of-band;
+  - maestro hierarchy = JSON, --compact = CSV.
+
+  Reguły, których trzymam się bez przypominania: testy assertują spec, nie app;
+  zero werdyktów dopóki człowiek nie orzekł; scratch w /tmp; commit bez
+  trailera; nie pushuję.
+
+  Czekam na jawny prompt na następne zadanie (verdict column + BUGS.md, potem P2
+  flows). Nie zaczynam pisać flowów ani BUGS.md z własnej inicjatywy.
+
+✻ Brewed for 25s
+
+※ recap: Building a Maestro E2E suite for the Buggy Android app; P1 recon is done and committed, SPEC-MATRIX filled with C1–C5 candidates. Next action is awaiting your explicit handoff to fill the verdict column and create BUGS.md.
+
+❯ Zadanie: zamknij adjudykacje P1 -> wypelnij verdict w SPEC-MATRIX i utworz    
+  docs/BUGS.md. Nie ruszaj flows (to P2). Trzymaj konwencje stylu repo.         
+                                                                                
+  1) docs/SPEC-MATRIX.md — uzupelnij kolumne verdict (PASS/BUG), zachowaj       
+  kolumne actual. Werdykt na poziomie wymagania + mapowanie kandydatow C1-C5 na 
+  bug-id:                                                                       
+     - R1 lista ofert = BUG: C1 -> BUG-A, C2 -> BUG-B (lista), C3 -> BUG-C      
+  (lista)                                                                       
+     - R2 aplikowanie = PASS                                                    
+     - R3 historia = BUG: C4 -> BUG-B (historia), C5 -> BUG-C (historia)        
+     - R4 rejestracja = PASS                                                    
+     - R5 logowanie/wylogowanie = PASS                                          
+     Anty-przypadki (persystencja, restart) pozostaja PASS/nie-asertowane, bez  
+  zmian.                                                                        
+                                                                                
+  2) Utworz docs/BUGS.md o dokladnie tej tresci:                                
+                                                                                
+  # BUGS.md — defekty Buggy wzgledem specyfikacji                               
+                                                                                
+  Defekty znalezione w P1 recon, zaadjudykowane przez czlowieka na screenach i  
+  dumpach hierarchy. Kazdy flow assertuje SPEC; czerwony wynik na ktorymkolwiek 
+  z ponizszych to poprawny wynik. Dowod recon w docs/recon/; przy uruchomieniu  
+  flow w P2-P4 dolinkowujemy artefakty Maestro z czerwonego przebiegu.          
+                                                                                
+  3 root defekty, 5 manifestacji na 2 powierzchniach (lista R1, historia R3).   
+                                                                                
+  ---                                                                           
+                                                                                
+  ## BUG-A — Wiele lokalizacji bez separatora (R1)                              
+  - Wymaganie: R1, lista ofert, lokalizacja.                                    
+  - Expected (spec): wiele lokalizacji wyswietlane jako lista rozdzielona       
+  przecinkami.                                                                  
+  - Actual: lokalizacje sklejone bez separatora. Dotyczy wszystkich ofert       
+  multi-lokacyjnych: QA Automation Engineer -> WarsawGdansk; Senior QA Engineer 
+  -> WarsawBerlinLondon; Senior QA -> WarsawBerlinLondonParis.                  
+  - Kroki: clearState -> otworz liste ofert -> oferta "QA Automation Engineer"  
+  (BigTech Inc, 2 lokacje).                                                     
+  - Severity: Medium. "WarsawGdansk" czyta sie jak jedno miasto, dane           
+  wprowadzaja w blad.                                                           
+  - Dowod: docs/recon/screens/02-offers-top.png,                                
+  docs/recon/screens/02-offers-bottom.png. Lokacja to pojedynczy wezel Flutter  
+  Semantics (nie sklejanie child-nodow), wiec dump = render; screen potwierdza  
+  wizualnie brak przecinka.                                                     
+                                                                                
+  ## BUG-B — Brak salary renderuje placeholder zamiast pominac element (R1 +    
+  R3)                                                                           
+  - Wymaganie: R1 lista + R3 historia.                                          
+  - Expected (spec): gdy brak salary, NIE wyswietlamy elementu salary (brak     
+  placeholdera); w historii linia salary analogicznie pominieta.                
+  - Actual: lista pokazuje element salary z tekstem "null"; historia pokazuje   
+  linie salary z tekstem "—".                                                   
+  - Kroki: clearState -> oferta "Senior QA Engineer" (TechCorp, bez salary): na 
+  liscie widoczne "null"; zaaplikuj -> profil -> wpis "Senior QA Engineer"      
+  pokazuje "—".                                                                 
+  - Severity: Medium. "null" na liscie wyglada jak artefakt kodu; spec wprost   
+  zakazuje placeholdera.                                                        
+  - Dowod: lista docs/recon/screens/02-offers-top.png +                         
+  docs/recon/hierarchy/02-offers-list-top.txt; historia                         
+  docs/recon/screens/09-history.png + docs/recon/hierarchy/09-history.txt.      
+                                                                                
+  ## BUG-C — Salary w formacie obiektu wycieka jako surowy JSON (R1 + R3)       
+  - Wymaganie: R1 lista + R3 historia.                                          
+  - Expected (spec): gdy oferta ma salary, wyswietlamy widelki w formacie jak   
+  pozostale oferty (np. 10000-15000 PLN).                                       
+  - Actual: surowy JSON {"min": 10000, "max": 15000}, identycznie na liscie i w 
+  historii.                                                                     
+  - Kroki: clearState -> oferta "Senior QA" (QualityAssurance Ltd) na liscie;   
+  zaaplikuj (lokacja London) -> profil -> wpis "Senior QA".                     
+  - Severity: High. Surowy JSON w UI to ewidentny defekt formatowania. Oferty z 
+  salary jako string ("5000-8000 PLN") renderuja sie poprawnie na obu           
+  powierzchniach -> defekt dotyczy wylacznie salary w formacie obiektu.         
+  - Dowod: lista docs/recon/hierarchy/02-offers-list-bottom.txt +               
+  docs/recon/screens/02-offers-bottom.png; historia                             
+  docs/recon/hierarchy/09-history.txt + docs/recon/screens/09-history.png.      
+                                                                                
+  ---                                                                           
+                                                                                
+  Uwaga repro: "Senior QA" (QualityAssurance Ltd, JSON salary, 4 lokacje) i     
+  "Senior QA Engineer" (TechCorp, brak salary, 3 lokacje) to DWIE rozne oferty. 
+  Nie mylic w krokach.                                                          
+                                                                                
+  3) Self-audit -> commit -> raport. Najpierw self-audit: git status pokazuje   
+  tylko docs/SPEC-MATRIX.md + docs/BUGS.md (zero scratch), verdict wypelniony   
+  per mapowanie C1-C5, kolumna actual nietknieta. Jesli gra: commit lokalny bez 
+  push, conventional, "docs: P1 adjudication verdict + BUGS.md skeleton (3      
+  root defects)", bez trailera Co-Authored-By/Generated with. Potem git show    
+  --stat HEAD i zaraportuj caly wynik audytu. Jesli cos nie gra: NIE commituj,  
+  zglos.                                                                        
+
+⏺ Zanim cokolwiek edytuję — wyłapałem konflikt w samym promptcie, który muszę
+  rozstrzygnąć z Tobą (anti-sycophancy + "explain before every gate").
+
+  Treść docs/BUGS.md, którą podałeś "o dokładnie tej treści", jest po polsku.
+  Ale w tym samym promptcie masz instrukcję "Trzymaj konwencje stylu repo", a
+  konwencja repo jest wiążąca i jednoznaczna — CLAUDE.md: "every file in this 
+  repo is written in English", i wszystkie dotychczasowe pliki (CLAUDE.md,
+  PROGRESS.md, SPEC-MATRIX.md, komentarze recon.yaml) są po angielsku. Repo jest
+  publiczne (deliverable rekrutacyjny).
+
+  Czyli dwie instrukcje z tego samego promptu są sprzeczne: verbatim polska 
+  treść vs konwencja repo = angielski. Nie chcę ani po cichu tłumaczyć
+  (złamałbym "dokładnie tej treści"), ani po cichu pisać po polsku (złamałbym
+  wiążącą regułę repo). To Twoja decyzja.
+
+⏺ User answered Claude's questions:
+  ⎿  · BUGS.md — w jakim języku zapisać plik? (treść merytoryczna bez zmian w 
+     obu wariantach: te same 3 root-defekty BUG-A/B/C, bug-id, kroki, severity, 
+     dowody) → Angielski (konwencja repo) (Recommended)
+
+⏺ Wybór: angielski — tłumaczę treść 1:1, struktura/bug-id/severity/dowody bez
+  zmian. Zaczynam.
+
+  Co teraz robię (przed bramką edycji):
+
+  1. docs/SPEC-MATRIX.md — wypełniam kolumnę verdict per Twoje mapowanie
+  (R1=BUG, R2=PASS, R3=BUG, R4=PASS, R5=PASS), nie ruszając kolumny actual;
+  dopisuję bug-id do każdego kandydata C1–C5 w nagłówku; aktualizuję notkę
+  "Human decides…" na zapis dokonanej adjudykacji (3 roots / 5 manifestacji); i
+  poprawiam regułę przy nagłówku tabeli, żeby plik nie był wewnętrznie sprzeczny
+  (kolumna już nie jest pusta — ale to zapis werdyktu człowieka, nie autorstwa
+  Claude).
+  2. docs/BUGS.md — tworzę nowy plik (angielska wersja Twojej treści).
+
+  Wykonuję edycje SPEC-MATRIX i tworzę BUGS.md:
+
+⏺ Update(docs/SPEC-MATRIX.md)
+  ⎿  Added 1 line, removed 1 line
+       9  > - `actual` comes from **real recon evidence**: an exact strin
+          g quoted from a hierarchy dump
+      10  >   (`docs/recon/hierarchy/…`) and/or a screenshot filename (`d
+          ocs/recon/screens/…`).
+      11  >   No artifact = no claim.
+      12 -> - **The `verdict` column stays EMPTY until the human's review
+         - — Claude never fills it.**                                    
+      12 +> - **The `verdict` column carries the human's review ONLY — Cl
+         +aude records the human's PASS/BUG, never authors one.** (Empty 
+         +through recon; filled at P1 adjudication from the human's rulin
+         +g.)                                                            
+      13  
+      14  ## Main table — requirements R1–R5
+      15  
+
+⏺ Update(docs/SPEC-MATRIX.md)
+  ⎿  Added 1 line, removed 1 line
+      18  
+      19  | Req | Flow | Expected per spec | Actual (from recon) | Verdic
+          t (PASS/BUG) |
+      20  |-----|------|-------------------|---------------------|-------
+          -------------|
+      21 -| R1  | _TBD — P2_ | **Offers list — tile data.** Each tile sho
+         -ws title, company, location, salary range. Location: single = o
+         -ne value; multiple = comma-separated. Salary: present → range s
+         -hown; **absent → the salary element does not exist at all** (no
+         - placeholder, no "no data"). | "Job Offers" list, **5 offers**.
+         - Multi-location values are concatenated **without separators**:
+         - `WarsawBerlinLondon`, `WarsawGdansk`, `WarsawBerlinLondonParis
+         -`. No-salary offer renders a salary element: `Salary: not speci
+         -fied` + value `null` (Senior QA Engineer). One salary rendered 
+         -as raw JSON: `{"min": 10000, "max": 15000}` (Senior QA / Qualit
+         -yAssurance). Normal ranges fine (`5000-8000 PLN`). Single-locat
+         -ion fine (`Krakow`). Evidence: `docs/recon/hierarchy/02-offers-
+         -list-top.txt` + `02-offers-list-bottom.txt`; `docs/recon/screen
+         -s/02-offers-top.png` + `02-offers-bottom.png`. → candidates **C
+         -1–C3** |  |                                                    
+      21 +| R1  | _TBD — P2_ | **Offers list — tile data.** Each tile sho
+         +ws title, company, location, salary range. Location: single = o
+         +ne value; multiple = comma-separated. Salary: present → range s
+         +hown; **absent → the salary element does not exist at all** (no
+         + placeholder, no "no data"). | "Job Offers" list, **5 offers**.
+         + Multi-location values are concatenated **without separators**:
+         + `WarsawBerlinLondon`, `WarsawGdansk`, `WarsawBerlinLondonParis
+         +`. No-salary offer renders a salary element: `Salary: not speci
+         +fied` + value `null` (Senior QA Engineer). One salary rendered 
+         +as raw JSON: `{"min": 10000, "max": 15000}` (Senior QA / Qualit
+         +yAssurance). Normal ranges fine (`5000-8000 PLN`). Single-locat
+         +ion fine (`Krakow`). Evidence: `docs/recon/hierarchy/02-offers-
+         +list-top.txt` + `02-offers-list-bottom.txt`; `docs/recon/screen
+         +s/02-offers-top.png` + `02-offers-bottom.png`. → candidates **C
+         +1–C3** | **BUG** — C1→BUG-A, C2→BUG-B (list), C3→BUG-C (list) |
+      22  | R2  | _TBD — P2_ | **Apply from the list.** Apply directly vi
+          a an "Apply" button on the tile, **without opening the offer de
+          tail**. Confirmation **snackbar contains the offer title AND th
+          e applied location** (both, not title alone). Multi-location of
+          fer: "Apply" **first opens a location-picker popup**; after cho
+          osing, the application is saved for the chosen location and the
+           snackbar shows title + that chosen location. | "Apply" sits **
+          on each tile** (no detail screen). Single-loc (Junior Flutter D
+          eveloper): snackbar `Applied to Junior Flutter Developer - Krak
+          ow` (title + location). Multi-loc (QA Automation Engineer): App
+          ly opens a **modal popup** `Select Location for QA Automation E
+          ngineer` with separate options `Warsaw` / `Gdansk`; choosing Gd
+          ansk → snackbar `Applied to QA Automation Engineer - Gdansk` (t
+          itle + chosen location). Picker splits locations correctly (con
+          trast C1). Evidence: `docs/recon/screens/03-apply-single-snackb
+          ar.png`, `04a-apply-multi-picker.png`, `04b-apply-multi-snackba
+          r.png`; `docs/recon/hierarchy/04-apply-multi-picker.txt`. No ca
+          ndidate observed in recon (human adjudicates). |  |
+      23  | R3  | _TBD — P2_ | **Application history.** Reached from the 
+          profile (header profile icon); lists the offers applied to. Ent
+          ry = **4 lines**: (1) title, (2) company, (3) chosen location, 
+          (4) salary range. No-salary offer → **no salary line** (consist
+          ent with the list). | Profile button (header) → "Profile" with 
+          "User Information" (email) + "Application History". Entry = tit
+          le / company / **chosen location** / salary; chosen location pe
+          rsists correctly (`Warsaw`, `Krakow`, `London`). Salaried entry
+           fine (`5000-8000 PLN`). **No-salary entry STILL shows a salary
+           line** rendered `—` (a11y `Applied job salary: not specified`)
+           → **C4**. **Raw-JSON salary leaks into history**: `{"min": 100
+          00, "max": 15000}` (Senior QA / QualityAssurance) → **C5**. Evi
+          dence: `docs/recon/hierarchy/09-history.txt`; `docs/recon/scree
+          ns/09-history.png`. |  |
+      24  | R4  | _TBD — P2_ | **Registration.** Successful registration 
+          **saves the user and auto-logs them in**. Validation: email bas
+          ic format; password **≥ 8 characters**; confirm-password **must
+           equal** the password. Validation error messages rendered **ABO
+          VE the relevant field (not below)**. | **Auto-login confirmed**
+           (valid register → lands on "Job Offers", no separate login). A
+          ll 3 validations present; each error rendered **ABOVE** its fie
+          ld (objective: error top-y < input top-y, + visual): email `Ple
+          ase enter a valid email address` (936 < 1002); password `Passwo
+          rd must be at least 8 characters` (1135 < 1201); confirm `Passw
+          ords do not match` (1335 < 1401). Evidence: `docs/recon/hierarc
+          hy/06-reg-email-error.txt`, `07-reg-pwd-error.txt`, `08-reg-con
+          firm-error.txt`; `docs/recon/screens/06/07/08-reg-*-error.png` 
+          (06 shows the red error above the Email box). **No candidate ob
+          served** (human adjudicates). |  |
+
+⏺ Update(docs/SPEC-MATRIX.md)
+  ⎿  Added 1 line, removed 1 line
+      19  | Req | Flow | Expected per spec | Actual (from recon) | Verdic
+          t (PASS/BUG) |
+      20  |-----|------|-------------------|---------------------|-------
+          -------------|
+      21  | R1  | _TBD — P2_ | **Offers list — tile data.** Each tile sho
+          ws title, company, location, salary range. Location: single = o
+          ne value; multiple = comma-separated. Salary: present → range s
+          hown; **absent → the salary element does not exist at all** (no
+           placeholder, no "no data"). | "Job Offers" list, **5 offers**.
+           Multi-location values are concatenated **without separators**:
+           `WarsawBerlinLondon`, `WarsawGdansk`, `WarsawBerlinLondonParis
+          `. No-salary offer renders a salary element: `Salary: not speci
+          fied` + value `null` (Senior QA Engineer). One salary rendered 
+          as raw JSON: `{"min": 10000, "max": 15000}` (Senior QA / Qualit
+          yAssurance). Normal ranges fine (`5000-8000 PLN`). Single-locat
+          ion fine (`Krakow`). Evidence: `docs/recon/hierarchy/02-offers-
+          list-top.txt` + `02-offers-list-bottom.txt`; `docs/recon/screen
+          s/02-offers-top.png` + `02-offers-bottom.png`. → candidates **C
+          1–C3** | **BUG** — C1→BUG-A, C2→BUG-B (list), C3→BUG-C (list) |
+      22 -| R2  | _TBD — P2_ | **Apply from the list.** Apply directly vi
+         -a an "Apply" button on the tile, **without opening the offer de
+         -tail**. Confirmation **snackbar contains the offer title AND th
+         -e applied location** (both, not title alone). Multi-location of
+         -fer: "Apply" **first opens a location-picker popup**; after cho
+         -osing, the application is saved for the chosen location and the
+         - snackbar shows title + that chosen location. | "Apply" sits **
+         -on each tile** (no detail screen). Single-loc (Junior Flutter D
+         -eveloper): snackbar `Applied to Junior Flutter Developer - Krak
+         -ow` (title + location). Multi-loc (QA Automation Engineer): App
+         -ly opens a **modal popup** `Select Location for QA Automation E
+         -ngineer` with separate options `Warsaw` / `Gdansk`; choosing Gd
+         -ansk → snackbar `Applied to QA Automation Engineer - Gdansk` (t
+         -itle + chosen location). Picker splits locations correctly (con
+         -trast C1). Evidence: `docs/recon/screens/03-apply-single-snackb
+         -ar.png`, `04a-apply-multi-picker.png`, `04b-apply-multi-snackba
+         -r.png`; `docs/recon/hierarchy/04-apply-multi-picker.txt`. No ca
+         -ndidate observed in recon (human adjudicates). |  |            
+      22 +| R2  | _TBD — P2_ | **Apply from the list.** Apply directly vi
+         +a an "Apply" button on the tile, **without opening the offer de
+         +tail**. Confirmation **snackbar contains the offer title AND th
+         +e applied location** (both, not title alone). Multi-location of
+         +fer: "Apply" **first opens a location-picker popup**; after cho
+         +osing, the application is saved for the chosen location and the
+         + snackbar shows title + that chosen location. | "Apply" sits **
+         +on each tile** (no detail screen). Single-loc (Junior Flutter D
+         +eveloper): snackbar `Applied to Junior Flutter Developer - Krak
+         +ow` (title + location). Multi-loc (QA Automation Engineer): App
+         +ly opens a **modal popup** `Select Location for QA Automation E
+         +ngineer` with separate options `Warsaw` / `Gdansk`; choosing Gd
+         +ansk → snackbar `Applied to QA Automation Engineer - Gdansk` (t
+         +itle + chosen location). Picker splits locations correctly (con
+         +trast C1). Evidence: `docs/recon/screens/03-apply-single-snackb
+         +ar.png`, `04a-apply-multi-picker.png`, `04b-apply-multi-snackba
+         +r.png`; `docs/recon/hierarchy/04-apply-multi-picker.txt`. No ca
+         +ndidate observed in recon (human adjudicates). | **PASS** |    
+      23  | R3  | _TBD — P2_ | **Application history.** Reached from the 
+          profile (header profile icon); lists the offers applied to. Ent
+          ry = **4 lines**: (1) title, (2) company, (3) chosen location, 
+          (4) salary range. No-salary offer → **no salary line** (consist
+          ent with the list). | Profile button (header) → "Profile" with 
+          "User Information" (email) + "Application History". Entry = tit
+          le / company / **chosen location** / salary; chosen location pe
+          rsists correctly (`Warsaw`, `Krakow`, `London`). Salaried entry
+           fine (`5000-8000 PLN`). **No-salary entry STILL shows a salary
+           line** rendered `—` (a11y `Applied job salary: not specified`)
+           → **C4**. **Raw-JSON salary leaks into history**: `{"min": 100
+          00, "max": 15000}` (Senior QA / QualityAssurance) → **C5**. Evi
+          dence: `docs/recon/hierarchy/09-history.txt`; `docs/recon/scree
+          ns/09-history.png`. |  |
+      24  | R4  | _TBD — P2_ | **Registration.** Successful registration 
+          **saves the user and auto-logs them in**. Validation: email bas
+          ic format; password **≥ 8 characters**; confirm-password **must
+           equal** the password. Validation error messages rendered **ABO
+          VE the relevant field (not below)**. | **Auto-login confirmed**
+           (valid register → lands on "Job Offers", no separate login). A
+          ll 3 validations present; each error rendered **ABOVE** its fie
+          ld (objective: error top-y < input top-y, + visual): email `Ple
+          ase enter a valid email address` (936 < 1002); password `Passwo
+          rd must be at least 8 characters` (1135 < 1201); confirm `Passw
+          ords do not match` (1335 < 1401). Evidence: `docs/recon/hierarc
+          hy/06-reg-email-error.txt`, `07-reg-pwd-error.txt`, `08-reg-con
+          firm-error.txt`; `docs/recon/screens/06/07/08-reg-*-error.png` 
+          (06 shows the red error above the Email box). **No candidate ob
+          served** (human adjudicates). |  |
+      25  | R5  | _TBD — P2_ | **Login / logout.** User can **log out fro
+          m the profile**, and can **log back in** with the email + passw
+          ord created at registration. | **Logout** button in profile → r
+          eturns to the login screen (`Welcome Back`) ✓. **Re-login** wit
+          h the registration creds (`recon.user@example.com` / `ReconPass
+          123`) → back to `Job Offers` ✓ (same session). Evidence: `docs/
+          recon/screens/10-after-logout.png` (login), `11-after-relogin.p
+          ng` (offers); `docs/recon/hierarchy/11-after-relogin.txt`. **No
+           candidate observed** (human adjudicates). |  |
+
+⏺ Update(docs/SPEC-MATRIX.md)
+  ⎿  Added 1 line, removed 1 line
+      20  |-----|------|-------------------|---------------------|-------
+          -------------|
+      21  | R1  | _TBD — P2_ | **Offers list — tile data.** Each tile sho
+          ws title, company, location, salary range. Location: single = o
+          ne value; multiple = comma-separated. Salary: present → range s
+          hown; **absent → the salary element does not exist at all** (no
+           placeholder, no "no data"). | "Job Offers" list, **5 offers**.
+           Multi-location values are concatenated **without separators**:
+           `WarsawBerlinLondon`, `WarsawGdansk`, `WarsawBerlinLondonParis
+          `. No-salary offer renders a salary element: `Salary: not speci
+          fied` + value `null` (Senior QA Engineer). One salary rendered 
+          as raw JSON: `{"min": 10000, "max": 15000}` (Senior QA / Qualit
+          yAssurance). Normal ranges fine (`5000-8000 PLN`). Single-locat
+          ion fine (`Krakow`). Evidence: `docs/recon/hierarchy/02-offers-
+          list-top.txt` + `02-offers-list-bottom.txt`; `docs/recon/screen
+          s/02-offers-top.png` + `02-offers-bottom.png`. → candidates **C
+          1–C3** | **BUG** — C1→BUG-A, C2→BUG-B (list), C3→BUG-C (list) |
+      22  | R2  | _TBD — P2_ | **Apply from the list.** Apply directly vi
+          a an "Apply" button on the tile, **without opening the offer de
+          tail**. Confirmation **snackbar contains the offer title AND th
+          e applied location** (both, not title alone). Multi-location of
+          fer: "Apply" **first opens a location-picker popup**; after cho
+          osing, the application is saved for the chosen location and the
+           snackbar shows title + that chosen location. | "Apply" sits **
+          on each tile** (no detail screen). Single-loc (Junior Flutter D
+          eveloper): snackbar `Applied to Junior Flutter Developer - Krak
+          ow` (title + location). Multi-loc (QA Automation Engineer): App
+          ly opens a **modal popup** `Select Location for QA Automation E
+          ngineer` with separate options `Warsaw` / `Gdansk`; choosing Gd
+          ansk → snackbar `Applied to QA Automation Engineer - Gdansk` (t
+          itle + chosen location). Picker splits locations correctly (con
+          trast C1). Evidence: `docs/recon/screens/03-apply-single-snackb
+          ar.png`, `04a-apply-multi-picker.png`, `04b-apply-multi-snackba
+          r.png`; `docs/recon/hierarchy/04-apply-multi-picker.txt`. No ca
+          ndidate observed in recon (human adjudicates). | **PASS** |
+      23 -| R3  | _TBD — P2_ | **Application history.** Reached from the 
+         -profile (header profile icon); lists the offers applied to. Ent
+         -ry = **4 lines**: (1) title, (2) company, (3) chosen location, 
+         -(4) salary range. No-salary offer → **no salary line** (consist
+         -ent with the list). | Profile button (header) → "Profile" with 
+         -"User Information" (email) + "Application History". Entry = tit
+         -le / company / **chosen location** / salary; chosen location pe
+         -rsists correctly (`Warsaw`, `Krakow`, `London`). Salaried entry
+         - fine (`5000-8000 PLN`). **No-salary entry STILL shows a salary
+         - line** rendered `—` (a11y `Applied job salary: not specified`)
+         - → **C4**. **Raw-JSON salary leaks into history**: `{"min": 100
+         -00, "max": 15000}` (Senior QA / QualityAssurance) → **C5**. Evi
+         -dence: `docs/recon/hierarchy/09-history.txt`; `docs/recon/scree
+         -ns/09-history.png`. |  |                                       
+      23 +| R3  | _TBD — P2_ | **Application history.** Reached from the 
+         +profile (header profile icon); lists the offers applied to. Ent
+         +ry = **4 lines**: (1) title, (2) company, (3) chosen location, 
+         +(4) salary range. No-salary offer → **no salary line** (consist
+         +ent with the list). | Profile button (header) → "Profile" with 
+         +"User Information" (email) + "Application History". Entry = tit
+         +le / company / **chosen location** / salary; chosen location pe
+         +rsists correctly (`Warsaw`, `Krakow`, `London`). Salaried entry
+         + fine (`5000-8000 PLN`). **No-salary entry STILL shows a salary
+         + line** rendered `—` (a11y `Applied job salary: not specified`)
+         + → **C4**. **Raw-JSON salary leaks into history**: `{"min": 100
+         +00, "max": 15000}` (Senior QA / QualityAssurance) → **C5**. Evi
+         +dence: `docs/recon/hierarchy/09-history.txt`; `docs/recon/scree
+         +ns/09-history.png`. | **BUG** — C4→BUG-B (history), C5→BUG-C (h
+         +istory) |                                                      
+      24  | R4  | _TBD — P2_ | **Registration.** Successful registration 
+          **saves the user and auto-logs them in**. Validation: email bas
+          ic format; password **≥ 8 characters**; confirm-password **must
+           equal** the password. Validation error messages rendered **ABO
+          VE the relevant field (not below)**. | **Auto-login confirmed**
+           (valid register → lands on "Job Offers", no separate login). A
+          ll 3 validations present; each error rendered **ABOVE** its fie
+          ld (objective: error top-y < input top-y, + visual): email `Ple
+          ase enter a valid email address` (936 < 1002); password `Passwo
+          rd must be at least 8 characters` (1135 < 1201); confirm `Passw
+          ords do not match` (1335 < 1401). Evidence: `docs/recon/hierarc
+          hy/06-reg-email-error.txt`, `07-reg-pwd-error.txt`, `08-reg-con
+          firm-error.txt`; `docs/recon/screens/06/07/08-reg-*-error.png` 
+          (06 shows the red error above the Email box). **No candidate ob
+          served** (human adjudicates). |  |
+      25  | R5  | _TBD — P2_ | **Login / logout.** User can **log out fro
+          m the profile**, and can **log back in** with the email + passw
+          ord created at registration. | **Logout** button in profile → r
+          eturns to the login screen (`Welcome Back`) ✓. **Re-login** wit
+          h the registration creds (`recon.user@example.com` / `ReconPass
+          123`) → back to `Job Offers` ✓ (same session). Evidence: `docs/
+          recon/screens/10-after-logout.png` (login), `11-after-relogin.p
+          ng` (offers); `docs/recon/hierarchy/11-after-relogin.txt`. **No
+           candidate observed** (human adjudicates). |  |
+      26  
+
+⏺ Update(docs/SPEC-MATRIX.md)
+  ⎿  Added 1 line, removed 1 line
+      21  | R1  | _TBD — P2_ | **Offers list — tile data.** Each tile sho
+          ws title, company, location, salary range. Location: single = o
+          ne value; multiple = comma-separated. Salary: present → range s
+          hown; **absent → the salary element does not exist at all** (no
+           placeholder, no "no data"). | "Job Offers" list, **5 offers**.
+           Multi-location values are concatenated **without separators**:
+           `WarsawBerlinLondon`, `WarsawGdansk`, `WarsawBerlinLondonParis
+          `. No-salary offer renders a salary element: `Salary: not speci
+          fied` + value `null` (Senior QA Engineer). One salary rendered 
+          as raw JSON: `{"min": 10000, "max": 15000}` (Senior QA / Qualit
+          yAssurance). Normal ranges fine (`5000-8000 PLN`). Single-locat
+          ion fine (`Krakow`). Evidence: `docs/recon/hierarchy/02-offers-
+          list-top.txt` + `02-offers-list-bottom.txt`; `docs/recon/screen
+          s/02-offers-top.png` + `02-offers-bottom.png`. → candidates **C
+          1–C3** | **BUG** — C1→BUG-A, C2→BUG-B (list), C3→BUG-C (list) |
+      22  | R2  | _TBD — P2_ | **Apply from the list.** Apply directly vi
+          a an "Apply" button on the tile, **without opening the offer de
+          tail**. Confirmation **snackbar contains the offer title AND th
+          e applied location** (both, not title alone). Multi-location of
+          fer: "Apply" **first opens a location-picker popup**; after cho
+          osing, the application is saved for the chosen location and the
+           snackbar shows title + that chosen location. | "Apply" sits **
+          on each tile** (no detail screen). Single-loc (Junior Flutter D
+          eveloper): snackbar `Applied to Junior Flutter Developer - Krak
+          ow` (title + location). Multi-loc (QA Automation Engineer): App
+          ly opens a **modal popup** `Select Location for QA Automation E
+          ngineer` with separate options `Warsaw` / `Gdansk`; choosing Gd
+          ansk → snackbar `Applied to QA Automation Engineer - Gdansk` (t
+          itle + chosen location). Picker splits locations correctly (con
+          trast C1). Evidence: `docs/recon/screens/03-apply-single-snackb
+          ar.png`, `04a-apply-multi-picker.png`, `04b-apply-multi-snackba
+          r.png`; `docs/recon/hierarchy/04-apply-multi-picker.txt`. No ca
+          ndidate observed in recon (human adjudicates). | **PASS** |
+      23  | R3  | _TBD — P2_ | **Application history.** Reached from the 
+          profile (header profile icon); lists the offers applied to. Ent
+          ry = **4 lines**: (1) title, (2) company, (3) chosen location, 
+          (4) salary range. No-salary offer → **no salary line** (consist
+          ent with the list). | Profile button (header) → "Profile" with 
+          "User Information" (email) + "Application History". Entry = tit
+          le / company / **chosen location** / salary; chosen location pe
+          rsists correctly (`Warsaw`, `Krakow`, `London`). Salaried entry
+           fine (`5000-8000 PLN`). **No-salary entry STILL shows a salary
+           line** rendered `—` (a11y `Applied job salary: not specified`)
+           → **C4**. **Raw-JSON salary leaks into history**: `{"min": 100
+          00, "max": 15000}` (Senior QA / QualityAssurance) → **C5**. Evi
+          dence: `docs/recon/hierarchy/09-history.txt`; `docs/recon/scree
+          ns/09-history.png`. | **BUG** — C4→BUG-B (history), C5→BUG-C (h
+          istory) |
+      24 -| R4  | _TBD — P2_ | **Registration.** Successful registration 
+         -**saves the user and auto-logs them in**. Validation: email bas
+         -ic format; password **≥ 8 characters**; confirm-password **must
+         - equal** the password. Validation error messages rendered **ABO
+         -VE the relevant field (not below)**. | **Auto-login confirmed**
+         - (valid register → lands on "Job Offers", no separate login). A
+         -ll 3 validations present; each error rendered **ABOVE** its fie
+         -ld (objective: error top-y < input top-y, + visual): email `Ple
+         -ase enter a valid email address` (936 < 1002); password `Passwo
+         -rd must be at least 8 characters` (1135 < 1201); confirm `Passw
+         -ords do not match` (1335 < 1401). Evidence: `docs/recon/hierarc
+         -hy/06-reg-email-error.txt`, `07-reg-pwd-error.txt`, `08-reg-con
+         -firm-error.txt`; `docs/recon/screens/06/07/08-reg-*-error.png` 
+         -(06 shows the red error above the Email box). **No candidate ob
+         -served** (human adjudicates). |  |                             
+      24 +| R4  | _TBD — P2_ | **Registration.** Successful registration 
+         +**saves the user and auto-logs them in**. Validation: email bas
+         +ic format; password **≥ 8 characters**; confirm-password **must
+         + equal** the password. Validation error messages rendered **ABO
+         +VE the relevant field (not below)**. | **Auto-login confirmed**
+         + (valid register → lands on "Job Offers", no separate login). A
+         +ll 3 validations present; each error rendered **ABOVE** its fie
+         +ld (objective: error top-y < input top-y, + visual): email `Ple
+         +ase enter a valid email address` (936 < 1002); password `Passwo
+         +rd must be at least 8 characters` (1135 < 1201); confirm `Passw
+         +ords do not match` (1335 < 1401). Evidence: `docs/recon/hierarc
+         +hy/06-reg-email-error.txt`, `07-reg-pwd-error.txt`, `08-reg-con
+         +firm-error.txt`; `docs/recon/screens/06/07/08-reg-*-error.png` 
+         +(06 shows the red error above the Email box). **No candidate ob
+         +served** (human adjudicates). | **PASS** |                     
+      25  | R5  | _TBD — P2_ | **Login / logout.** User can **log out fro
+          m the profile**, and can **log back in** with the email + passw
+          ord created at registration. | **Logout** button in profile → r
+          eturns to the login screen (`Welcome Back`) ✓. **Re-login** wit
+          h the registration creds (`recon.user@example.com` / `ReconPass
+          123`) → back to `Job Offers` ✓ (same session). Evidence: `docs/
+          recon/screens/10-after-logout.png` (login), `11-after-relogin.p
+          ng` (offers); `docs/recon/hierarchy/11-after-relogin.txt`. **No
+           candidate observed** (human adjudicates). |  |
+      26  
+      27  ## Bug candidates (recon output — NO verdicts)
+
+⏺ Update(docs/SPEC-MATRIX.md)
+  ⎿  Added 1 line, removed 1 line
+      22  | R2  | _TBD — P2_ | **Apply from the list.** Apply directly vi
+          a an "Apply" button on the tile, **without opening the offer de
+          tail**. Confirmation **snackbar contains the offer title AND th
+          e applied location** (both, not title alone). Multi-location of
+          fer: "Apply" **first opens a location-picker popup**; after cho
+          osing, the application is saved for the chosen location and the
+           snackbar shows title + that chosen location. | "Apply" sits **
+          on each tile** (no detail screen). Single-loc (Junior Flutter D
+          eveloper): snackbar `Applied to Junior Flutter Developer - Krak
+          ow` (title + location). Multi-loc (QA Automation Engineer): App
+          ly opens a **modal popup** `Select Location for QA Automation E
+          ngineer` with separate options `Warsaw` / `Gdansk`; choosing Gd
+          ansk → snackbar `Applied to QA Automation Engineer - Gdansk` (t
+          itle + chosen location). Picker splits locations correctly (con
+          trast C1). Evidence: `docs/recon/screens/03-apply-single-snackb
+          ar.png`, `04a-apply-multi-picker.png`, `04b-apply-multi-snackba
+          r.png`; `docs/recon/hierarchy/04-apply-multi-picker.txt`. No ca
+          ndidate observed in recon (human adjudicates). | **PASS** |
+      23  | R3  | _TBD — P2_ | **Application history.** Reached from the 
+          profile (header profile icon); lists the offers applied to. Ent
+          ry = **4 lines**: (1) title, (2) company, (3) chosen location, 
+          (4) salary range. No-salary offer → **no salary line** (consist
+          ent with the list). | Profile button (header) → "Profile" with 
+          "User Information" (email) + "Application History". Entry = tit
+          le / company / **chosen location** / salary; chosen location pe
+          rsists correctly (`Warsaw`, `Krakow`, `London`). Salaried entry
+           fine (`5000-8000 PLN`). **No-salary entry STILL shows a salary
+           line** rendered `—` (a11y `Applied job salary: not specified`)
+           → **C4**. **Raw-JSON salary leaks into history**: `{"min": 100
+          00, "max": 15000}` (Senior QA / QualityAssurance) → **C5**. Evi
+          dence: `docs/recon/hierarchy/09-history.txt`; `docs/recon/scree
+          ns/09-history.png`. | **BUG** — C4→BUG-B (history), C5→BUG-C (h
+          istory) |
+      24  | R4  | _TBD — P2_ | **Registration.** Successful registration 
+          **saves the user and auto-logs them in**. Validation: email bas
+          ic format; password **≥ 8 characters**; confirm-password **must
+           equal** the password. Validation error messages rendered **ABO
+          VE the relevant field (not below)**. | **Auto-login confirmed**
+           (valid register → lands on "Job Offers", no separate login). A
+          ll 3 validations present; each error rendered **ABOVE** its fie
+          ld (objective: error top-y < input top-y, + visual): email `Ple
+          ase enter a valid email address` (936 < 1002); password `Passwo
+          rd must be at least 8 characters` (1135 < 1201); confirm `Passw
+          ords do not match` (1335 < 1401). Evidence: `docs/recon/hierarc
+          hy/06-reg-email-error.txt`, `07-reg-pwd-error.txt`, `08-reg-con
+          firm-error.txt`; `docs/recon/screens/06/07/08-reg-*-error.png` 
+          (06 shows the red error above the Email box). **No candidate ob
+          served** (human adjudicates). | **PASS** |
+      25 -| R5  | _TBD — P2_ | **Login / logout.** User can **log out fro
+         -m the profile**, and can **log back in** with the email + passw
+         -ord created at registration. | **Logout** button in profile → r
+         -eturns to the login screen (`Welcome Back`) ✓. **Re-login** wit
+         -h the registration creds (`recon.user@example.com` / `ReconPass
+         -123`) → back to `Job Offers` ✓ (same session). Evidence: `docs/
+         -recon/screens/10-after-logout.png` (login), `11-after-relogin.p
+         -ng` (offers); `docs/recon/hierarchy/11-after-relogin.txt`. **No
+         - candidate observed** (human adjudicates). |  |                
+      25 +| R5  | _TBD — P2_ | **Login / logout.** User can **log out fro
+         +m the profile**, and can **log back in** with the email + passw
+         +ord created at registration. | **Logout** button in profile → r
+         +eturns to the login screen (`Welcome Back`) ✓. **Re-login** wit
+         +h the registration creds (`recon.user@example.com` / `ReconPass
+         +123`) → back to `Job Offers` ✓ (same session). Evidence: `docs/
+         +recon/screens/10-after-logout.png` (login), `11-after-relogin.p
+         +ng` (offers); `docs/recon/hierarchy/11-after-relogin.txt`. **No
+         + candidate observed** (human adjudicates). | **PASS** |        
+      26  
+      27  ## Bug candidates (recon output — NO verdicts)
+      28  
+
+⏺ Update(docs/SPEC-MATRIX.md)
+  ⎿  Added 1 line, removed 1 line
+      30  > (hierarchy string or screenshot filename), tagged **"candidat
+          e — human adjudicates on
+      31  > screenshot."** Claude does not rule BUG/PASS.
+      32  
+      33 -**C1 — R1 — multi-location values rendered without separators.*
+         -*                                                              
+      33 +**C1 — R1 — multi-location values rendered without separators.*
+         +* → **BUG-A**                                                  
+      34  - Expected per spec: multiple locations shown as **comma-separa
+          ted** values.
+      35  - Actual: concatenated with no separator — `Locations: WarsawBe
+          rlinLondon`, `WarsawGdansk`, `WarsawBerlinLondonParis`.
+      36  - Artifact: `docs/recon/hierarchy/02-offers-list-top.txt` + `02
+          -offers-list-bottom.txt`; `docs/recon/screens/02-offers-top.png
+          ` + `02-offers-bottom.png`.
+
+⏺ Update(docs/SPEC-MATRIX.md)
+  ⎿  Added 1 line, removed 1 line
+      36  - Artifact: `docs/recon/hierarchy/02-offers-list-top.txt` + `02
+          -offers-list-bottom.txt`; `docs/recon/screens/02-offers-top.png
+          ` + `02-offers-bottom.png`.
+      37  - _candidate — human adjudicates on screenshot._
+      38  
+      39 -**C2 — R1 — no-salary offer still renders a salary element (pla
+         -ceholder + literal `null`).**                                  
+      39 +**C2 — R1 — no-salary offer still renders a salary element (pla
+         +ceholder + literal `null`).** → **BUG-B** (list)               
+      40  - Expected per spec: when salary is absent, the **salary elemen
+          t does not exist at all** (no placeholder, no "no data").
+      41  - Actual: Senior QA Engineer (TechCorp) shows `Salary: not spec
+          ified` with value `null`.
+      42  - Artifact: `docs/recon/hierarchy/02-offers-list-top.txt` (`Sal
+          ary: not specified\nnull`); `docs/recon/screens/02-offers-top.p
+          ng`.
+
+⏺ Update(docs/SPEC-MATRIX.md)
+  ⎿  Added 1 line, removed 1 line
+      42  - Artifact: `docs/recon/hierarchy/02-offers-list-top.txt` (`Sal
+          ary: not specified\nnull`); `docs/recon/screens/02-offers-top.p
+          ng`.
+      43  - _candidate — human adjudicates on screenshot._
+      44  
+      45 -**C3 — R1 — salary rendered as raw JSON instead of a formatted 
+         -range.**                                                       
+      45 +**C3 — R1 — salary rendered as raw JSON instead of a formatted 
+         +range.** → **BUG-C** (list)                                    
+      46  - Expected per spec: salary shown as a range (e.g. `10000-15000
+           PLN`).
+      47  - Actual: Senior QA (QualityAssurance Ltd) shows `Salary: {"min
+          ": 10000, "max": 15000}`.
+      48  - Artifact: `docs/recon/hierarchy/02-offers-list-bottom.txt`; `
+          docs/recon/screens/02-offers-bottom.png`.
+
+⏺ Update(docs/SPEC-MATRIX.md)  ⎿  Added 1 line, removed 1 line
+      48  - Artifact: `docs/recon/hierarchy/02-offers-list-bottom.txt`; `
+          docs/recon/screens/02-offers-bottom.png`.
+      49  - _candidate — human adjudicates on screenshot._
+      50  
+      51 -**C4 — R3 — no-salary offer still renders a salary line in hist
+         -ory.**                                                         
+      51 +**C4 — R3 — no-salary offer still renders a salary line in hist
+         +ory.** → **BUG-B** (history)                                   
+      52  - Expected per spec: no-salary offer → **no salary line** in th
+          e history entry.
+      53  - Actual: Senior QA Engineer entry shows a 4th line `—` (a11y `
+          Applied job salary: not specified`).
+      54  - Artifact: `docs/recon/hierarchy/09-history.txt`; `docs/recon/
+          screens/09-history.png`.
+
+⏺ Update(docs/SPEC-MATRIX.md)
+  ⎿  Added 1 line, removed 1 line
+      54  - Artifact: `docs/recon/hierarchy/09-history.txt`; `docs/recon/
+          screens/09-history.png`.
+      55  - _candidate — human adjudicates on screenshot._
+      56  
+      57 -**C5 — R3 — salary rendered as raw JSON in history (same root a
+         -s C3, history surface).**                                      
+      57 +**C5 — R3 — salary rendered as raw JSON in history (same root a
+         +s C3, history surface).** → **BUG-C** (history)                
+      58  - Expected per spec: salary shown as a formatted range.
+      59  - Actual: Senior QA (QualityAssurance Ltd) history entry shows 
+          `Applied job salary: {"min": 10000, "max": 15000}`.
+      60  - Artifact: `docs/recon/hierarchy/09-history.txt`; `docs/recon/
+          screens/09-history.png`.
+
+⏺ Update(docs/SPEC-MATRIX.md)
+  ⎿  Added 3 lines, removed 2 lines
+      61  - _candidate — human adjudicates on screenshot._
+      62  
+      63  > Note: no-salary rendering differs by surface — list shows `nu
+          ll` (C2), history shows `—` (C4);
+      64 -> raw-JSON salary appears on both list (C3) and history (C5). H
+         -uman decides if these are one                                  
+      65 -> defect or several.                                           
+      64 +> raw-JSON salary appears on both list (C3) and history (C5). H
+         +uman adjudicated: **3 root                                     
+      65 +> defects** (BUG-A / BUG-B / BUG-C), **5 manifestations** acros
+         +s 2 surfaces (list R1, history R3)                             
+      66 +> — see `docs/BUGS.md`.                                        
+      67  
+      68  _Recon complete — all R1–R5 acts run. Total candidates: **C1–C5
+          ** (all under R1 / R3). R2, R4, R5 clean (no candidate observed
+          )._
+      69  
+
+⏺ All 11 SPEC-MATRIX edits applied. Now I create docs/BUGS.md — the English
+  rendering of your content (substance, bug-ids, steps, severities, evidence
+  paths all preserved 1:1).
+
+⏺ Write(docs/BUGS.md)
+  ⎿  Wrote 38 lines to docs/BUGS.md
+       2 # BUGS.md — Buggy defects vs. the specification
+       3 Defects found during P1 recon, adjudicated by the human from scr
+       4 Every flow asserts the SPEC; a red result on any of the items be
+         low is the correct result. Recon
+       5 evidence lives in `docs/recon/`; when the P2–P4 flows run, we li
+       6 red run.aestro artifacts from the
+       7 
+         tory R3).fects, 5 manifestations across 2 surfaces (list R1, his
+       9 
+      10 ---
+     … +61 lines (ctrl+o to expand)
+
+⏺ Pliki gotowe. Self-audit przed commitem — sprawdzam, że git status pokazuje
+  wyłącznie dwa zamierzone pliki (zero scratch), oraz oglądam diff
+  SPEC-MATRIX.md, żeby potwierdzić, że kolumna actual jest nietknięta (tylko
+  verdict + bug-id w nagłówkach kandydatów + notka + reguła). To są read-only
+  komendy git.
+
+⏺ Bash(echo "=== git status --short ===" && git status --short && echo && echo
+      "=== diff stat ===" && git diff --stat && echo && echo "=== untracked ==="
+      && git ls-fil…)
+  ⎿  === git status --short ===
+      M docs/SPEC-MATRIX.md
+     ?? docs/BUGS.md
+     … +7 lines (ctrl+o to expand)
+
+⏺ Status czysty — tylko docs/SPEC-MATRIX.md (M) + docs/BUGS.md (??), zero
+  scratch. Diff stat (14+/13−) zgadza się dokładnie z moim śladem: 5 wierszy
+  tabeli + 5 nagłówków kandydatów + reguła (po 1 linii) + notka (2→3 linie).
+  Teraz oglądam pełny diff, żeby potwierdzić, że w zmienionych wierszach tabeli
+  część actual jest bajtowo nietknięta — zmienia się tylko dopisana komórka
+  verdict.
+
+⏺ Bash(git diff docs/SPEC-MATRIX.md)
+  ⎿  diff --git a/docs/SPEC-MATRIX.md b/docs/SPEC-MATRIX.md
+     index 0b27d33..b20d16c 100644
+     --- a/docs/SPEC-MATRIX.md
+     … +184 lines (ctrl+o to expand)
+
+⏺ Self-audit PASS:
+  - git status = wyłącznie docs/SPEC-MATRIX.md (M) + docs/BUGS.md (new). Zero
+  scratch, nic w /tmp nie dotyka repo.
+  - Kolumna actual nietknięta — w każdym wierszu tabeli tekst Actual jest
+  bajtowo identyczny, zmienia się tylko dopisana komórka verdict. Bullet-y
+  Expected/Actual/Artifact kandydatów też bez zmian.
+  - Mapowanie zgodne: R1 BUG (C1→A, C2→B-list, C3→C-list), R2 PASS, R3 BUG
+  (C4→B-hist, C5→C-hist), R4 PASS, R5 PASS. Anty-przypadki
+  (persystencja/restart) i sekcja anti-cases — poza diffem, bez zmian.
+
+  Gra. Commit lokalny, bez push — zgodnie z workflow projektu (P0/P1 też szły
+  lokalnie na main) i Twoją jawną instrukcją. Staguję tylko te dwa pliki,
+  conventional message bez trailera, potem git show --stat HEAD do raportu.
+
+⏺ Bash(git add docs/SPEC-MATRIX.md docs/BUGS.md && \
+      git commit -m "docs: P1 adjudication verdict + BUGS.md skeleton (3 root
+      defects)" && \…)
+  ⎿  [main cd4bf26] docs: P1 adjudication verdict + BUGS.md skeleton (3 roo
+     t defects)
+      2 files changed, 52 insertions(+), 13 deletions(-)
+     … +11 lines (ctrl+o to expand)
+
+⏺ Zrobione. Raport z audytu i commitu:
+
+  Wynik
+
+  Adjudykacja P1 zamknięta — commit lokalny cd4bf26, bez push.
+
+  1) docs/SPEC-MATRIX.md — verdict wypełniony, actual nietknięty
+
+  ┌───────────────────┬─────────┬────────────────────────────────────────────┐
+  │        Req        │ Verdict │                 Mapowanie                  │
+  ├───────────────────┼─────────┼────────────────────────────────────────────┤
+  │ R1 (lista)        │ BUG     │ C1→BUG-A, C2→BUG-B (list), C3→BUG-C (list) │
+  ├───────────────────┼─────────┼────────────────────────────────────────────┤
+  │ R2 (apply)        │ PASS    │ —                                          │
+  ├───────────────────┼─────────┼────────────────────────────────────────────┤
+  │ R3 (historia)     │ BUG     │ C4→BUG-B (history), C5→BUG-C (history)     │
+  ├───────────────────┼─────────┼────────────────────────────────────────────┤
+  │ R4 (rejestracja)  │ PASS    │ —                                          │
+  ├───────────────────┼─────────┼────────────────────────────────────────────┤
+  │ R5 (login/logout) │ PASS    │ —                                          │
+  └───────────────────┴─────────┴────────────────────────────────────────────┘
+
+  - Każdy kandydat C1–C5 otagowany bug-id w nagłówku; notka "Human decides…"
+  zamieniona na zapis dokonanej adjudykacji (3 roots / 5 manifestacji →
+  docs/BUGS.md); reguła przy tabeli poprawiona, by plik nie był sprzeczny
+  (kolumna to zapis werdyktu człowieka, nie autorstwo Claude).
+  - Anty-przypadki (persystencja, restart) i sekcja anti-cases — bez zmian.
+
+  2) docs/BUGS.md — utworzony (38 linii)
+
+  3 root-defekty BUG-A/B/C, treść 1:1 wg Twojego szkicu (struktura, bug-id,
+  kroki, severity, dowody, repro-note). Język: angielski — Twoja decyzja z
+  pytania, zgodna z konwencją repo.
+
+  3) Self-audit (przed commitem)
+
+  - git status → wyłącznie docs/SPEC-MATRIX.md (M) + docs/BUGS.md (new). Zero 
+  scratch, nic z /tmp.
+  - actual bajtowo identyczny — diff potwierdził, że w wierszach tabeli zmienia
+  się tylko dopisana komórka verdict; bullet-y Expected/Actual/Artifact
+  kandydatów nietknięte.
+  - Diff stat (14+/13−) zgodny co do linii z zamierzonym śladem.
+
+  Commit
+
+  commit cd4bf26  docs: P1 adjudication verdict + BUGS.md skeleton (3 root
+  defects)
+   docs/BUGS.md        | 38 ++++++++++++++
+   docs/SPEC-MATRIX.md | 27 +++++++------
+   2 files changed, 52 insertions(+), 13 deletions(-)
+  git show --stat HEAD potwierdza: brak trailera Co-Authored-By / "Generated
+  with", nie pushowałem.
+
+  Standby. Flows nie ruszone — P2 czeka na jawny handoff.
+
+✻ Worked for 5m 11s
+
+※ recap: Goal: deliver a Maestro E2E suite asserting Buggy's spec. I just closed P1 adjudication — filled verdicts in SPEC-MATRIX and created BUGS.md (3 root defects), committed locally as cd4bf26, no push. Next: start P2 flows when you hand off.
