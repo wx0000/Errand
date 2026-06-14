@@ -167,6 +167,31 @@ If a step does not apply, **say which and why — never skip silently.**
      no CLAUDE.md Session Log entry — refreshed Current Status; flagged the recon-entry gap to the
      human rather than fabricating it.
 
+### 2026-06-14 — P1 — recon
+
+- **Done:** full recon R1–R5 against the live emulator. `recon.yaml` (**12 STAGE acts**;
+  proof-of-method, **not** the final suite), **17 screenshots + 12 hierarchy dumps** under
+  `docs/recon/`, SPEC-MATRIX `actual` filled, bug **candidates C1–C5** (R1 list + R3 history — a
+  salary/location formatting cluster; R2/R4/R5 clean) — **no verdicts**. Locale = EN; session +
+  history survive an app restart (spec silent → recorded, **not** a candidate). Commit `7a15bd4`.
+- **Decisions:** Maestro/selector conventions captured in `CLAUDE.md` (load-bearing for P2);
+  `STAGE` passed only via `-e` (no flow `env:` default); `recon.yaml` + all recon artifacts
+  committed as evidence (only `buggy.apk` + the task PDF stay out); attribution trailer disabled +
+  scaffold history rewritten clean; `verdict` column left to the human.
+- **Judgment moments:**
+  1. KROK 0 caught the P0 "env empty" note as **stale** — `maestro`/`adb` were a PATH-gap, not
+     not-installed (binaries dated after the P0 session), and the human had upgraded Java 9.0.4 →
+     21 LTS; proceeded instead of a false STOP.
+  2. Discover-then-target: dumped the `offers` list **first** and derived the apply/register/
+     history selectors from the real JSON — recon must not assume a no-salary or multi-location
+     offer exists.
+  3. Per-act `clearState` for isolation, with deliberate exceptions — `login-logout` shares one
+     session, `persistence` issues no `clearState` across the restart (else the wiped datastore
+     would read as a false BUG).
+  4. Multi-location picker confirmed **modal/parkable** → dumped its hierarchy (exact location
+     strings) rather than screenshot-only; snackbar handled as transient (screenshot +
+     `extendedWaitUntil`), a snackbar timeout treated as **evidence**, not a recon failure.
+
 ### 2026-06-12 — P0 — build
 
 - **Done:** scaffold built (`.gitignore`, `CLAUDE.md`, `PROGRESS.md`,
