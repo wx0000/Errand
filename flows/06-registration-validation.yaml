@@ -1,0 +1,56 @@
+# R4 — registration validation.
+# Each of the three validation rules is exercised in ISOLATION (one field invalid, the
+# other two valid) and its error must render ABOVE its field (spec). The `above:` relative
+# selector is the programmatic equivalent of the recon y-coordinate evidence
+# (docs/recon/hierarchy/06|07|08-reg-*.txt: error top-y < field top-y). Each recon dump
+# shows exactly one error node, so the other two errors are asserted absent (spec: a valid
+# field raises no error). Asserts the SPEC; R4 = PASS, expected green.
+appId: com.example.buggy
+---
+# --- Scenario 1: invalid email format (password + confirm valid and matching) ---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: ../subflows/register-user.yaml
+    env:
+      EMAIL: "notanemail"
+      PASSWORD: "ValidPass123"
+      CONFIRM: "ValidPass123"
+- assertVisible:                              # spec: email error ABOVE the email field
+    text: ".*Please enter a valid email address.*"
+    above:
+      text: ".*Email input field.*"
+- assertNotVisible: ".*Password must be at least 8 characters.*"
+- assertNotVisible: ".*Passwords do not match.*"
+
+# --- Scenario 2: password under 8 characters (email valid; confirm == password) ---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: ../subflows/register-user.yaml
+    env:
+      EMAIL: "valid.user@example.com"
+      PASSWORD: "short"
+      CONFIRM: "short"
+- assertVisible:                              # spec: password error ABOVE the password field
+    text: ".*Password must be at least 8 characters.*"
+    above:
+      text: ".*Password input field.*"
+- assertNotVisible: ".*Please enter a valid email address.*"
+- assertNotVisible: ".*Passwords do not match.*"
+
+# --- Scenario 3: confirm-password mismatch (email + password valid) ---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: ../subflows/register-user.yaml
+    env:
+      EMAIL: "valid.user@example.com"
+      PASSWORD: "ValidPass123"
+      CONFIRM: "Different456"
+- assertVisible:                              # spec: confirm error ABOVE the confirm field
+    text: ".*Passwords do not match.*"
+    above:
+      text: ".*Confirm password input field.*"
+- assertNotVisible: ".*Please enter a valid email address.*"
+- assertNotVisible: ".*Password must be at least 8 characters.*"

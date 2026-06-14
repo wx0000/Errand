@@ -1,0 +1,36 @@
+# R5 — log out from the profile, then log back in with the registration credentials.
+# Asserts the SPEC; R5 = PASS, expected green. Re-expresses the recon login-logout act
+# as suite subflows + spec assertions.
+appId: com.example.buggy
+---
+- launchApp:
+    clearState: true
+# Unique email per run; captured ONCE and reused for register AND re-login.
+- evalScript: ${output.email = 'qa.user.' + Date.now() + '@example.com'}
+- runFlow:
+    file: ../subflows/register-user.yaml
+    env:
+      EMAIL: "${output.email}"
+      PASSWORD: "ValidPass123"
+      CONFIRM: "ValidPass123"          # explicit (= PASSWORD) so registration succeeds
+# Readiness only (NOT the R5 assertion): be registered + auto-logged-in before exercising logout.
+- extendedWaitUntil:
+    visible: ".*Job Offers.*"
+    timeout: 8000
+- runFlow:
+    file: ../subflows/open-profile.yaml
+- runFlow:
+    file: ../subflows/logout.yaml
+# R5 assertion 1 — logout returns to the login screen.
+- extendedWaitUntil:
+    visible: ".*Welcome Back.*"
+    timeout: 6000
+- runFlow:
+    file: ../subflows/login.yaml
+    env:
+      EMAIL: "${output.email}"
+      PASSWORD: "ValidPass123"
+# R5 assertion 2 — re-login with the registration credentials reaches the offers list.
+- extendedWaitUntil:
+    visible: ".*Job Offers.*"
+    timeout: 8000

@@ -1,0 +1,13 @@
+# Subflow: submit login credentials. Asserts ONLY its own scope (on the login screen).
+# Does NOT assert the outcome — the calling flow asserts the post-login landing.
+# NO `env:` defaults: in Maestro 2.6.1 a subflow env default overrides the caller's runFlow value
+# (CLAUDE.md convention) — the caller passes EMAIL/PASSWORD.
+appId: com.example.buggy
+---
+- assertVisible: ".*Welcome Back.*"          # own-scope gate: on the login screen (auto-waits, no sleep)
+- tapOn: ".*Email input field.*"
+- inputText: "${EMAIL}"
+- tapOn: ".*Password input field.*"
+- inputText: "${PASSWORD}"
+- hideKeyboard
+- tapOn: "Login"                             # clickable Button (exact, anchored to full node text)

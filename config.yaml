@@ -1,0 +1,5 @@
+# Maestro workspace config — the P2 suite.
+# Scopes `maestro test .` to flows/ only. The files under subflows/ are fragments
+# (invoked via `runFlow: file:`) and must never run standalone.
+flows:
+  - "flows/*.yaml"

@@ -1,0 +1,6 @@
+# Subflow: open the profile from the header. Asserts ONLY its own scope (profile opened).
+# Does NOT assert any history content — entry-content assertions are R3 (P3).
+appId: com.example.buggy
+---
+- tapOn: ".*Profile button.*"               # header profile icon
+- assertVisible: ".*Profile screen title.*"  # own-scope gate: profile opened (auto-waits, no sleep)

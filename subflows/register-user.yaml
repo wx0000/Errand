@@ -1,0 +1,19 @@
+# Subflow: attempt a registration with the given field values.
+# Asserts ONLY its own scope (reached the register form). Does NOT assert the outcome —
+# the calling flow decides whether success (07) or a validation error (06) is expected.
+# Caller MUST pass EMAIL, PASSWORD and CONFIRM via the runFlow `env:`. There are deliberately
+# NO `env:` defaults here: in Maestro 2.6.1 a subflow's env default OVERRIDES the value passed by
+# the caller (the same precedence bug CLAUDE.md notes for `-e`), which resolves every field to ""
+# and fails registration. Without defaults the caller's values are used; a missing one errors loudly.
+appId: com.example.buggy
+---
+- tapOn: ".*Don't have an account.*"        # clickable Button (the wrapper View is not clickable)
+- assertVisible: ".*Create Account.*"        # own-scope gate: on the register form (auto-waits, no sleep)
+- tapOn: ".*Email input field.*"
+- inputText: "${EMAIL}"
+- tapOn: ".*Password input field.*"
+- inputText: "${PASSWORD}"
+- tapOn: ".*Confirm password input field.*"
+- inputText: "${CONFIRM}"
+- hideKeyboard
+- tapOn: "Register"                          # clickable Button (exact, anchored to full node text)

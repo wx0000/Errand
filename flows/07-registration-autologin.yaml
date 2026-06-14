@@ -1,0 +1,20 @@
+# R4 — successful registration auto-logs the user in.
+# A valid registration lands directly on "Job Offers" with NO separate login step —
+# that landing is the observable proof of auto-login. Asserts the SPEC; R4 = PASS, expected green.
+appId: com.example.buggy
+---
+- launchApp:
+    clearState: true
+# Unique email per run (timestamp) so no run collides with a prior account.
+- evalScript: ${output.email = 'qa.user.' + Date.now() + '@example.com'}
+- runFlow:
+    file: ../subflows/register-user.yaml
+    env:
+      EMAIL: "${output.email}"
+      PASSWORD: "ValidPass123"
+      CONFIRM: "ValidPass123"          # explicit (= PASSWORD) so registration succeeds
+# Spec: registration auto-logs in and navigates to the authenticated home.
+# extendedWaitUntil (not a bare assert) — allow ~8s for the post-register transition (recon-observed).
+- extendedWaitUntil:
+    visible: ".*Job Offers.*"
+    timeout: 8000

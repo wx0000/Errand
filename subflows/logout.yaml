@@ -1,0 +1,6 @@
+# Subflow: log out. Asserts ONLY its own scope (the logout control is present).
+# Does NOT assert the outcome — landing on the login screen is the flow's R5 assertion.
+appId: com.example.buggy
+---
+- assertVisible: "Logout"                    # own-scope gate: logout control present (exact, not "Logout button")
+- tapOn: "Logout"                            # clickable Button (exact, anchored to full node text)
