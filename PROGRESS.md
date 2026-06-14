@@ -20,10 +20,11 @@ Update at the end of every session: check off what's done, note drift if the pla
   - [x] List bug **candidates** C1–C5 (R1/R3) with artifacts — **no verdicts**
   - [x] **Adjudication** — human R1–R5 verdicts → SPEC-MATRIX `verdict` filled + `docs/BUGS.md` (3 root defects BUG-A/B/C); commit `cd4bf26`
 
-- [ ] **P2 — Subflows + registration / login**
-  - [ ] Reusable subflows (launch, auth helpers, …)
-  - [ ] Registration flow
-  - [ ] Login flow
+- [x] **P2 — Subflows + registration / login** — **COMPLETE**
+  - [x] Reusable subflows — `register-user`, `login`, `logout`, `open-profile` (+ `config.yaml` scope)
+  - [x] Registration flows — `06-registration-validation` (R4), `07-registration-autologin` (R4)
+  - [x] Login flow — `08-login-logout` (R5)
+  - [x] Suite **3/3 green** (R4/R5 PASS, as adjudicated); commit `5f61654`
 
 - [ ] **P3 — Applying + history**
   - [ ] Apply-to-offer flow
@@ -43,6 +44,19 @@ Update at the end of every session: check off what's done, note drift if the pla
 
 > Newest entries at the top. Format:
 > `### YYYY-MM-DD — <phase> — <role>` then bullets: **Done**, **Decisions**, **Drift**.
+
+### 2026-06-15 — P2 — build
+
+- **Done:** 8 suite files (`config.yaml` + 4 subflows + 3 flows: `06` R4-validation, `07`
+  R4-autologin, `08` R5 login/logout). Suite **3/3 green** (R4/R5 PASS, as adjudicated). Commit
+  `5f61654`. Plan `p2-subflows-reg-login.md` archived to `docs/ai-history/`.
+- **Decisions:** `register-user` = generic registration-attempt helper (3-param), no outcome
+  assertion inside; R4 "error above field" asserted via Maestro `above:`; unique email per run
+  (`evalScript`+`Date.now()`); no `tags:`/selective-run (rejected extras → README future work).
+- **Drift:** the approved plan prescribed an empty `env:` defaults block in the subflows — that
+  contradicts Maestro 2.6.1 (a subflow `env` default overrides the `runFlow`-passed value → blank
+  fields → **3/3 false red**). Reconciled in-build (removed the defaults) and updated the CLAUDE.md
+  Maestro conventions so P3/P4 subflows inherit the fix.
 
 ### 2026-06-14 — P1 — adjudication
 

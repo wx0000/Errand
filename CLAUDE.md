@@ -79,7 +79,7 @@ the human's, never Claude's). Do not keep a second copy of the skeleton here.
 
 ## Maestro / selector conventions (P1 recon — load-bearing for P2)
 
-Learned from real recon against Buggy; apply when writing the P2 flows.
+Learned from real recon (P1) and the P2 build against Buggy; load-bearing for P3/P4.
 
 - **Selectors are regex anchored to the FULL node text (DOTALL).** Flutter exposes text as
   `accessibilityText` / `hintText` in a `"label\nvalue"` shape, so a bare substring does **not**
@@ -88,6 +88,11 @@ Learned from real recon against Buggy; apply when writing the P2 flows.
   `clickable=false` and the tap fails.
 - **Pass `STAGE` only via `-e STAGE=<act>`.** Do **not** add `env: STAGE: …` in the flow header:
   in Maestro 2.6.1 the flow `env` default overrides `-e` and silently pins every run to the default.
+- **Subflows take params via `runFlow`'s `env:` — and declare NO `env:` defaults.** Same Maestro
+  2.6.1 precedence bug as `-e`: a subflow's `env` default overrides the value the caller passes,
+  silently resolving every `${VAR}` to that default. Reference `${VAR}` directly with no defaults
+  block; a missing param then errors loudly instead of typing blank. (P2: confirmed the hard way —
+  empty defaults made every registration field submit blank → 3/3 false red until removed.)
 - **Snackbar = transient, absent from the a11y hierarchy.** Catch it in-flow with a screenshot +
   `extendedWaitUntil` on its token (`.*Applied to.*`); the **screenshot is the evidence**.
 - **Picker = modal, parkable** → dump its hierarchy out-of-band (`maestro hierarchy`).
@@ -134,19 +139,45 @@ If a step does not apply, **say which and why — never skip silently.**
 
 ## Current Status
 
-- **Phase:** **P1 — DONE** (recon + adjudication). SPEC MATRIX `verdict` filled from the human's
-  ruling; `docs/BUGS.md` records **3 root defects** (BUG-A/B/C — 5 manifestations across R1 list +
-  R3 history). Adjudication committed `cd4bf26`.
-- **Next task:** **P2 — subflows + registration/login.** First real suite flows (reusable
-  subflows: launch + auth helpers → registration → login) against the live emulator, applying the
-  Maestro/selector conventions above. Tests assert the SPEC, never the app.
-- **R1–R5 coverage:** all 5 adjudicated — **R1 BUG** (C1→BUG-A, C2→BUG-B, C3→BUG-C),
-  **R2 PASS**, **R3 BUG** (C4→BUG-B, C5→BUG-C), **R4 PASS**, **R5 PASS**. Per-requirement `flow`
-  assignment still _TBD — P2_.
+- **Phase:** **P2 — DONE** (subflows + registration/login flows). **8 suite files** — `config.yaml`
+  (workspace scope = `flows/` only), 4 subflows (`register-user`, `login`, `logout`, `open-profile`),
+  3 flows (`06` R4-validation, `07` R4-autologin, `08` R5 login/logout). Suite **3/3 green** (R4/R5 =
+  PASS, as adjudicated). Committed `5f61654`.
+- **Next task:** **P3 — applying + history.** `apply-to-offer` subflow + flows for **R2** (apply from
+  the list, snackbar = title **and** location, multi-loc picker) and **R3** (history from profile).
+  R2 = PASS (expected green); R3 = **BUG** (C4→BUG-B, C5→BUG-C) → expect **red = findings**, do not
+  bend. Anti-case table + persistence anti-case land with these bug flows.
+- **R1–R5 coverage:** **R4 → flows 06+07** (PASS, green ✓), **R5 → flow 08** (PASS, green ✓). Still
+  unassigned: **R2** (apply, PASS) → P3; **R3** (history, BUG) → P3; **R1** (offers list, BUG) → P4.
 
 ## Session Log
 
 > Newest entries at the top. Each entry: date, phase, what was done, decisions, judgment moments.
+
+### 2026-06-15 — P2 — build
+
+- **Done:** designed P2 in plan mode (archived `p2-subflows-reg-login.md`) → built **8 suite files**:
+  `config.yaml` (workspace scope = `flows/` only), subflows `register-user`/`login`/`logout`/
+  `open-profile`, flows `06-registration-validation` (R4), `07-registration-autologin` (R4),
+  `08-login-logout` (R5). Suite **3/3 green**. Commit `5f61654`.
+- **Decisions:** `register-user` is a generic registration-**attempt** helper (`EMAIL/PASSWORD/
+  CONFIRM`) with **no outcome assertion inside** — the flow asserts success (07) or the validation
+  error (06); each subflow asserts only its own readiness gate. R4 "error **ABOVE** field" asserted
+  with Maestro's relative `above:` selector (programmatic equivalent of the recon y-coordinates).
+  Unique email per run via `evalScript` + `Date.now()`. **No `tags:`/selective-run** (rejected
+  extras → README future work, not suite code).
+- **Judgment moments:**
+  1. **Verify-against-reality caught a mechanics bug, NOT an app finding.** First run **3/3 red**;
+     the failure screenshot showed the register form submitted with **empty fields** ("Email is
+     required"). Root cause: the subflows' empty `env:` defaults **overrode** the values passed via
+     `runFlow` — the exact Maestro 2.6.1 precedence bug noted for `-e`, now confirmed for subflow
+     defaults too. Reconciled (removed the defaults) → 3/3 green. Resisted misreading the red as an
+     R4/R5 finding (recon already proved them PASS) and never bent an assertion.
+  2. Surfaced the `register-user` signature as a design choice (asked); took the recommended 3-param
+     option only after the human deferred — flagged correctable at the gate.
+  3. Caught my **own plan flaw mid-build** (the plan had prescribed the empty `env:` defaults block);
+     reconciled per the plan's "verify before implement" clause and folded the corrected convention
+     back into the Maestro conventions above.
 
 ### 2026-06-14 — P1 — adjudication
 

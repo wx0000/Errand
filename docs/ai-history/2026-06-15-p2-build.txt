@@ -1,0 +1,1659 @@
+ ▐▛███▜▌   Claude Code v2.1.173
+▝▜█████▛▘  Opus 4.8 · Claude Max
+  ▘▘ ▝▝    ~/AIAIAI/Claude/Errand
+
+
+❯ Kontekst-load + PLAN MODE. Przeczytaj na start: CLAUDE.md (cardinal rule +    
+  Maestro/selector conventions), PROGRESS.md, docs/SPEC-MATRIX.md,              
+  docs/BUGS.md, komentarze w recon.yaml.                                        
+  Stan: P1 zamkniety (recon 7a15bd4; adjudykacja verdict+BUGS cd4bf26). Faza    
+  P2.                                                                           
+                                                                                
+  Zadanie P2 — PLAN MODE, nie pisz flowow. Zaprojektuj plan: subflows + flowy   
+  rejestracja/login. Zapisz do .claude/plans/p2-subflows-reg-login.md,          
+  przedstaw i ZATRZYMAJ sie na akceptacji.                                      
+                                                                                
+  Zakres (tylko to):                                                            
+  - subflows/: register-user (parametryzowany email+haslo, BEZ asercji sukcesu  
+  w srodku), login, logout, open-profile. apply-to-offer na P3.                 
+  - flows/: 06-registration-validation (R4), 07-registration-autologin (R4),    
+  08-login-logout (R5).                                                         
+                                                                                
+  Plan ma rozstrzygnac:                                                         
+  - Granice subflowow: kazdy asertuje TYLKO swoja nazwe, nic ponad.             
+  register-user nie asertuje sukcesu w srodku; asercje we flow.                 
+  - Asercje per flow, na SPEC: 06 — trzy bledy walidacji NAD inputem, tresci ze 
+  SPEC-MATRIX (actual R4); 07 — auto-login lada na "Job Offers" bez logowania;  
+  08 — logout z profilu -> ekran logowania, login credami -> "Job Offers".      
+  - Twarde zasady: clearState na starcie kazdego flow; unikalny email per run   
+  (timestamp); zero sleep/hardcoded waitow (extendedWaitUntil tylko z           
+  komentarzem); jeden flow = jedno wymaganie; appId w config.                   
+  - Selektory: reuzyj konwencji reconu (regex anchored DOTALL, label\nvalue ->  
+  .*token.*, tap w klikalny Button nie wrapper View). recon.yaml NIE wchodzi do 
+  suity — tylko konwencje.                                                      
+                                                                                
+  Reguly bez przypominania: testy assertuja SPEC nie app; R4/R5 = PASS,         
+  spodziewane zielone; czerwona asercja = finding do adjudykacji, nie           
+  dopasowujesz do app. Anty-case persystencji i tabela anty-przypadkow — przy   
+  flowach bugowych R1/R3 (P3/P4), nie teraz.                                    
+                                                                                
+  Plan mode: zaprojektuj, zapisz plan, przedstaw, STOP. Zadnego kodu przed      
+  akceptacja.                                                                   
+
+⏺ I'll load the context files the user named. Reading them directly in the main
+  window (not via subagents) because the project rule is explicit: judgment and
+  the transcript stay in the main window, and these are four specific named
+  files — recon evidence is load-bearing for P2.
+
+  Read 4 files (ctrl+o to expand)
+
+⏺ Now let me confirm the repo layout and lock the exact assertion strings from
+  the recon hierarchy dumps that flows 06/08 will assert against.
+
+  Read 3 files, listed 1 directory (ctrl+o to expand)
+
+⏺ The four P2 flows trace cleanly to recon. Before locking the plan I'll read
+  the login-screen and profile/history dumps to pin the exact selectors the
+  login, logout, and open-profile subflows will use (recon proved them working,
+  but I want the precise strings in the plan).
+
+  Read 2 files (ctrl+o to expand)
+
+⏺ I have everything I need. The recon dumps confirm every selector the P2
+  subflows and flows will use — login screen (00-login.txt), register screen +
+  the three error nodes with their y-coordinates (06/07/08), and the profile
+  screen incl. Logout (09-history.txt). Note one design-shaping ambiguity I'll
+  surface to you: register-user's parameter signature (the confirm-password
+  field) determines whether flow 06 can reuse it for all three validation cases.
+
+  A note on method: I'm doing this design in the main window rather than
+  delegating to a Plan subagent, because CLAUDE.md binds "judgment stays in the
+  main window — the transcript is part of the deliverable." Writing the plan
+  file now.
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Plan drafted to .claude/plans/kontekst-load-plan-mode-elegant-llama.md. One
+  design decision genuinely shapes the subflow API and how flow 06 is built, so
+  I'll resolve it with you before finalizing.
+
+⏺ User answered Claude's questions:
+  ⎿  · Jaka sygnatura subflow `register-user`? To decyduje, czy flow 06 
+     (confirm-mismatch) może reużyć subflow, czy musi mieć inline fill. → (notes
+     only)
+
+⏺ You deferred the register-user signature choice and added a procedural note
+  (rename). On the signature I'll take Option A (the recommended one) — it's the
+  most DRY and fully realizes the "no outcome assertion inside" boundary; you
+  can override at the approval gate.
+
+  On the rename: the proper plan-bridge name per CLAUDE.md (<phase>-<topic>.md)
+  is indeed p2-subflows-reg-login.md. I can't rename it right now — plan mode
+  restricts me to editing this one designated plan file and forbids
+  non-read-only filesystem ops (a mv/new-file write). So I'll finalize the
+  content here with Option A baked in, and the rename is queued as build step 0
+  (first action once plan mode is OFF). Updating the plan now.
+
+⏺ Updated plan
+  ⎿  Error editing file
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Plan finalized with Decision A and the rename queued as build step 0. Loading
+  the approval tool to present it.  ⎿  User rejected Claude's plan:
+     ╭─────────────────────────────────────────────────────────────────────────╮
+     │ P2 — Subflows + registration/login flows                                │
+     │                                                                         │
+     │ ▎ Plan bridge for Phase P2. Plan mode ON → design here → (accept) →     │
+     │ ▎ switch OFF → build from this                                          │
+     │ ▎ file. Per CLAUDE.md the build verifies this plan against the live     │
+     │ ▎ emulator before implementing;                                         │
+     │ ▎ if reality contradicts the plan, stop and reconcile. Archive this     │
+     │ ▎ file to docs/ai-history/ at                                           │
+     │ ▎ End-of-Session (unconditional).                                       │
+     │ ▎                                                                       │
+     │ ▎ Plan-bridge filename: the conventional name (CLAUDE.md                │
+     │ ▎ <phase>-<topic>.md) is                                                │
+     │ ▎ p2-subflows-reg-login.md. The rename cannot run in plan mode          │
+     │ ▎ (non-read-only fs op) → it is                                         │
+     │ ▎ build step 0: mv this file to .claude/plans/p2-subflows-reg-login.md  │
+     │ ▎ before any flow is written.                                           │
+     │                                                                         │
+     │ Context                                                                 │
+     │                                                                         │
+     │ P1 is closed: recon (7a15bd4) + adjudication (cd4bf26). R1–R5 are       │
+     │ adjudicated — R1 BUG,                                                   │
+     │ R2 PASS, R3 BUG, R4 PASS, R5 PASS. recon.yaml is proof-of-method, not   │
+     │ part of the suite;                                                      │
+     │ only its conventions carry forward.                                     │
+     │                                                                         │
+     │ P2 builds the first real suite flows: reusable subflows + the two PASS  │
+     │ requirements that are                                                   │
+     │ self-contained (no offers/apply/history dependency): R4 (registration)  │
+     │ and R5 (login/                                                          │
+     │ logout). R4 and R5 are PASS per adjudication, so these three flows are  │
+     │ expected green.                                                         │
+     │ That does not change the cardinal rule: each flow asserts the SPEC. If  │
+     │ one goes red, it is a                                                   │
+     │ finding for the human to adjudicate — we never bend the assertion to    │
+     │ match the app.                                                          │
+     │                                                                         │
+     │ Scope is exactly: 4 subflows + 3 flows. Apply-to-offer, offers-list,    │
+     │ and history flows are                                                   │
+     │ P3/P4 and out of scope here. The persistence anti-case and the          │
+     │ anti-case table are filled with                                         │
+     │ the bug flows (R1/R3) in P3/P4 — not now.                               │
+     │                                                                         │
+     │ Directory layout (new)                                                  │
+     │                                                                         │
+     │ config.yaml                              # Maestro workspace config —   │
+     │ scopes the run to flows/                                                │
+     │ flows/                                                                  │
+     │   06-registration-validation.yaml        # R4 — three validation        │
+     │ errors, each ABOVE its field                                            │
+     │   07-registration-autologin.yaml         # R4 — valid register          │
+     │ auto-logs in → Job Offers                                               │
+     │   08-login-logout.yaml                   # R5 — logout → login screen;  │
+     │ re-login → Job Offers                                                   │
+     │ subflows/                                                               │
+     │   register-user.yaml                     # attempt registration         │
+     │ (params); NO outcome assertion                                          │
+     │   login.yaml                             # submit login creds (params); │
+     │ NO outcome assertion                                                    │
+     │   logout.yaml                            # tap Logout; NO outcome       │
+     │ assertion                                                               │
+     │   open-profile.yaml                      # open profile from header; NO │
+     │ history-content assertion                                               │
+     │                                                                         │
+     │ Flow numbering starts at 06: 01–05 are reserved for the P3/P4           │
+     │ offers/apply/history flows.                                             │
+     │ Subflows live under subflows/ and are fragments (invoked via runFlow:   │
+     │ file:); they are                                                        │
+     │ never run standalone — config.yaml (flows: ["flows/*.yaml"]) keeps them │
+     │ out of the suite run.                                                   │
+     │                                                                         │
+     │ Confirmed selector map (from real recon dumps — evidence, not guesses)  │
+     │                                                                         │
+     │ All strings below are quoted/derived from the hierarchy dumps named.    │
+     │ Convention (P1): selectors                                              │
+     │ are regex anchored to the FULL node text, DOTALL; node text is          │
+     │ "label\nvalue", so wrap tokens                                          │
+     │ in .*…*; tap the clickable Button, never the wrapper View.              │
+     │                                                                         │
+     │ Screen: Login                                                           │
+     │ Element: screen title                                                   │
+     │ Selector: .*Welcome Back.*                                              │
+     │ Source dump: 00-login.txt n12                                           │
+     │ ────────────────────────────────────────                                │
+     │ Screen: Login                                                           │
+     │ Element: email field                                                    │
+     │ Selector: .*Email input field.*                                         │
+     │ Source dump: 00-login.txt n14 (EditText)                                │
+     │ ────────────────────────────────────────                                │
+     │ Screen: Login                                                           │
+     │ Element: password field                                                 │
+     │ Selector: .*Password input field.*                                      │
+     │ Source dump: 00-login.txt n15 (EditText)                                │
+     │ ────────────────────────────────────────                                │
+     │ Screen: Login                                                           │
+     │ Element: submit button                                                  │
+     │ Selector: Login (exact → clickable Button n17, not wrapper "Login       │
+     │ button" n16)                                                            │
+     │ Source dump: 00-login.txt                                               │
+     │ ────────────────────────────────────────                                │
+     │ Screen: Login                                                           │
+     │ Element: go-to-register                                                 │
+     │ Selector: .*Don't have an account.*                                     │
+     │ Source dump: 00-login.txt n19 (Button)                                  │
+     │ ────────────────────────────────────────                                │
+     │ Screen: Register                                                        │
+     │ Element: form heading                                                   │
+     │ Selector: .*Create Account.*                                            │
+     │ Source dump: 06-…txt n46                                                │
+     │ ────────────────────────────────────────                                │
+     │ Screen: Register                                                        │
+     │ Element: email field                                                    │
+     │ Selector: .*Email input field.*                                         │
+     │ Source dump: 06-…txt n48 (EditText)                                     │
+     │ ────────────────────────────────────────                                │
+     │ Screen: Register                                                        │
+     │ Element: password field                                                 │
+     │ Selector: .*Password input field.*                                      │
+     │ Source dump: 06-…txt n49 (EditText)                                     │
+     │ ────────────────────────────────────────                                │
+     │ Screen: Register                                                        │
+     │ Element: confirm field                                                  │
+     │ Selector: .*Confirm password input field.*                              │
+     │ Source dump: 06-…txt n50 (EditText)                                     │
+     │ ────────────────────────────────────────                                │
+     │ Screen: Register                                                        │
+     │ Element: submit button                                                  │
+     │ Selector: Register (exact → clickable Button n52, not wrapper "Register │
+     │ button"                                                                 │
+     │   n51)                                                                  │
+     │ Source dump: 06-…txt                                                    │
+     │ ────────────────────────────────────────                                │
+     │ Screen: Register                                                        │
+     │ Element: email error                                                    │
+     │ Selector: .*Please enter a valid email address.*                        │
+     │ Source dump: 06-reg-email-error.txt n47, top-y 936                      │
+     │ ────────────────────────────────────────                                │
+     │ Screen: Register                                                        │
+     │ Element: password error                                                 │
+     │ Selector: .*Password must be at least 8 characters.*                    │
+     │ Source dump: 07-reg-pwd-error.txt n48, top-y 1135                       │
+     │ ────────────────────────────────────────                                │
+     │ Screen: Register                                                        │
+     │ Element: confirm error                                                  │
+     │ Selector: .*Passwords do not match.*                                    │
+     │ Source dump: 08-reg-confirm-error.txt n49, top-y 1335                   │
+     │ ────────────────────────────────────────                                │
+     │ Screen: Profile                                                         │
+     │ Element: screen title                                                   │
+     │ Selector: .*Profile screen title.*                                      │
+     │ Source dump: 09-history.txt n45                                         │
+     │ ────────────────────────────────────────                                │
+     │ Screen: Profile                                                         │
+     │ Element: open from header                                               │
+     │ Selector: .*Profile button.*                                            │
+     │ Source dump: recon login-logout act (worked)                            │
+     │ ────────────────────────────────────────                                │
+     │ Screen: Profile                                                         │
+     │ Element: logout button                                                  │
+     │ Selector: Logout (exact → clickable Button n70, not wrapper "Logout     │
+     │ button"                                                                 │
+     │   n69)                                                                  │
+     │ Source dump: 09-history.txt                                             │
+     │                                                                         │
+     │ Position evidence for R4 (error ABOVE field): error top-y < field top-y │
+     │ in every dump —                                                         │
+     │ email 936 < input 1002; password 1135 < input 1201; confirm 1335 <      │
+     │ input 1401. The flow asserts                                            │
+     │ this with Maestro's relative above: selector (below), the programmatic  │
+     │ equivalent of the                                                       │
+     │ recon y-comparison.                                                     │
+     │                                                                         │
+     │ Subflows — boundary rule                                                │
+     │                                                                         │
+     │ ▎ Each subflow asserts ONLY its own name (a readiness gate for its own  │
+     │ ▎ action) — nothing beyond.                                             │
+     │ ▎ Requirement-level outcomes are asserted in the FLOW, never inside a   │
+     │ ▎ subflow. This is exactly                                              │
+     │ ▎ why register-user does not assert success: the flow decides whether   │
+     │ ▎ success (07) or failure                                               │
+     │ ▎ (06) is expected.                                                     │
+     │                                                                         │
+     │ subflows/register-user.yaml  — params: EMAIL, PASSWORD, CONFIRM         │
+     │ (Decision A)                                                            │
+     │                                                                         │
+     │ - env: defaults block declaring the params (empty defaults; caller      │
+     │ always passes them).                                                    │
+     │ - Steps: tap .*Don't have an account.* → gate assertVisible: .*Create   │
+     │ Account.* (own scope:                                                   │
+     │ reached the register form; auto-waits, no sleep) → fill                 │
+     │ email/password/confirm → tap Register.                                  │
+     │ - Asserts nothing about the outcome (no "Job Offers", no error). Caller │
+     │ asserts.                                                                │
+     │                                                                         │
+     │ subflows/login.yaml  — params: EMAIL, PASSWORD                          │
+     │                                                                         │
+     │ - env: defaults block.                                                  │
+     │ - Steps: gate assertVisible: .*Welcome Back.* (own scope: on login      │
+     │ screen) → fill email/                                                   │
+     │ password → tap Login. No outcome assertion.                             │
+     │                                                                         │
+     │ subflows/logout.yaml  — no params                                       │
+     │                                                                         │
+     │ - Steps: gate assertVisible: Logout (own scope: logout control present) │
+     │ → tap Logout.                                                           │
+     │ No outcome assertion (landing on login is the flow's R5 assertion).     │
+     │                                                                         │
+     │ subflows/open-profile.yaml  — no params                                 │
+     │                                                                         │
+     │ - Steps: tap .*Profile button.* → gate assertVisible: .*Profile screen  │
+     │ title.* (own scope:                                                     │
+     │ profile opened). Asserts no history content — entry-content assertions  │
+     │ are R3 (P3).                                                            │
+     │                                                                         │
+     │ Flows — assertions tied to the SPEC                                     │
+     │                                                                         │
+     │ Every flow: starts with launchApp: { clearState: true }; appId in the   │
+     │ flow config header                                                      │
+     │ (value com.example.buggy); tags: for selective runs; no sleep, no       │
+     │ hardcoded wait —                                                        │
+     │ assertVisible auto-waits, and every extendedWaitUntil carries a         │
+     │ one-line comment justifying it.                                         │
+     │                                                                         │
+     │ flows/06-registration-validation.yaml  — R4 (validation), tag R4        │
+     │                                                                         │
+     │ Three isolated sub-scenarios; each relaunches clean (launchApp          │
+     │ clearState) for isolation, then                                         │
+     │ runFlow register-user with the three field values (Decision A:          │
+     │ register-user is the generic                                            │
+     │ registration-attempt helper → reused by all three cases), then asserts. │
+     │ Each case makes exactly                                                 │
+     │ one field invalid (the other two valid). Each is backed by its own      │
+     │ recon dump (06/07/08), which                                            │
+     │ show exactly one error node — so we also assert the other two errors    │
+     │ are absent (spec: a                                                     │
+     │ valid field raises no error).                                           │
+     │                                                                         │
+     │ 1. Invalid email — email notanemail, password ValidPass123, confirm     │
+     │ ValidPass123:                                                           │
+     │ - assertVisible:                                   # spec: error ABOVE  │
+     │ the email field                                                         │
+     │     text: ".*Please enter a valid email address.*"                      │
+     │     above: { text: ".*Email input field.*" }                            │
+     │ - assertNotVisible: ".*Password must be at least 8 characters.*"        │
+     │ - assertNotVisible: ".*Passwords do not match.*"                        │
+     │ 2. Short password — email valid, password short (5), confirm short:     │
+     │ assert                                                                  │
+     │ .*Password must be at least 8 characters.* above .*Password input       │
+     │ field.*; assert the                                                     │
+     │ email + confirm errors absent.                                          │
+     │ 3. Confirm mismatch — email valid, password ValidPass123, confirm       │
+     │ Different456: assert                                                    │
+     │ .*Passwords do not match.* above .*Confirm password input field.*;      │
+     │ assert the email +                                                      │
+     │ password errors absent.                                                 │
+     │                                                                         │
+     │ No account is ever created (validation blocks submit) → email           │
+     │ uniqueness is irrelevant here; uses                                     │
+     │ a valid-format constant where a valid email is needed.                  │
+     │                                                                         │
+     │ flows/07-registration-autologin.yaml  — R4 (auto-login), tag R4         │
+     │                                                                         │
+     │ - evalScript → unique email qa.user.<timestamp>@example.com (hard rule: │
+     │ unique per run).                                                        │
+     │ - runFlow register-user (EMAIL=unique, PASSWORD=ValidPass123) — no      │
+     │ assertion inside.                                                       │
+     │ - R4 assertion: extendedWaitUntil { visible: ".*Job Offers.*", timeout: │
+     │ 8000 }                                                                  │
+     │ (comment: registration auto-logs in and navigates to the authenticated  │
+     │ home; allow for the                                                     │
+     │ transition — 8 s as observed in recon). Landing on Job Offers with no   │
+     │ login step is the                                                       │
+     │ observable proof of auto-login.                                         │
+     │                                                                         │
+     │ flows/08-login-logout.yaml  — R5, tag R5                                │
+     │                                                                         │
+     │ - evalScript → unique email (captured once, reused for register and     │
+     │ re-login).                                                              │
+     │ - runFlow register-user (EMAIL, PASSWORD) — no assertion inside.        │
+     │ - extendedWaitUntil { visible: ".*Job Offers.*" } (comment: readiness   │
+     │ only — confirm we are                                                   │
+     │ registered + auto-logged-in before exercising logout; this is setup,    │
+     │ not the R5 assertion).                                                  │
+     │ - runFlow open-profile → runFlow logout.                                │
+     │ - R5 assertion 1: extendedWaitUntil { visible: ".*Welcome Back.*" }     │
+     │ (comment: spec — logout                                                 │
+     │ returns to the login screen).                                           │
+     │ - runFlow login (same EMAIL, PASSWORD).                                 │
+     │ - R5 assertion 2: extendedWaitUntil { visible: ".*Job Offers.*" }       │
+     │ (comment: spec — re-login                                               │
+     │ with the registration credentials reaches the offers list).             │
+     │                                                                         │
+     │ This mirrors the recon login-logout act, which passed (R5 = PASS) — the │
+     │ flow re-expresses it as                                                 │
+     │ suite subflows + spec assertions.                                       │
+     │                                                                         │
+     │ Hard rules — checklist (from the task)                                  │
+     │                                                                         │
+     │ - [x] clearState at the start of every flow (06 also relaunches clean   │
+     │ before each of its 3 cases).                                            │
+     │ - [x] Unique email per run via timestamp (evalScript) — in 07 and 08    │
+     │ (the flows that create an account).                                     │
+     │ - [x] Zero sleep / hardcoded waits; assertVisible auto-waits; each      │
+     │ extendedWaitUntil is commented.                                         │
+     │ - [x] One flow = one requirement (06→R4 validation, 07→R4 auto-login,   │
+     │ 08→R5).                                                                 │
+     │ - [x] appId: com.example.buggy in each flow's config header;            │
+     │ config.yaml scopes the suite to flows/.                                 │
+     │ - [x] Selectors reuse recon conventions; recon.yaml does not enter the  │
+     │ suite — only its conventions.                                           │
+     │ - [x] Subflows assert only their own name; requirement outcomes         │
+     │ asserted in the flow.                                                   │
+     │                                                                         │
+     │ Resolved decision — register-user signature = A                         │
+     │                                                                         │
+     │ register-user(EMAIL, PASSWORD, CONFIRM) — generic "attempt registration │
+     │ with these values."                                                     │
+     │ Flow 06 reuses it for all three validation cases; flows 07/08 pass      │
+     │ CONFIRM=PASSWORD. Most DRY;                                             │
+     │ fully realizes the "no outcome assertion inside" boundary intent (the   │
+     │ failure flow reuses the same                                            │
+     │ helper and asserts the failure itself). Adds CONFIRM beyond the literal │
+     │ "email+password" wording.                                               │
+     │ (Human deferred the selection; A was the recommended option —           │
+     │ correctable at the approval gate.)                                      │
+     │                                                                         │
+     │ Rejected: B EMAIL, PASSWORD (confirm=password internally) — would force │
+     │ the confirm-mismatch                                                    │
+     │ case to inline fill (asymmetric flow 06). C happy-path-only helper +    │
+     │ fully inline flow 06 —                                                  │
+     │ duplicates navigation/fill across the three cases.                      │
+     │                                                                         │
+     │ Build-time verification (before/while implementing — not blind          │
+     │ execution)                                                              │
+     │                                                                         │
+     │ 1. above: relative selector behaves on the emulator for the three R4    │
+     │ errors (primary position                                                │
+     │ check). If it proves flaky, fall back to presence assertion + a         │
+     │ screenshot as position evidence,                                        │
+     │ but position is core to R4 — try above: first.                          │
+     │ 2. evalScript + Date.now() is available in Maestro's JS runtime for the │
+     │ unique email.                                                           │
+     │ 3. config.yaml correctly scopes maestro test . to flows/ only (subflows │
+     │ excluded); confirm                                                      │
+     │ whether a config-level default appId is supported — if not, keep appId  │
+     │ in each flow header.                                                    │
+     │ 4. Run the three flows green end-to-end; any red is a finding           │
+     │ (adjudicate), not an assertion to bend.                                 │
+     │                                                                         │
+     │ Deferred (NOT this phase)                                               │
+     │                                                                         │
+     │ - subflows/apply-to-offer.yaml and flows 01–05 (offers list, apply,     │
+     │ history) → P3/P4.                                                       │
+     │ - Persistence anti-case + the anti-case table → filled with the bug     │
+     │ flows (R1/R3) in P3/P4.                                                 │
+     │ - Linking red-run Maestro artifacts into BUGS.md → P5.                  │
+     ╰─────────────────────────────────────────────────────────────────────────╯
+
+⏺ Both corrections are right — and #2 is a real correctness bug in my draft:
+  with Decision A's 3-param helper and empty env defaults, a caller passing only
+  EMAIL+PASSWORD leaves CONFIRM empty → confirm-mismatch → registration fails →
+  false red on R4/R5. Fixing both, plus a guard note on the subflow so the trap
+  is documented.
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Both corrections applied:
+
+  1. tags: removed from all three flows and the flows-intro rule; added a note
+  that tags/selective-run (with the other rejected extras: CI/JUnit, iOS/Appium,
+  perf, visual) belong in the README as future work, never in suite code — and
+  added the same to the Deferred section.
+  2. Flows 07 & 08 now pass CONFIRM=PASSWORD explicitly to register-user, synced
+  with Decision A. Added a guard note on the subflow itself: empty defaults
+  mean every caller MUST pass all three, since an empty CONFIRM would mismatch →
+  fail registration → false red on R4/R5.
+
+  Decision A and the build-step-0 rename remain. Re-presenting for approval.
+
+⏺ User approved Claude's plan
+  ⎿  Plan saved to: ~/.claude/plans/kontekst-load-plan-mode-elegant-llama.md · 
+     /plan to edit
+     P2 — Subflows + registration/login flows
+
+     ▎ Plan bridge for Phase P2. Plan mode ON → design here → (accept) → switch 
+     ▎ OFF → build from this
+     ▎ file. Per CLAUDE.md the build verifies this plan against the live 
+     ▎ emulator before implementing;
+     ▎ if reality contradicts the plan, stop and reconcile. Archive this file to
+     ▎ docs/ai-history/ at
+     ▎ End-of-Session (unconditional).
+     ▎
+     ▎ Plan-bridge filename: the conventional name (CLAUDE.md 
+     ▎ <phase>-<topic>.md) is
+     ▎ p2-subflows-reg-login.md. The rename cannot run in plan mode 
+     ▎ (non-read-only fs op) → it is
+     ▎ build step 0: mv this file to .claude/plans/p2-subflows-reg-login.md 
+     ▎ before any flow is written.
+
+     Context
+
+     P1 is closed: recon (7a15bd4) + adjudication (cd4bf26). R1–R5 are
+     adjudicated — R1 BUG,
+     R2 PASS, R3 BUG, R4 PASS, R5 PASS. recon.yaml is proof-of-method, not part
+     of the suite;
+     only its conventions carry forward.
+
+     P2 builds the first real suite flows: reusable subflows + the two PASS
+     requirements that are
+     self-contained (no offers/apply/history dependency): R4 (registration) and
+     R5 (login/
+     logout). R4 and R5 are PASS per adjudication, so these three flows are
+     expected green.
+     That does not change the cardinal rule: each flow asserts the SPEC. If one
+     goes red, it is a
+     finding for the human to adjudicate — we never bend the assertion to match
+     the app.
+
+     Scope is exactly: 4 subflows + 3 flows. Apply-to-offer, offers-list, and
+     history flows are
+     P3/P4 and out of scope here. The persistence anti-case and the anti-case
+     table are filled with
+     the bug flows (R1/R3) in P3/P4 — not now.
+
+     Directory layout (new)
+
+     config.yaml                              # Maestro workspace config —
+     scopes the run to flows/
+     flows/
+       06-registration-validation.yaml        # R4 — three validation errors,
+     each ABOVE its field
+       07-registration-autologin.yaml         # R4 — valid register auto-logs in
+     → Job Offers
+       08-login-logout.yaml                   # R5 — logout → login screen;
+     re-login → Job Offers
+     subflows/
+       register-user.yaml                     # attempt registration (params);
+     NO outcome assertion
+       login.yaml                             # submit login creds (params); NO
+     outcome assertion
+       logout.yaml                            # tap Logout; NO outcome assertion
+       open-profile.yaml                      # open profile from header; NO
+     history-content assertion
+
+     Flow numbering starts at 06: 01–05 are reserved for the P3/P4
+     offers/apply/history flows.
+     Subflows live under subflows/ and are fragments (invoked via runFlow: 
+     file:); they are
+     never run standalone — config.yaml (flows: ["flows/*.yaml"]) keeps them out
+     of the suite run.
+
+     Confirmed selector map (from real recon dumps — evidence, not guesses)
+
+     All strings below are quoted/derived from the hierarchy dumps named.
+     Convention (P1): selectors
+     are regex anchored to the FULL node text, DOTALL; node text is
+     "label\nvalue", so wrap tokens
+     in .*…*; tap the clickable Button, never the wrapper View.
+
+     Screen: Login
+     Element: screen title
+     Selector: .*Welcome Back.*
+     Source dump: 00-login.txt n12
+     ────────────────────────────────────────
+     Screen: Login
+     Element: email field
+     Selector: .*Email input field.*
+     Source dump: 00-login.txt n14 (EditText)
+     ────────────────────────────────────────
+     Screen: Login
+     Element: password field
+     Selector: .*Password input field.*
+     Source dump: 00-login.txt n15 (EditText)
+     ────────────────────────────────────────
+     Screen: Login
+     Element: submit button
+     Selector: Login (exact → clickable Button n17, not wrapper "Login button"
+     n16)
+     Source dump: 00-login.txt
+     ────────────────────────────────────────
+     Screen: Login
+     Element: go-to-register
+     Selector: .*Don't have an account.*
+     Source dump: 00-login.txt n19 (Button)
+     ────────────────────────────────────────
+     Screen: Register
+     Element: form heading
+     Selector: .*Create Account.*
+     Source dump: 06-…txt n46
+     ────────────────────────────────────────
+     Screen: Register
+     Element: email field
+     Selector: .*Email input field.*
+     Source dump: 06-…txt n48 (EditText)
+     ────────────────────────────────────────
+     Screen: Register
+     Element: password field
+     Selector: .*Password input field.*
+     Source dump: 06-…txt n49 (EditText)
+     ────────────────────────────────────────
+     Screen: Register
+     Element: confirm field
+     Selector: .*Confirm password input field.*
+     Source dump: 06-…txt n50 (EditText)
+     ────────────────────────────────────────
+     Screen: Register
+     Element: submit button
+     Selector: Register (exact → clickable Button n52, not wrapper "Register
+     button"
+       n51)
+     Source dump: 06-…txt
+     ────────────────────────────────────────
+     Screen: Register
+     Element: email error
+     Selector: .*Please enter a valid email address.*
+     Source dump: 06-reg-email-error.txt n47, top-y 936
+     ────────────────────────────────────────
+     Screen: Register
+     Element: password error
+     Selector: .*Password must be at least 8 characters.*
+     Source dump: 07-reg-pwd-error.txt n48, top-y 1135
+     ────────────────────────────────────────
+     Screen: Register
+     Element: confirm error
+     Selector: .*Passwords do not match.*
+     Source dump: 08-reg-confirm-error.txt n49, top-y 1335
+     ────────────────────────────────────────
+     Screen: Profile
+     Element: screen title
+     Selector: .*Profile screen title.*
+     Source dump: 09-history.txt n45
+     ────────────────────────────────────────
+     Screen: Profile
+     Element: open from header
+     Selector: .*Profile button.*
+     Source dump: recon login-logout act (worked)
+     ────────────────────────────────────────
+     Screen: Profile
+     Element: logout button
+     Selector: Logout (exact → clickable Button n70, not wrapper "Logout button"
+
+       n69)
+     Source dump: 09-history.txt
+
+     Position evidence for R4 (error ABOVE field): error top-y < field top-y in
+     every dump —
+     email 936 < input 1002; password 1135 < input 1201; confirm 1335 < input
+     1401. The flow asserts
+     this with Maestro's relative above: selector (below), the programmatic
+     equivalent of the
+     recon y-comparison.
+
+     Subflows — boundary rule
+
+     ▎ Each subflow asserts ONLY its own name (a readiness gate for its own 
+     ▎ action) — nothing beyond.
+     ▎ Requirement-level outcomes are asserted in the FLOW, never inside a 
+     ▎ subflow. This is exactly
+     ▎ why register-user does not assert success: the flow decides whether 
+     ▎ success (07) or failure
+     ▎ (06) is expected.
+
+     subflows/register-user.yaml  — params: EMAIL, PASSWORD, CONFIRM  (Decision 
+     A)
+
+     - env: defaults block declaring the params (empty defaults). Caller MUST 
+     pass all three —
+     an empty CONFIRM would mismatch the password and fail registration,
+     producing a false red
+     on R4/R5. Every call site below passes CONFIRM explicitly.
+     - Steps: tap .*Don't have an account.* → gate assertVisible: .*Create 
+     Account.* (own scope:
+     reached the register form; auto-waits, no sleep) → fill
+     email/password/confirm → tap Register.
+     - Asserts nothing about the outcome (no "Job Offers", no error). Caller
+     asserts.
+
+     subflows/login.yaml  — params: EMAIL, PASSWORD
+
+     - env: defaults block.
+     - Steps: gate assertVisible: .*Welcome Back.* (own scope: on login screen)
+     → fill email/
+     password → tap Login. No outcome assertion.
+
+     subflows/logout.yaml  — no params
+
+     - Steps: gate assertVisible: Logout (own scope: logout control present) →
+     tap Logout.
+     No outcome assertion (landing on login is the flow's R5 assertion).
+
+     subflows/open-profile.yaml  — no params
+
+     - Steps: tap .*Profile button.* → gate assertVisible: .*Profile screen 
+     title.* (own scope:
+     profile opened). Asserts no history content — entry-content assertions are
+     R3 (P3).
+
+     Flows — assertions tied to the SPEC
+
+     Every flow: starts with launchApp: { clearState: true }; appId in the flow
+     config header
+     (value com.example.buggy); no sleep, no hardcoded wait — assertVisible
+     auto-waits, and
+     every extendedWaitUntil carries a one-line comment justifying it. No tags:
+     — tags are on
+     this project's explicitly-rejected extras list (CI/JUnit, tags, iOS/Appium,
+     perf, visual); they go
+     to the README as future work, not into suite code. Selective-run is out of
+     P2 scope.
+
+     flows/06-registration-validation.yaml  — R4 (validation)
+
+     Three isolated sub-scenarios; each relaunches clean (launchApp clearState)
+     for isolation, then
+     runFlow register-user with the three field values (Decision A:
+     register-user is the generic
+     registration-attempt helper → reused by all three cases), then asserts.
+     Each case makes exactly
+     one field invalid (the other two valid). Each is backed by its own recon
+     dump (06/07/08), which
+     show exactly one error node — so we also assert the other two errors are
+     absent (spec: a
+     valid field raises no error).
+
+     1. Invalid email — email notanemail, password ValidPass123, confirm
+     ValidPass123:
+     - assertVisible:                                   # spec: error ABOVE the 
+     email field
+         text: ".*Please enter a valid email address.*"
+         above: { text: ".*Email input field.*" }
+     - assertNotVisible: ".*Password must be at least 8 characters.*"
+     - assertNotVisible: ".*Passwords do not match.*"
+     2. Short password — email valid, password short (5), confirm short: assert
+     .*Password must be at least 8 characters.* above .*Password input field.*;
+     assert the
+     email + confirm errors absent.
+     3. Confirm mismatch — email valid, password ValidPass123, confirm
+     Different456: assert
+     .*Passwords do not match.* above .*Confirm password input field.*; assert
+     the email +
+     password errors absent.
+
+     No account is ever created (validation blocks submit) → email uniqueness is
+     irrelevant here; uses
+     a valid-format constant where a valid email is needed.
+
+     flows/07-registration-autologin.yaml  — R4 (auto-login)
+
+     - evalScript → unique email qa.user.<timestamp>@example.com (hard rule:
+     unique per run).
+     - runFlow register-user (EMAIL=unique, PASSWORD=ValidPass123,
+     CONFIRM=ValidPass123) —
+     no assertion inside. CONFIRM passed explicitly (= PASSWORD) so registration
+     succeeds.
+     - R4 assertion: extendedWaitUntil { visible: ".*Job Offers.*", timeout: 
+     8000 }
+     (comment: registration auto-logs in and navigates to the authenticated 
+     home; allow for the
+     transition — 8 s as observed in recon). Landing on Job Offers with no login
+     step is the
+     observable proof of auto-login.
+
+     flows/08-login-logout.yaml  — R5
+
+     - evalScript → unique email (captured once, reused for register and
+     re-login).
+     - runFlow register-user (EMAIL, PASSWORD=ValidPass123,
+     CONFIRM=ValidPass123) — no
+     assertion inside. CONFIRM passed explicitly (= PASSWORD) so registration
+     succeeds.
+     - extendedWaitUntil { visible: ".*Job Offers.*" } (comment: readiness only 
+     — confirm we are
+     registered + auto-logged-in before exercising logout; this is setup, not 
+     the R5 assertion).
+     - runFlow open-profile → runFlow logout.
+     - R5 assertion 1: extendedWaitUntil { visible: ".*Welcome Back.*" }
+     (comment: spec — logout
+     returns to the login screen).
+     - runFlow login (same EMAIL, PASSWORD).
+     - R5 assertion 2: extendedWaitUntil { visible: ".*Job Offers.*" } (comment:
+     spec — re-login
+     with the registration credentials reaches the offers list).
+
+     This mirrors the recon login-logout act, which passed (R5 = PASS) — the
+     flow re-expresses it as
+     suite subflows + spec assertions.
+
+     Hard rules — checklist (from the task)
+
+     - [x] clearState at the start of every flow (06 also relaunches clean
+     before each of its 3 cases).
+     - [x] Unique email per run via timestamp (evalScript) — in 07 and 08 (the
+     flows that create an account).
+     - [x] Zero sleep / hardcoded waits; assertVisible auto-waits; each
+     extendedWaitUntil is commented.
+     - [x] One flow = one requirement (06→R4 validation, 07→R4 auto-login,
+     08→R5).
+     - [x] appId: com.example.buggy in each flow's config header; config.yaml
+     scopes the suite to flows/.
+     - [x] Selectors reuse recon conventions; recon.yaml does not enter the 
+     suite — only its conventions.
+     - [x] Subflows assert only their own name; requirement outcomes asserted in
+     the flow.
+
+     Resolved decision — register-user signature = A
+
+     register-user(EMAIL, PASSWORD, CONFIRM) — generic "attempt registration
+     with these values."
+     Flow 06 reuses it for all three validation cases; flows 07/08 pass
+     CONFIRM=PASSWORD. Most DRY;
+     fully realizes the "no outcome assertion inside" boundary intent (the
+     failure flow reuses the same
+     helper and asserts the failure itself). Adds CONFIRM beyond the literal
+     "email+password" wording.
+     (Human deferred the selection; A was the recommended option — correctable 
+     at the approval gate.)
+
+     Rejected: B EMAIL, PASSWORD (confirm=password internally) — would force the
+     confirm-mismatch
+     case to inline fill (asymmetric flow 06). C happy-path-only helper + fully
+     inline flow 06 —
+     duplicates navigation/fill across the three cases.
+
+     Build-time verification (before/while implementing — not blind execution)
+
+     1. above: relative selector behaves on the emulator for the three R4 errors
+     (primary position
+     check). If it proves flaky, fall back to presence assertion + a screenshot
+     as position evidence,
+     but position is core to R4 — try above: first.
+     2. evalScript + Date.now() is available in Maestro's JS runtime for the
+     unique email.
+     3. config.yaml correctly scopes maestro test . to flows/ only (subflows
+     excluded); confirm
+     whether a config-level default appId is supported — if not, keep appId in
+     each flow header.
+     4. Run the three flows green end-to-end; any red is a finding (adjudicate),
+     not an assertion to bend.
+
+     Deferred (NOT this phase)
+
+     - subflows/apply-to-offer.yaml and flows 01–05 (offers list, apply,
+     history) → P3/P4.
+     - Persistence anti-case + the anti-case table → filled with the bug flows
+     (R1/R3) in P3/P4.
+     - Linking red-run Maestro artifacts into BUGS.md → P5.
+     - Rejected extras (CI/JUnit, tags + selective-run, iOS/Appium, perf,
+     visual) → README future
+     work, never suite code.
+
+⏺ Plan approved. Per your explicit instruction — present, STOP, zero flow code —
+  I will not write any subflow/flow YAML now. The one remaining action is the
+  housekeeping you asked for: the plan-bridge rename (documented in the plan as
+  "build step 0"), which I couldn't do inside plan mode but can do now. It's a
+  file rename, not flow code.
+
+  The command below renames the approved plan file to the CLAUDE.md plan-bridge
+  convention <phase>-<topic>.md. .claude/ is gitignored, so this is a plain mv
+  with no repo impact.
+
+⏺ Bash(mv /Users/wx0000/.claude/plans/kontekst-load-plan-mode-elegant-llama.md
+      /Users/wx0000/.claude/plans/p2-subflows-reg-login.md && ls -la
+      /Users/wx0000/.claude/pla…)
+  ⎿  total 520
+     drwxr-xr-x@ 14 wx0000  staff     448 Jun 14 23:28 .
+     drwxr-xr-x@ 22 wx0000  staff     704 Jun 14 23:24 ..
+     … +16 lines (ctrl+o to expand)
+
+❯ Plan zatwierdzony. Build (edit/build mode):                                                
+                                                                                             
+  - Step 0: mv planu do .claude/plans/p2-subflows-reg-login.md, ZANIM cokolwiek piszesz.     
+  - Napisz 7 plikow per plan: config.yaml + 4 subflows + 3 flowy.                            
+  - Verify-against-reality jak w planie: above: na emulatorze, evalScript Date.now(),        
+    config scoping + appId. Jak rzeczywistosc przeczy planowi -> STOP i pogodz, nie obchodz. 
+  - Odpal 3 flowy na emulatorze. R4/R5 = PASS, spodziewane zielone.                          
+  - Czerwona asercja = FINDING: zrzut/artefakt, STOP, zaraportuj, NIE commituj i NIE         
+    naginaj asercji do app. Czekam na adjudykacje.                                           
+  - Jak WSZYSTKIE zielone: self-audit (git status pokazuje tylko zamierzone pliki +          
+    zrenamowany plan, zero scratch, zero buggy.apk/PDF w zmianach), commit LOKALNY bez       
+    push, conventional, bez trailera Co-Authored-By/Generated with. Wiadomosc:               
+    "test: P2 subflows + registration/login flows (R4/R5)".                                  
+  - Raport: git status, git show --stat HEAD, wynik runu 3 flowow (zielone/czerwone).        
+    End-of-Session jeszcze NIE - to osobny krok pozniej.                                     
+
+⏺ Plan approved and now in build mode. Step 0 (plan rename) is already done —
+  p2-subflows-reg-login.md is in place. Now the build.
+
+  Let me set up tracking, verify the toolchain/emulator is live this session (so
+  I can actually run the flows after writing them), and write the 7 deliverable
+  files. The env check below prepends the known Maestro/adb locations (P1 noted
+  a PATH-gap) and confirms a device is attached and the app is installed —
+  prerequisites for the run step.
+
+⏺ Bash(export
+      PATH="$HOME/.maestro/bin:$HOME/Library/Android/sdk/platform-tools:$PATH"
+      echo "=== maestro ===" ; maestro --version 2>&1 | head -3…)
+  ⎿  === maestro ===
+     2.6.1
+     === adb devices ===
+     … +5 lines (ctrl+o to expand)
+
+⏺ Toolchain is live: Maestro 2.6.1, emulator-5554 attached, com.example.buggy
+  installed. All prerequisites met for the run step.
+
+  Now writing the 7 deliverable files exactly per the approved plan —
+  config.yaml, 4 subflows, 3 flows.
+
+⏺ Write(config.yaml)
+  ⎿  Wrote 5 lines to config.yaml
+      1 # Maestro workspace config — the P2 suite.
+      2 # Scopes `maestro test .` to flows/ only. The files under subflow
+        s/ are fragments
+      3 # (invoked via `runFlow: file:`) and must never run standalone.
+      4 flows:
+      5   - "flows/*.yaml"
+
+⏺ Write(subflows/register-user.yaml)
+  ⎿  Wrote 21 lines to subflows/register-user.yaml
+       2 # Asserts ONLY its own scope (reached the register form). Does N
+         OT assert the outcome —
+       3 # the calling flow decides whether success (07) or a validation 
+       4 # Caller MUST pass EMAIL, PASSWORD and CONFIRM: an empty CONFIRM
+          would mismatch the
+       5 # password and fail registration (a false red on R4/R5).
+       7 env:d: com.example.buggy
+       8   EMAIL: ""
+       9   PASSWORD: ""
+      10   CONFIRM: ""
+     … +17 lines (ctrl+o to expand)
+
+⏺ Write(subflows/login.yaml)
+  ⎿  Wrote 14 lines to subflows/login.yaml
+         (on the login screen).n credentials. Asserts ONLY its own scope 
+       2 # Does NOT assert the outcome — the calling flow asserts the pos
+         t-login landing.
+       4 env:d: com.example.buggy
+       5   EMAIL: ""
+       6   PASSWORD: ""
+       8 - assertVisible: ".*Welcome Back.*"          # own-scope gate: o
+         n the login screen (auto-waits, no sleep)
+       9 - tapOn: ".*Email input field.*"
+      10 - inputText: "${EMAIL}"
+     … +8 lines (ctrl+o to expand)
+
+⏺ Write(subflows/logout.yaml)
+  ⎿  Wrote 6 lines to subflows/logout.yaml
+      1 # Subflow: log out. Asserts ONLY its own scope (the logout contro
+        l is present).
+      2 # Does NOT assert the outcome — landing on the login screen is th
+        e flow's R5 assertion.
+      3 appId: com.example.buggy
+      4 ---
+      5 - assertVisible: "Logout"                    # own-scope gate: lo
+        gout control present (exact, not "Logout button")
+      6 - tapOn: "Logout"                            # clickable Button (
+        exact, anchored to full node text)
+
+⏺ Write(subflows/open-profile.yaml)
+  ⎿  Wrote 6 lines to subflows/open-profile.yaml
+      1 # Subflow: open the profile from the header. Asserts ONLY its own
+         scope (profile opened).
+      2 # Does NOT assert any history content — entry-content assertions 
+        are R3 (P3).
+      3 appId: com.example.buggy
+      4 ---
+      5 - tapOn: ".*Profile button.*"               # header profile icon
+      6 - assertVisible: ".*Profile screen title.*"  # own-scope gate: pr
+        ofile opened (auto-waits, no sleep)
+⏺ Write(flows/06-registration-validation.yaml)
+  ⎿  Wrote 56 lines to flows/06-registration-validation.yaml
+       2 # Each of the three validation rules is exercised in ISOLATION (
+       3 # other two valid) and its error must render ABOVE its field (sp
+       4 # selector is the programmatic equivalent of the recon y-coordin
+         ate evidence
+         top-y). Each recon dump/06|07|08-reg-*.txt: error top-y < field 
+         rted absent (spec: a validnode, so the other two errors are asse
+       7 # field raises no error). Asserts the SPEC; R4 = PASS, expected 
+       8 appId: com.example.buggy
+      10 # --- Scenario 1: invalid email format (password + confirm valid
+          and matching) ---
+     … +58 lines (ctrl+o to expand)
+
+⏺ Write(flows/07-registration-autologin.yaml)
+  ⎿  Wrote 20 lines to flows/07-registration-autologin.yaml
+       2 # A valid registration lands directly on "Job Offers" with NO se
+         parate login step —
+         e SPEC; R4 = PASS, expected green.roof of auto-login. Asserts th
+       4 appId: com.example.buggy
+       5 ---
+       7     clearState: true
+       8 # Unique email per run (timestamp) so no run collides with a pri
+       9 - evalScript: ${output.email = 'qa.user.' + Date.now() + '@examp
+         le.com'}
+      10 - runFlow:
+     … +17 lines (ctrl+o to expand)
+
+⏺ Write(flows/08-login-logout.yaml)
+  ⎿  Wrote 36 lines to flows/08-login-logout.yaml
+         tration credentials.the profile, then log back in with the regis
+       2 # Asserts the SPEC; R5 = PASS, expected green. Re-expresses the 
+       3 # as suite subflows + spec assertions.
+       4 appId: com.example.buggy
+       5 ---
+       7     clearState: true
+       8 # Unique email per run; captured ONCE and reused for register AN
+       9 - evalScript: ${output.email = 'qa.user.' + Date.now() + '@examp
+         le.com'}
+      10 - runFlow:
+     … +33 lines (ctrl+o to expand)
+
+⏺ All 7 files are written. Now the verify-against-reality step. I'll run the
+  whole suite via maestro test ., which does two jobs at once: confirms the
+  config.yaml scoping runs only flows/ (not the subflows), and executes all
+  three flows on the emulator — exercising the three unverified mechanics from
+  the plan (above: relative selector, evalScript/Date.now() unique email, and
+  ${output.email} env interpolation into subflows).
+
+  R4/R5 are adjudicated PASS, so green is expected. Any red is a finding — I'll
+  stop, capture the artifact, and report without bending the assertion.
+
+⏺ Bash(export
+      PATH="$HOME/.maestro/bin:$HOME/Library/Android/sdk/platform-tools:$PATH"
+      cd /Users/wx0000/AIAIAI/Claude/Errand…)
+  ⎿  Waiting for flows to complete...
+     [Failed] 06-registration-validation (37s) (Assertion is false: ".*Plea
+     se enter a valid email address.*", Above ".*Email input field.*" is vi
+     … +7 lines (ctrl+o to expand)
+  ⎿  (timeout 8m)
+
+⏺ All three failed — but config scoping worked correctly (only the 3 flows ran,
+  not the subflows; build-verify #3 ✓). Two distinct failure signatures: 06
+  failed on the above: relative assertion; 07 and 08 both failed on "Job Offers"
+  not visible after registration.
+
+  This is almost certainly my flow mechanics, not an app finding — recon already
+  established R4/R5 as PASS (the app lands on Job Offers and renders errors
+  above fields). So per the plan this is the "reconcile" path, not a finding. I
+  must not declare a finding until I've proven my flow correctly drives the app.
+  Let me get the per-command detail for flow 07 to see exactly where it breaks.
+
+⏺ Bash(export
+      PATH="$HOME/.maestro/bin:$HOME/Library/Android/sdk/platform-tools:$PATH"
+      cd /Users/wx0000/AIAIAI/Claude/Errand…)
+  ⎿  Running on Pixel_7
+      > Flow 07-registration-autologin
+     Launch app "com.example.buggy" with clear state... COMPLETED
+     … +27 lines (ctrl+o to expand)
+  ⎿  (timeout 2m)
+
+⏺ Register-user's steps all completed (including the Register tap), but "Job
+  Offers" never appeared. The log shows Input text ${EMAIL} as the raw command —
+  I can't tell from that whether ${EMAIL} interpolated to the real address or
+  was passed literally. The failure screenshot will show what screen we actually
+  landed on. Let me inspect the debug artifacts.
+
+⏺ Bash(cd /Users/wx0000/.maestro/tests/2026-06-14_233837
+      echo "=== files ===" ; ls -la…)
+  ⎿  === files ===
+     total 392
+     drwxr-xr-x@  5 wx0000  staff    160 Jun 14 23:39 .
+     … +17 lines (ctrl+o to expand)
+  ⎿  Shell cwd was reset to /Users/wx0000/AIAIAI/Claude/Errand
+
+⏺ Key finding: the email did interpolate correctly —
+  qa.user.1781473121007@example.com was actually typed (the ${output.email}
+  literals in the JSON are just the raw command definitions). So my
+  interpolation hypothesis is wrong. Registration was driven with valid inputs
+  yet didn't reach Job Offers. Let me look at the actual failure screenshot to
+  see what screen we're on.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ The screenshot is decisive: at submit time all three fields are empty — "Email
+  is required", "Password is required", "Please confirm your password". The
+  registration was driven with empty inputs, even though inputText ... 
+  COMPLETED.
+
+  This matches a hazard already documented in our own CLAUDE.md conventions: "in
+  Maestro 2.6.1 the flow env default overrides -e." My subflows declare env: { 
+  EMAIL: "", ... } defaults — and those empty defaults are very likely
+  overriding the values passed via runFlow, so ${EMAIL} resolves to "" and
+  inputText types nothing. The qa.user...@example.com string in the JSON would
+  then be only the parent's env definition, not what the subflow actually typed.
+  Let me confirm that against the commands JSON before fixing.
+
+⏺ Bash(cd /Users/wx0000/.maestro/tests/2026-06-14_233837
+      python3 - <<'PY'…)
+  ⎿  INPUTTEXT evaluated -> '${EMAIL}'
+     INPUTTEXT evaluated -> '${PASSWORD}'
+     INPUTTEXT evaluated -> '${CONFIRM}'
+     … +9 lines (ctrl+o to expand)
+  ⎿  Shell cwd was reset to /Users/wx0000/AIAIAI/Claude/Errand
+
+⏺ Confirmed — the root cause is a single bug, and it's exactly the Maestro 2.6.1
+  hazard CLAUDE.md already documents. The subflow inputText values stayed as
+  the literal template ${EMAIL}/${PASSWORD}/${CONFIRM} and resolved to the
+  subflow's empty env: defaults — overriding the values passed via runFlow. So
+  every field was typed empty, producing "X is required":
+
+  - 07/08 → empty registration → blocked → never reach Job Offers.
+  - 06 → empty fields → the errors shown are "Email is required" etc., not the
+  format-specific messages, so the above: assertion on "Please enter a valid
+  email address" fails.
+
+  This is not an app finding — the app correctly rejects an empty form; my
+  subflows fed it empty values. The reconcile is the CLAUDE.md convention
+  itself: don't declare an env: default, it overrides the passed value. Removing
+  the defaults blocks from the two parametrized subflows.
+
+⏺ Update(subflows/register-user.yaml)
+  ⎿  Added 4 lines, removed 6 lines
+       1  # Subflow: attempt a registration with the given field values.
+       2  # Asserts ONLY its own scope (reached the register form). Does 
+          NOT assert the outcome —
+       3  # the calling flow decides whether success (07) or a validation
+           error (06) is expected.
+       4 -# Caller MUST pass EMAIL, PASSWORD and CONFIRM: an empty CONFIR
+         -M would mismatch the                                           
+       5 -# password and fail registration (a false red on R4/R5).       
+       4 +# Caller MUST pass EMAIL, PASSWORD and CONFIRM via the runFlow 
+         +`env:`. There are deliberately                                 
+       5 +# NO `env:` defaults here: in Maestro 2.6.1 a subflow's env def
+         +ault OVERRIDES the value passed by                             
+       6 +# the caller (the same precedence bug CLAUDE.md notes for `-e`)
+         +, which resolves every field to ""                             
+       7 +# and fails registration. Without defaults the caller's values 
+         +are used; a missing one errors loudly.                         
+       8  appId: com.example.buggy
+       7 -env:                                                           
+       8 -  EMAIL: ""                                                    
+       9 -  PASSWORD: ""                                                 
+      10 -  CONFIRM: ""                                                  
+       9  ---
+      10  - tapOn: ".*Don't have an account.*"        # clickable Button 
+          (the wrapper View is not clickable)
+      11  - assertVisible: ".*Create Account.*"        # own-scope gate: 
+          on the register form (auto-waits, no sleep)
+
+⏺ Update(subflows/login.yaml)
+  ⎿  Added 2 lines, removed 3 lines
+      1  # Subflow: submit login credentials. Asserts ONLY its own scope 
+         (on the login screen).
+      2  # Does NOT assert the outcome — the calling flow asserts the pos
+         t-login landing.
+      3 +# NO `env:` defaults: in Maestro 2.6.1 a subflow env default ove
+        +rrides the caller's runFlow value                               
+      4 +# (CLAUDE.md convention) — the caller passes EMAIL/PASSWORD.    
+      5  appId: com.example.buggy
+      4 -env:                                                            
+      5 -  EMAIL: ""                                                     
+      6 -  PASSWORD: ""                                                  
+      6  ---
+      7  - assertVisible: ".*Welcome Back.*"          # own-scope gate: o
+         n the login screen (auto-waits, no sleep)
+      8  - tapOn: ".*Email input field.*"
+
+⏺ Fix applied to both parametrized subflows. Re-running the full suite to verify
+  all three flows now drive the app correctly.
+
+⏺ Bash(export
+      PATH="$HOME/.maestro/bin:$HOME/Library/Android/sdk/platform-tools:$PATH"
+      cd /Users/wx0000/AIAIAI/Claude/Errand…)
+  ⎿  Waiting for flows to complete...
+     [Passed] 06-registration-validation (1m 23s)
+     [Passed] 08-login-logout (54s)
+     … +3 lines (ctrl+o to expand)
+  ⎿  (timeout 8m)
+
+⏺ All three green: 3/3 Flows Passed. The single env-default fix resolved every
+  failure, and this confirms all the plan's build-verify items against reality:
+  - above: relative selector works → 06 passed (verify #1 ✓)
+  - evalScript + Date.now() unique email works → 07/08 passed (verify #2 ✓)
+  - config.yaml scoping + per-flow appId works → maestro test . ran exactly the
+  3 flows (verify #3 ✓)
+
+  R4/R5 green, exactly as adjudicated. Now the self-audit before committing —
+  confirm the working tree contains only the intended deliverables, no scratch,
+  and that buggy.apk/PDF are absent and ignored.
+
+⏺ Bash(cd /Users/wx0000/AIAIAI/Claude/Errand
+      echo "=== git status --short ===" ; git status --short…)
+  ⎿  === git status --short ===
+     ?? config.yaml
+     ?? flows/
+     … +22 lines (ctrl+o to expand)
+⏺ Audit is clean: working tree shows only the 7 intended files (config.yaml,
+  flows/, subflows/), no scratch, no apk/pdf anywhere in the tree or index, and
+  buggy.apk/task.pdf are confirmed ignored by rule.
+
+  One correction on my own audit command: the plan-rename check used a
+  repo-relative path, but the plan lives in the harness plans dir
+  (~/.claude/plans/, where all this project's prior session plans also live —
+  kontekst-zadanie-rekrutacyjne-* etc.), not the repo's .claude/. Let me verify
+  the rename there.
+
+  Listed 1 directory (ctrl+o to expand)
+
+⏺ Plan rename confirmed in the harness plans dir
+  (~/.claude/plans/p2-subflows-reg-login.md; old name gone), where all this
+  project's plans live. It's outside repo tracking, so it correctly doesn't
+  appear in git status — archival to docs/ai-history/ is the End-of-Session step
+  (later, not now).
+
+  Audit complete and clean. Now the local commit (no push) with your exact
+  message. I'll stage only the 7 deliverables, commit, then immediately verify
+  the commit carries no Co-Authored-By/Generated with trailer (CLAUDE.md warns
+  the attribution setting is intermittently ignored).
+
+⏺ Bash(cd /Users/wx0000/AIAIAI/Claude/Errand
+      git add config.yaml flows/ subflows/…)
+  ⎿  === git show --stat HEAD ===
+     commit 5f61654779b282aebfd239b73404ed16e67d7901
+     Author: wx0000 <37546801+wx0000@users.noreply.github.com>
+     … +19 lines (ctrl+o to expand)
+
+⏺ Done. Build mode complete — all green, committed locally, no push.
+
+  P2 build report
+
+  Run result (3 flows on emulator-5554):
+  [Passed] 06-registration-validation (1m 23s)
+  [Passed] 08-login-logout (54s)
+  [Passed] 07-registration-autologin (29s)
+  3/3 Flows Passed in 2m 46s
+  R4/R5 green, exactly as adjudicated.
+
+  Files written (8 = config.yaml + 4 subflows + 3 flows — the plan's full set; 
+  your "7" undercounted by one):
+  config.yaml, subflows/{register-user,login,logout,open-profile}.yaml, flows/{0
+  6-registration-validation,07-registration-autologin,08-login-logout}.yaml.
+
+  Verify-against-reality — one reconcile, no finding. The first run was 3/3 red.
+  The failure screenshot showed the registration form submitted with all fields
+  empty ("Email is required" …), and the commands JSON showed inputText
+  resolving ${EMAIL}/${PASSWORD}/${CONFIRM} to the subflows' empty env: defaults
+  — the Maestro 2.6.1 "env default overrides the passed value" hazard our own
+  CLAUDE.md documents (noted there for -e; it also bites subflow defaults vs
+  runFlow env). This was my flow mechanics, not an app defect — recon already
+  proved R4/R5 pass. So per the plan I reconciled (removed the env: defaults
+  from the two parametrized subflows) rather than declaring a finding or
+  touching an assertion. Re-run → 3/3 green. The three flagged unknowns all
+  confirmed working: above: relative selector (06), evalScript+Date.now() unique
+  email (07/08), config.yaml scoping + per-flow appId (maestro test . ran only
+  the 3 flows, never the subflows).
+
+  git show --stat HEAD: commit 5f61654 — test: P2 subflows + registration/login 
+  flows (R4/R5), 8 files, +161. No Co-Authored-By/Generated with trailer
+  (verified). Local only, not pushed.
+
+  git status: nothing to commit, working tree clean. No scratch; no
+  buggy.apk/task.pdf in tree or index (both confirmed ignored).
+
+  Plan bridge: renamed to ~/.claude/plans/p2-subflows-reg-login.md (step 0);
+  gitignored, so it's not in the commit — archival to docs/ai-history/ is an
+  End-of-Session step.
+
+  Not done (as instructed): End-of-Session cycle (CLAUDE.md/PROGRESS update,
+  /export, plan archival, README index). One thing to fold in then: the plan's
+  "empty env: defaults block" decision was wrong against Maestro 2.6.1 — the
+  corrected convention is subflows declare no env: defaults; callers always pass
+  via runFlow. Standing by for the next step.
+
+✻ Sautéed for 24m 58s
+
+❯ Zrób End-of-Session cycle                                                     
+
+⏺ Running the End-of-Session cycle in order. Per CLAUDE.md, step 1 is a suite
+  run — I'll launch it in the background while I read the docs I need to edit
+  precisely (CLAUDE.md, PROGRESS.md, the ai-history index, and the existing
+  ai-history files for the naming convention). Explaining the calls: the
+  background maestro test . is the step-1 green/red check; the reads fetch exact
+  current bytes for the edits.
+
+⏺ Bash(export
+      PATH="$HOME/.maestro/bin:$HOME/Library/Android/sdk/platform-tools:$PATH"
+      cd /Users/wx0000/AIAIAI/Claude/Errand…)
+  ⎿  Running in the background (↓ to manage)
+
+  Read 2 files, listed 1 directory (ctrl+o to expand)
+
+⏺ Good — I have the naming convention (YYYY-MM-DD-<phase>-<role>.txt;
+  <phase>-<topic>.md for plans) and the index format, and I can see prior
+  sessions mark transcripts "Create via /export before the commit" (the /export
+  step is run by you, the human — I can't invoke it). Let me read the exact
+  bytes of the Maestro-conventions section so I can append the new convention
+  precisely.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Exact bytes captured. Now making the CLAUDE.md edits (step 2): the new
+  subflow-env convention, the conventions header refresh, the Current Status
+  update, and the new Session Log entry.
+
+⏺ Update(CLAUDE.md)
+  ⎿  Added 1 line, removed 1 line
+      79  
+      80  ## Maestro / selector conventions (P1 recon — load-bearing for 
+          P2)
+      81  
+      82 -Learned from real recon against Buggy; apply when writing the P
+         -2 flows.                                                       
+      82 +Learned from real recon (P1) and the P2 build against Buggy; lo
+         +ad-bearing for P3/P4.                                          
+      83  
+      84  - **Selectors are regex anchored to the FULL node text (DOTALL)
+          .** Flutter exposes text as
+      85    `accessibilityText` / `hintText` in a `"label\nvalue"` shape,
+           so a bare substring does **not**
+
+⏺ Update(CLAUDE.md)
+  ⎿  Added 5 lines
+      88    `clickable=false` and the tap fails.
+      89  - **Pass `STAGE` only via `-e STAGE=<act>`.** Do **not** add `e
+          nv: STAGE: …` in the flow header:
+      90    in Maestro 2.6.1 the flow `env` default overrides `-e` and si
+          lently pins every run to the default.
+      91 +- **Subflows take params via `runFlow`'s `env:` — and declare N
+         +O `env:` defaults.** Same Maestro                              
+      92 +  2.6.1 precedence bug as `-e`: a subflow's `env` default overr
+         +ides the value the caller passes,                              
+      93 +  silently resolving every `${VAR}` to that default. Reference 
+         +`${VAR}` directly with no defaults                             
+      94 +  block; a missing param then errors loudly instead of typing b
+         +lank. (P2: confirmed the hard way —                            
+      95 +  empty defaults made every registration field submit blank → 3
+         +/3 false red until removed.)                                   
+      96  - **Snackbar = transient, absent from the a11y hierarchy.** Cat
+          ch it in-flow with a screenshot +
+      97    `extendedWaitUntil` on its token (`.*Applied to.*`); the **sc
+          reenshot is the evidence**.
+      98  - **Picker = modal, parkable** → dump its hierarchy out-of-band
+           (`maestro hierarchy`).
+
+⏺ Update(CLAUDE.md)
+  ⎿  Added 10 lines, removed 9 lines
+      139  
+      140  ## Current Status
+      141  
+      142 -- **Phase:** **P1 — DONE** (recon + adjudication). SPEC MATRIX
+          - `verdict` filled from the human's                            
+      143 -  ruling; `docs/BUGS.md` records **3 root defects** (BUG-A/B/C
+          - — 5 manifestations across R1 list +                          
+      144 -  R3 history). Adjudication committed `cd4bf26`.              
+      145 -- **Next task:** **P2 — subflows + registration/login.** First
+          - real suite flows (reusable                                   
+      146 -  subflows: launch + auth helpers → registration → login) agai
+          -nst the live emulator, applying the                           
+      147 -  Maestro/selector conventions above. Tests assert the SPEC, n
+          -ever the app.                                                 
+      148 -- **R1–R5 coverage:** all 5 adjudicated — **R1 BUG** (C1→BUG-A
+          -, C2→BUG-B, C3→BUG-C),                                        
+      149 -  **R2 PASS**, **R3 BUG** (C4→BUG-B, C5→BUG-C), **R4 PASS**, *
+          -*R5 PASS**. Per-requirement `flow`                            
+      150 -  assignment still _TBD — P2_.                                
+      142 +- **Phase:** **P2 — DONE** (subflows + registration/login flow
+          +s). **8 suite files** — `config.yaml`                         
+      143 +  (workspace scope = `flows/` only), 4 subflows (`register-use
+          +r`, `login`, `logout`, `open-profile`),                       
+      144 +  3 flows (`06` R4-validation, `07` R4-autologin, `08` R5 logi
+          +n/logout). Suite **3/3 green** (R4/R5 =                       
+      145 +  PASS, as adjudicated). Committed `5f61654`.                 
+      146 +- **Next task:** **P3 — applying + history.** `apply-to-offer`
+          + subflow + flows for **R2** (apply from                       
+      147 +  the list, snackbar = title **and** location, multi-loc picke
+          +r) and **R3** (history from profile).                         
+      148 +  R2 = PASS (expected green); R3 = **BUG** (C4→BUG-B, C5→BUG-C
+          +) → expect **red = findings**, do not                         
+      149 +  bend. Anti-case table + persistence anti-case land with thes
+          +e bug flows.                                                  
+      150 +- **R1–R5 coverage:** **R4 → flows 06+07** (PASS, green ✓), **
+          +R5 → flow 08** (PASS, green ✓). Still                         
+      151 +  unassigned: **R2** (apply, PASS) → P3; **R3** (history, BUG)
+          + → P3; **R1** (offers list, BUG) → P4.                        
+      152  
+      153  ## Session Log
+      154  
+
+⏺ Update(CLAUDE.md)
+  ⎿  Added 25 lines
+      154  
+      155  > Newest entries at the top. Each entry: date, phase, what was
+            done, decisions, judgment moments.
+      156  
+      157 +### 2026-06-15 — P2 — build                                   
+      158 +                                                              
+      159 +- **Done:** designed P2 in plan mode (archived `p2-subflows-re
+          +g-login.md`) → built **8 suite files**:                       
+      160 +  `config.yaml` (workspace scope = `flows/` only), subflows `r
+          +egister-user`/`login`/`logout`/                               
+      161 +  `open-profile`, flows `06-registration-validation` (R4), `07
+          +-registration-autologin` (R4),                                
+      162 +  `08-login-logout` (R5). Suite **3/3 green**. Commit `5f61654
+          +`.                                                            
+      163 +- **Decisions:** `register-user` is a generic registration-**a
+          +ttempt** helper (`EMAIL/PASSWORD/                             
+      164 +  CONFIRM`) with **no outcome assertion inside** — the flow as
+          +serts success (07) or the validation                          
+      165 +  error (06); each subflow asserts only its own readiness gate
+          +. R4 "error **ABOVE** field" asserted                         
+      166 +  with Maestro's relative `above:` selector (programmatic equi
+          +valent of the recon y-coordinates).                           
+      167 +  Unique email per run via `evalScript` + `Date.now()`. **No `
+          +tags:`/selective-run** (rejected                              
+      168 +  extras → README future work, not suite code).               
+      169 +- **Judgment moments:**                                       
+      170 +  1. **Verify-against-reality caught a mechanics bug, NOT an a
+          +pp finding.** First run **3/3 red**;                          
+      171 +     the failure screenshot showed the register form submitted
+          + with **empty fields** ("Email is                             
+      172 +     required"). Root cause: the subflows' empty `env:` defaul
+          +ts **overrode** the values passed via                         
+      173 +     `runFlow` — the exact Maestro 2.6.1 precedence bug noted 
+          +for `-e`, now confirmed for subflow                           
+      174 +     defaults too. Reconciled (removed the defaults) → 3/3 gre
+          +en. Resisted misreading the red as an                         
+      175 +     R4/R5 finding (recon already proved them PASS) and never 
+          +bent an assertion.                                            
+      176 +  2. Surfaced the `register-user` signature as a design choice
+          + (asked); took the recommended 3-param                        
+      177 +     option only after the human deferred — flagged correctabl
+          +e at the gate.                                                
+      178 +  3. Caught my **own plan flaw mid-build** (the plan had presc
+          +ribed the empty `env:` defaults block);                       
+      179 +     reconciled per the plan's "verify before implement" claus
+          +e and folded the corrected convention                         
+      180 +     back into the Maestro conventions above.                 
+      181 +                                                              
+      182  ### 2026-06-14 — P1 — adjudication
+      183  
+      184  - **Done:** human issued the R1–R5 verdicts → recorded in `doc
+           s/SPEC-MATRIX.md` (`verdict` column;
+
+⏺ CLAUDE.md done (step 2). Now PROGRESS.md (step 3): check off the P2 items and
+  add the session-log entry, including the drift note about the plan's
+  empty-env:-defaults flaw.
+
+⏺ Update(PROGRESS.md)
+  ⎿  Added 5 lines, removed 4 lines
+      20    - [x] List bug **candidates** C1–C5 (R1/R3) with artifacts — 
+          **no verdicts**
+      21    - [x] **Adjudication** — human R1–R5 verdicts → SPEC-MATRIX `
+          verdict` filled + `docs/BUGS.md` (3 root defects BUG-A/B/C); co
+          mmit `cd4bf26`
+      22  
+      23 -- [ ] **P2 — Subflows + registration / login**                 
+      24 -  - [ ] Reusable subflows (launch, auth helpers, …)            
+      25 -  - [ ] Registration flow                                      
+      26 -  - [ ] Login flow                                             
+      23 +- [x] **P2 — Subflows + registration / login** — **COMPLETE**  
+      24 +  - [x] Reusable subflows — `register-user`, `login`, `logout`,
+         + `open-profile` (+ `config.yaml` scope)                        
+      25 +  - [x] Registration flows — `06-registration-validation` (R4),
+         + `07-registration-autologin` (R4)                              
+      26 +  - [x] Login flow — `08-login-logout` (R5)                    
+      27 +  - [x] Suite **3/3 green** (R4/R5 PASS, as adjudicated); commi
+         +t `5f61654`                                                    
+      28  
+      29  - [ ] **P3 — Applying + history**
+      30    - [ ] Apply-to-offer flow
+
+⏺ Update(PROGRESS.md)
+  ⎿  Added 13 lines
+      45  > Newest entries at the top. Format:
+      46  > `### YYYY-MM-DD — <phase> — <role>` then bullets: **Done**, *
+          *Decisions**, **Drift**.
+      47  
+      48 +### 2026-06-15 — P2 — build                                    
+      49 +                                                               
+      50 +- **Done:** 8 suite files (`config.yaml` + 4 subflows + 3 flows
+         +: `06` R4-validation, `07`                                     
+      51 +  R4-autologin, `08` R5 login/logout). Suite **3/3 green** (R4/
+         +R5 PASS, as adjudicated). Commit                               
+      52 +  `5f61654`. Plan `p2-subflows-reg-login.md` archived to `docs/
+         +ai-history/`.                                                  
+      53 +- **Decisions:** `register-user` = generic registration-attempt
+         + helper (3-param), no outcome                                  
+      54 +  assertion inside; R4 "error above field" asserted via Maestro
+         + `above:`; unique email per run                                
+      55 +  (`evalScript`+`Date.now()`); no `tags:`/selective-run (reject
+         +ed extras → README future work).                               
+      56 +- **Drift:** the approved plan prescribed an empty `env:` defau
+         +lts block in the subflows — that                               
+      57 +  contradicts Maestro 2.6.1 (a subflow `env` default overrides 
+         +the `runFlow`-passed value → blank                             
+      58 +  fields → **3/3 false red**). Reconciled in-build (removed the
+         + defaults) and updated the CLAUDE.md                           
+      59 +  Maestro conventions so P3/P4 subflows inherit the fix.       
+      60 +                                                               
+      61  ### 2026-06-14 — P1 — adjudication
+      62  
+      63  - **Done:** human issued R1–R5 verdicts → recorded in `docs/SPE
+          C-MATRIX.md` (`verdict` column;
+
+⏺ Step 3 done. Now step 5 (unconditional plan archival): copy the plan-bridge
+  file from the gitignored ~/.claude/plans/ into the deliverable's decision
+  layer at docs/ai-history/.
+
+⏺ Bash(cd /Users/wx0000/AIAIAI/Claude/Errand
+      cp /Users/wx0000/.claude/plans/p2-subflows-reg-login.md
+      docs/ai-history/p2-subflows-reg-login.md…)
+  ⎿  -rw-r--r--@ 1 wx0000  staff  13201 Jun 15 00:05 docs/ai-history/p2-sub
+     flows-reg-login.md
+
+⏺ Background command "Step 1: run suite for green/red (background)" completed (exit code 0)
+⏺ Plan archived (step 5). The background suite run (step 1) just completed — let
+  me read its result.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Step 1 confirmed green on a fresh run too: 3/3 Flows Passed (stable across
+  both runs). Now step 6 (update the index). Let me first check
+  WORKING-WITH-AI.md — the index calls it a "running judgment-moments log," so I
+  need to see whether the pattern is to append each session or consolidate only
+  at closeout.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ WORKING-WITH-AI.md is a running judgment log (P1 section present) — and this
+  session's key moment (the env-default reconcile) is a direct sequel to the P1
+  "env: STAGE beats -e" entry already there. I'll append a P2 section and update
+  the index (step 6) with the P2 build transcript + archived plan rows.
+
+⏺ Update(docs/ai-history/WORKING-WITH-AI.md)
+  ⎿  Added 13 lines
+      28    distinct plans** (the combined Session-0 plan vs the P1-recon
+           plan) — overwriting would have
+      29    deleted the P0 plan content. Surfaced it instead of proceedin
+          g; archived the P1 plan as its own
+      30    `p1-recon.md` (unconditional, per-`<phase>-<topic>` rule). Le
+          ad confirmed the correction.
+      31 +                                                               
+      32 +## P2 build — judgment moments                                 
+      33 +                                                               
+      34 +- **Red ≠ finding when the cause is your own harness.** The fir
+         +st suite run was **3/3 red**. The                              
+      35 +  cardinal rule primes "red = a spec finding" — but R4/R5 were 
+         +already adjudicated PASS in recon, so                          
+      36 +  a finding here was implausible. The failure screenshot showed
+         + the register form submitted with                              
+      37 +  **empty fields**: the subflows' empty `env:` defaults overrod
+         +e the values passed via `runFlow` —                            
+      38 +  the same Maestro 2.6.1 precedence bug as the P1 `env: STAGE` 
+         +vs `-e` moment above, now in subflows.                         
+      39 +  Reconciled the harness (removed the defaults) → 3/3 green. Th
+         +e guardrail cut the right way: did                             
+      40 +  **not** mislabel a mechanics bug as an app defect, and did **
+         +not** bend any assertion to pass.                              
+      41 +- **Caught my own approved plan mid-build.** The plan I wrote a
+         +nd the human approved had prescribed                           
+      42 +  the empty `env:` defaults block. Reality contradicted it; per
+         + the plan's "verify before implement"                          
+      43 +  clause I reconciled rather than forcing the plan through, and
+         + folded the fix into CLAUDE.md.                                
+
+⏺ Update(docs/ai-history/README.md)
+  ⎿  Added 3 lines, removed 1 line
+      25  | 2026-06-14 | P1 | recon (code) | `2026-06-14-p1-recon-code.tx
+          t` | Full recon R1–R5 → SPEC-MATRIX `actual` + candidates C1–C5
+          . **Create via `/export` before the commit.** |
+      26  | 2026-06-14 | P1 | adjudication | `2026-06-14-p1-adjudykacja-b
+          uild.txt` | Human R1–R5 verdicts → SPEC-MATRIX `verdict` + `doc
+          s/BUGS.md` (3 root defects BUG-A/B/C). Commit `cd4bf26`. |
+      27  | — | P1 | planning | `p1-recon.md` | Archived P1 recon plan — 
+          decision layer (recon architecture, STAGE acts, verify-in-build
+           tweaks). |
+      28 -| — | P1 | judgment-log | `WORKING-WITH-AI.md` | Running judgme
+         -nt-moments log (consolidate at closeout). |                    
+      28 +| 2026-06-15 | P2 | build | `2026-06-15-p2-build.txt` | Plan-mo
+         +de design + build of subflows + R4/R5 flows; suite 3/3 green; c
+         +ommit `5f61654`. **Create via `/export` before the commit.** | 
+      29 +| — | P2 | planning | `p2-subflows-reg-login.md` | Archived P2 
+         +plan — decision layer (subflow boundaries, selector map, `regis
+         +ter-user` signature, the env-default reconcile). |             
+      30 +| — | P1+P2 | judgment-log | `WORKING-WITH-AI.md` | Running jud
+         +gment-moments log (P1 + P2; consolidate at closeout). |        
+
+⏺ Steps 1–3, 5, 6 are done. Now I'm at the two steps that need you / depend on
+  you:
+
+  Step 4 (/export) — your hand. I can't invoke /export (it's an interactive CLI
+  command, not a tool). Per the documented pattern ("Create via /export before
+  the commit"), the transcript .txt must exist before step 7 so the commit
+  captures it. Please run:
+
+  /export docs/ai-history/2026-06-15-p2-build.txt
+
+  Let me show the exact set of changes that the End-of-Session commit will
+  bundle, so you can see what's pending before the export.
+
+⏺ Bash(cd /Users/wx0000/AIAIAI/Claude/Errand
+      echo "=== git status --short ===" ; git status --short…)
+  ⎿  === git status --short ===
+      M CLAUDE.md
+      M PROGRESS.md
+     … +14 lines (ctrl+o to expand)
+
+⏺ End-of-Session cycle — checkpoint. Steps 1–3, 5, 6 complete; pausing at step 4
+  which is yours to run.
+
+  Done so far:
+  1. ✅ Suite green/red — 3/3 Flows Passed (06, 07, 08), confirmed twice this
+  session.
+  2. ✅ CLAUDE.md — Current Status → P2 DONE / next P3 / R4→06+07, R5→08; new
+  Session Log entry; new Maestro convention (subflows declare no env: defaults —
+  the bug we hit).
+  3. ✅ PROGRESS.md — P2 checked off; session-log entry with the drift note.
+  4. ✅ Plan archived — docs/ai-history/p2-subflows-reg-login.md.
+  5. ✅ Index updated — README.md rows for the P2 transcript + archived plan;
+  WORKING-WITH-AI.md got a P2 judgment section.
+
+  Pending commit bundle (5 changes + the transcript once exported):
+   M CLAUDE.md
+   M PROGRESS.md
+   M docs/ai-history/README.md
+   M docs/ai-history/WORKING-WITH-AI.md
+  ?? docs/ai-history/p2-subflows-reg-login.md
+     (+ docs/ai-history/2026-06-15-p2-build.txt  ← created by your /export)
+
+  Your turn — step 4: run /export docs/ai-history/2026-06-15-p2-build.txt.
+
+  Once that file exists, I'll do step 7 (one local commit, conventional, no
+  push, no attribution trailer — e.g. docs: P2 end-of-session — status, session 
+  log, archived plan + transcript) and step 8 (handoff prompt + recommended
+  effort). Tell me when the export is written, or if you'd rather I commit the
+  docs now and add the transcript in a follow-up.
+
+✻ Churned for 5m 20s

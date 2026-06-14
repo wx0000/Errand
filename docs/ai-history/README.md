@@ -25,4 +25,6 @@ of each session (see `CLAUDE.md` → End-of-Session Cycle, step 5).
 | 2026-06-14 | P1 | recon (code) | `2026-06-14-p1-recon-code.txt` | Full recon R1–R5 → SPEC-MATRIX `actual` + candidates C1–C5. **Create via `/export` before the commit.** |
 | 2026-06-14 | P1 | adjudication | `2026-06-14-p1-adjudykacja-build.txt` | Human R1–R5 verdicts → SPEC-MATRIX `verdict` + `docs/BUGS.md` (3 root defects BUG-A/B/C). Commit `cd4bf26`. |
 | — | P1 | planning | `p1-recon.md` | Archived P1 recon plan — decision layer (recon architecture, STAGE acts, verify-in-build tweaks). |
-| — | P1 | judgment-log | `WORKING-WITH-AI.md` | Running judgment-moments log (consolidate at closeout). |
+| 2026-06-15 | P2 | build | `2026-06-15-p2-build.txt` | Plan-mode design + build of subflows + R4/R5 flows; suite 3/3 green; commit `5f61654`. **Create via `/export` before the commit.** |
+| — | P2 | planning | `p2-subflows-reg-login.md` | Archived P2 plan — decision layer (subflow boundaries, selector map, `register-user` signature, the env-default reconcile). |
+| — | P1+P2 | judgment-log | `WORKING-WITH-AI.md` | Running judgment-moments log (P1 + P2; consolidate at closeout). |

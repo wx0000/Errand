@@ -28,3 +28,16 @@ project closeout.**
   distinct plans** (the combined Session-0 plan vs the P1-recon plan) — overwriting would have
   deleted the P0 plan content. Surfaced it instead of proceeding; archived the P1 plan as its own
   `p1-recon.md` (unconditional, per-`<phase>-<topic>` rule). Lead confirmed the correction.
+
+## P2 build — judgment moments
+
+- **Red ≠ finding when the cause is your own harness.** The first suite run was **3/3 red**. The
+  cardinal rule primes "red = a spec finding" — but R4/R5 were already adjudicated PASS in recon, so
+  a finding here was implausible. The failure screenshot showed the register form submitted with
+  **empty fields**: the subflows' empty `env:` defaults overrode the values passed via `runFlow` —
+  the same Maestro 2.6.1 precedence bug as the P1 `env: STAGE` vs `-e` moment above, now in subflows.
+  Reconciled the harness (removed the defaults) → 3/3 green. The guardrail cut the right way: did
+  **not** mislabel a mechanics bug as an app defect, and did **not** bend any assertion to pass.
+- **Caught my own approved plan mid-build.** The plan I wrote and the human approved had prescribed
+  the empty `env:` defaults block. Reality contradicted it; per the plan's "verify before implement"
+  clause I reconciled rather than forcing the plan through, and folded the fix into CLAUDE.md.
