@@ -165,7 +165,7 @@ If a step does not apply, **say which and why — never skip silently.**
      `verdict` cell appended), so no spec-evidence was altered.
   3. Found `Current Status` stale (still "P0 done / P1 recon blocked") and the recon session left
      no CLAUDE.md Session Log entry — refreshed Current Status; flagged the recon-entry gap to the
-     human rather than fabricating it.
+     human rather than fabricating it (backfilled in `dd181e3`).
 
 ### 2026-06-14 — P1 — recon
 
