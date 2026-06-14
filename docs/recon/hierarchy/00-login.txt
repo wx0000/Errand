@@ -1,0 +1,59 @@
+element_num,depth,attributes,parent_num
+0,0,"",
+1,1,"",0
+2,2,"bounds=[0,0][1080,2400]; enabled=true; class=android.widget.FrameLayout; important-for-accessibility=true; enabled=true",1
+3,3,"bounds=[0,0][1080,2400]; enabled=true; class=android.widget.LinearLayout; enabled=true",2
+4,4,"resource-id=android:id/content; bounds=[0,0][1080,2400]; enabled=true; class=android.widget.FrameLayout; enabled=true",3
+5,5,"bounds=[0,0][1080,2400]; enabled=true; class=android.widget.FrameLayout; enabled=true",4
+6,6,"bounds=[0,0][1080,2400]; enabled=true; class=android.view.View; enabled=true",5
+7,7,"bounds=[0,0][1080,2400]; enabled=true; class=android.view.View; enabled=true",6
+8,8,"bounds=[0,0][1080,2400]; enabled=true; class=android.view.View; enabled=true",7
+9,9,"bounds=[0,0][1080,2400]; enabled=true; class=android.view.View; enabled=true",8
+10,10,"bounds=[0,0][1080,283]; enabled=true; class=android.view.View; enabled=true",9
+11,11,"accessibilityText=Login screen title
+Login; bounds=[42,173][184,246]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",10
+12,10,"accessibilityText=Welcome Back title
+Welcome Back; bounds=[327,831][753,920]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",9
+13,10,"accessibilityText=Login to continue subtitle
+Login to continue; bounds=[438,946][773,1007]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",9
+14,10,"hintText=Email input field
+Email; clickable=true; bounds=[42,1112][1038,1259]; enabled=true; class=android.widget.EditText; important-for-accessibility=true; clickable=true; enabled=true",9
+15,10,"hintText=Password input field
+Password; clickable=true; bounds=[42,1311][1038,1458]; enabled=true; class=android.widget.EditText; important-for-accessibility=true; clickable=true; enabled=true",9
+16,10,"accessibilityText=Login button; bounds=[42,1537][1038,1674]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",9
+17,11,"accessibilityText=Login; clickable=true; bounds=[42,1537][1038,1674]; enabled=true; class=android.widget.Button; important-for-accessibility=true; clickable=true; enabled=true",16
+18,10,"accessibilityText=Navigate to register screen button; bounds=[243,1726][837,1852]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",9
+19,11,"accessibilityText=Don't have an account? Register; clickable=true; bounds=[243,1726][837,1852]; enabled=true; class=android.widget.Button; important-for-accessibility=true; clickable=true; enabled=true",18
+20,2,"bounds=[0,0][1080,136]; enabled=true; class=android.widget.FrameLayout; important-for-accessibility=true; enabled=true",1
+21,3,"resource-id=com.android.systemui:id/status_bar_launch_animation_container; bounds=[0,0][1080,136]; enabled=true; class=android.widget.FrameLayout; enabled=true",20
+22,3,"resource-id=com.android.systemui:id/status_bar_container; bounds=[0,0][1080,136]; enabled=true; class=android.widget.FrameLayout; enabled=true",20
+23,4,"bounds=[0,0][1080,136]; enabled=true; class=androidx.compose.ui.platform.ComposeView; important-for-accessibility=true; enabled=true",22
+24,5,"bounds=[0,0][1080,136]; enabled=true; class=android.view.View; enabled=true",23
+25,6,"bounds=[0,0][1080,136]; enabled=true; class=androidx.compose.ui.viewinterop.ViewFactoryHolder; important-for-accessibility=true; enabled=true",24
+26,7,"resource-id=com.android.systemui:id/status_bar; bounds=[0,0][1080,136]; enabled=true; class=android.widget.FrameLayout; important-for-accessibility=true; enabled=true",25
+27,8,"resource-id=com.android.systemui:id/status_bar_contents; bounds=[47,0][1027,136]; enabled=true; class=android.widget.LinearLayout; enabled=true",26
+28,9,"resource-id=com.android.systemui:id/status_bar_start_side_container; bounds=[47,1][459,136]; enabled=true; class=android.widget.FrameLayout; enabled=true",27
+29,10,"resource-id=com.android.systemui:id/status_bar_start_side_content; bounds=[47,1][241,136]; enabled=true; class=android.widget.FrameLayout; important-for-accessibility=true; enabled=true",28
+30,11,"resource-id=com.android.systemui:id/status_bar_start_side_except_heads_up; bounds=[47,1][241,136]; enabled=true; class=android.widget.LinearLayout; enabled=true",29
+31,12,"text=12:42; accessibilityText=12:42 AM; resource-id=com.android.systemui:id/clock; bounds=[47,39][183,97]; enabled=true; class=android.widget.TextView; important-for-accessibility=true; enabled=true",30
+32,12,"resource-id=com.android.systemui:id/start_side_notif_and_chip_container; bounds=[183,1][241,136]; enabled=true; class=android.widget.FrameLayout; enabled=true",30
+33,13,"resource-id=com.android.systemui:id/notification_icon_area; bounds=[183,1][241,136]; enabled=true; class=android.widget.FrameLayout; enabled=true",32
+34,14,"resource-id=com.android.systemui:id/notificationIcons; bounds=[183,1][241,136]; enabled=true; class=android.view.ViewGroup; enabled=true",33
+35,15,"accessibilityText=Security & privacy notification: ; bounds=[183,1][241,136]; enabled=true; class=android.widget.ImageView; important-for-accessibility=true; enabled=true",34
+36,9,"resource-id=com.android.systemui:id/cutout_space_view; bounds=[459,1][604,136]; enabled=true; class=android.view.View; enabled=true",27
+37,9,"resource-id=com.android.systemui:id/status_bar_end_side_container; bounds=[604,1][1016,136]; enabled=true; class=android.widget.FrameLayout; enabled=true",27
+38,10,"resource-id=com.android.systemui:id/status_bar_end_side_content; bounds=[799,1][1016,136]; enabled=true; class=android.widget.LinearLayout; enabled=true",37
+39,11,"resource-id=com.android.systemui:id/system_icons; bounds=[799,39][1016,97]; enabled=true; class=android.widget.LinearLayout; important-for-accessibility=true; enabled=true",38
+40,12,"resource-id=com.android.systemui:id/statusIcons; bounds=[807,39][935,97]; enabled=true; class=android.widget.LinearLayout; enabled=true",39
+41,13,"accessibilityText=T-Mobile, signal full.; resource-id=com.android.systemui:id/mobile_combo; bounds=[807,39][868,97]; enabled=true; class=android.widget.FrameLayout; important-for-accessibility=true; enabled=true",40
+42,14,"resource-id=com.android.systemui:id/mobile_group; bounds=[815,39][860,97]; enabled=true; class=android.widget.LinearLayout; enabled=true",41
+43,15,"bounds=[815,52][860,84]; enabled=true; class=android.widget.FrameLayout; enabled=true",42
+44,16,"resource-id=com.android.systemui:id/mobile_signal; bounds=[815,52][860,84]; enabled=true; class=android.widget.ImageView; enabled=true",43
+45,13,"resource-id=com.android.systemui:id/wifi_combo; bounds=[868,39][927,97]; enabled=true; class=android.widget.FrameLayout; enabled=true",40
+46,14,"resource-id=com.android.systemui:id/wifi_group; bounds=[876,39][919,97]; enabled=true; class=android.widget.LinearLayout; enabled=true",45
+47,15,"resource-id=com.android.systemui:id/wifi_combo; bounds=[876,52][919,84]; enabled=true; class=android.widget.FrameLayout; enabled=true",46
+48,16,"accessibilityText=Wifi signal full.; resource-id=com.android.systemui:id/wifi_signal; bounds=[876,52][919,84]; enabled=true; class=android.widget.ImageView; important-for-accessibility=true; enabled=true",47
+49,12,"bounds=[935,51][1005,85]; enabled=true; class=androidx.compose.ui.platform.ComposeView; important-for-accessibility=true; enabled=true",39
+50,13,"bounds=[935,51][1005,85]; enabled=true; class=android.view.View; enabled=true",49
+51,14,"resource-id=com.android.systemui:id/battery; bounds=[935,51][1005,85]; enabled=true; class=android.view.View; enabled=true",50
+52,15,"accessibilityText=Battery 100 percent.; bounds=[935,51][998,85]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",51

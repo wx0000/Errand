@@ -77,6 +77,24 @@ the human's, never Claude's). Do not keep a second copy of the skeleton here.
    prompt — file edit, bash command, file read, anything — state in 1–3 plain-language sentences
    what it does and why, in the prose immediately before it. No bare action at an approval gate.
 
+## Maestro / selector conventions (P1 recon — load-bearing for P2)
+
+Learned from real recon against Buggy; apply when writing the P2 flows.
+
+- **Selectors are regex anchored to the FULL node text (DOTALL).** Flutter exposes text as
+  `accessibilityText` / `hintText` in a `"label\nvalue"` shape, so a bare substring does **not**
+  match — wrap tokens (`.*token.*`) or use the exact full string.
+- **Tap the clickable `Button`, not the wrapper `View`** — the wrapper is often
+  `clickable=false` and the tap fails.
+- **Pass `STAGE` only via `-e STAGE=<act>`.** Do **not** add `env: STAGE: …` in the flow header:
+  in Maestro 2.6.1 the flow `env` default overrides `-e` and silently pins every run to the default.
+- **Snackbar = transient, absent from the a11y hierarchy.** Catch it in-flow with a screenshot +
+  `extendedWaitUntil` on its token (`.*Applied to.*`); the **screenshot is the evidence**.
+- **Picker = modal, parkable** → dump its hierarchy out-of-band (`maestro hierarchy`).
+- **`maestro hierarchy`** (no flag) = JSON; **`--compact`** = CSV.
+
+The full per-screen selector map lives in the comments of `recon.yaml` (repo root).
+
 ## End-of-Session Cycle (run BEFORE closing a session, in order)
 
 If a step does not apply, **say which and why — never skip silently.**

@@ -12,12 +12,12 @@ Update at the end of every session: check off what's done, note drift if the pla
   - [x] `docs/ai-history/README.md` (transcript naming convention + index)
   - [x] Environment verification — **run; env empty** (no maestro/adb/SDK; JDK 9.0.4 EOL); exact install commands handed to human
 
-- [ ] **P1 — Recon + SPEC MATRIX** — **BLOCKED** (waits on toolchain install **and** the human pasting R1–R5)
-  - [ ] `recon.yaml` — launch Buggy, traverse key screens
-  - [ ] Per-screen Maestro hierarchy dumps → files
-  - [ ] Per-screen screenshots → files
-  - [ ] Fill the `actual` column of the SPEC MATRIX from real evidence
-  - [ ] List bug **candidates** (R#, expected per spec, evidence quote + screenshot) — **no verdicts**
+- [x] **P1 — Recon + SPEC MATRIX** — **COMPLETE**
+  - [x] `recon.yaml` — STAGE-parameterized recon flow (12 acts; proof-of-method, not the final suite)
+  - [x] Per-screen Maestro hierarchy dumps → `docs/recon/hierarchy/` (12 files)
+  - [x] Per-screen screenshots → `docs/recon/screens/` (17 files)
+  - [x] Fill the `actual` column of the SPEC MATRIX from real evidence (R1–R5)
+  - [x] List bug **candidates** C1–C5 (R1/R3) with artifacts — **no verdicts**
 
 - [ ] **P2 — Subflows + registration / login**
   - [ ] Reusable subflows (launch, auth helpers, …)
@@ -42,6 +42,16 @@ Update at the end of every session: check off what's done, note drift if the pla
 
 > Newest entries at the top. Format:
 > `### YYYY-MM-DD — <phase> — <role>` then bullets: **Done**, **Decisions**, **Drift**.
+
+### 2026-06-14 — P1 — recon
+
+- **Done:** full recon R1–R5. `recon.yaml` (12 STAGE acts), 17 screenshots + 12 hierarchy dumps in
+  `docs/recon/`, SPEC-MATRIX `actual` filled. Candidates **C1–C5** (R1 list + R3 history — a
+  salary/location formatting cluster). R2/R4/R5 clean. Locale = EN; persistence survives restart
+  (spec silent → recorded, not a candidate).
+- **Decisions:** Maestro selector conventions captured in `CLAUDE.md` (load-bearing for P2);
+  attribution trailer disabled + scaffold history rewritten clean; verdict column left to the human.
+- **Drift:** none vs the recon plan. Persistence kept as exploration only (no persistence assertion).
 
 ### 2026-06-12 — P0 — build
 

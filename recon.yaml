@@ -1,0 +1,339 @@
+# recon.yaml — P1 recon proof-of-method. NOT part of the final suite.
+#
+# STAGE-parameterized single flow (no subflows). Each run drives ONE act:
+#   maestro test -e STAGE=<act> recon.yaml
+# An act navigates from a clean state, screenshots each screen/variant, and
+# PARKS on its target screen. The view hierarchy is then dumped out-of-band
+# (maestro hierarchy CANNOT run inside a flow) while the app is parked:
+#   maestro hierarchy > docs/recon/hierarchy/<NN-screen>.json
+#
+# Conventions: clearState at the start of each act for isolation; transient
+# states (snackbar, picker) are caught with extendedWaitUntil (no sleeps);
+# selectors are derived from real hierarchy dumps, not guessed.
+appId: com.example.buggy
+# NOTE: STAGE is supplied ONLY via the CLI (`-e STAGE=<act>`). Do NOT add an
+# `env: STAGE: ...` default here — in Maestro 2.6.1 the flow `env` default takes
+# precedence over `-e`, which silently pins every run to the default act.
+---
+# === locale — first screen after clearState = LOGIN; UI-language evidence ===
+- runFlow:
+    when:
+      true: ${STAGE == "locale"}
+    commands:
+      - launchApp:
+          clearState: true
+      # Maestro matches selectors as a regex anchored to the FULL node text
+      # (DOTALL). Node text is "label\nvalue", so wrap tokens in .*...*
+      - assertVisible: ".*Welcome Back.*"       # readiness gate (auto-waits, no sleep)
+      - takeScreenshot: "docs/recon/screens/00-login"
+
+# === register — navigate login -> register form (field discovery) ===
+- runFlow:
+    when:
+      true: ${STAGE == "register"}
+    commands:
+      - launchApp:
+          clearState: true
+      - tapOn: ".*Don't have an account.*"      # clickable Button (the wrapper View is not clickable)
+      - extendedWaitUntil:
+          notVisible: ".*Welcome Back.*"         # confirm we left login (no sleep)
+          timeout: 5000
+      - takeScreenshot: "docs/recon/screens/01-register"
+
+# === reg-valid — register a valid user -> auto-login -> landing (offers?) ===
+- runFlow:
+    when:
+      true: ${STAGE == "reg-valid"}
+    commands:
+      - launchApp:
+          clearState: true
+      - tapOn: ".*Don't have an account.*"
+      - extendedWaitUntil:
+          notVisible: ".*Welcome Back.*"
+          timeout: 5000
+      - tapOn: ".*Email input field.*"
+      - inputText: "recon.user@example.com"
+      - tapOn: ".*Password input field.*"
+      - inputText: "ReconPass123"
+      - tapOn: ".*Confirm password input field.*"
+      - inputText: "ReconPass123"
+      - hideKeyboard
+      - takeScreenshot: "docs/recon/screens/05a-register-filled"
+      - tapOn: "Register"
+      - extendedWaitUntil:
+          notVisible: ".*Create Account.*"        # confirm we left the register form
+          timeout: 8000
+      - takeScreenshot: "docs/recon/screens/05b-after-register-landing"
+
+# === offers — register -> auto-login -> Job Offers list (top + scrolled) ===
+# Re-registers the same user (clearState wipes the account each act → fine).
+- runFlow:
+    when:
+      true: ${STAGE == "offers"}
+    commands:
+      - launchApp:
+          clearState: true
+      - tapOn: ".*Don't have an account.*"
+      - tapOn: ".*Email input field.*"
+      - inputText: "recon.user@example.com"
+      - tapOn: ".*Password input field.*"
+      - inputText: "ReconPass123"
+      - tapOn: ".*Confirm password input field.*"
+      - inputText: "ReconPass123"
+      - hideKeyboard
+      - tapOn: "Register"
+      - extendedWaitUntil:
+          visible: ".*Job Offers.*"
+          timeout: 8000
+      - takeScreenshot: "docs/recon/screens/02-offers-top"
+      - scrollUntilVisible:
+          element:
+            text: ".*QualityAssurance.*"          # last offer (Senior QA / QualityAssurance Ltd)
+          direction: DOWN
+      - takeScreenshot: "docs/recon/screens/02-offers-bottom"
+
+# === apply-single — apply to a single-location offer; capture the snackbar ===
+# Junior Flutter Developer (Krakow) = 2nd offer → Apply index 1 (0-based, top).
+- runFlow:
+    when:
+      true: ${STAGE == "apply-single"}
+    commands:
+      - launchApp:
+          clearState: true
+      - tapOn: ".*Don't have an account.*"
+      - tapOn: ".*Email input field.*"
+      - inputText: "recon.user@example.com"
+      - tapOn: ".*Password input field.*"
+      - inputText: "ReconPass123"
+      - tapOn: ".*Confirm password input field.*"
+      - inputText: "ReconPass123"
+      - hideKeyboard
+      - tapOn: "Register"
+      - extendedWaitUntil:
+          visible: ".*Job Offers.*"
+          timeout: 8000
+      - tapOn:
+          text: "Apply"
+          index: 1
+      - takeScreenshot: "docs/recon/screens/03-apply-single-snackbar"
+
+# === apply-multi — apply to a multi-location offer; capture the picker ===
+# QA Automation Engineer (Warsaw/Gdansk) = 3rd offer → Apply index 2 (0-based, top).
+- runFlow:
+    when:
+      true: ${STAGE == "apply-multi"}
+    commands:
+      - launchApp:
+          clearState: true
+      - tapOn: ".*Don't have an account.*"
+      - tapOn: ".*Email input field.*"
+      - inputText: "recon.user@example.com"
+      - tapOn: ".*Password input field.*"
+      - inputText: "ReconPass123"
+      - tapOn: ".*Confirm password input field.*"
+      - inputText: "ReconPass123"
+      - hideKeyboard
+      - tapOn: "Register"
+      - extendedWaitUntil:
+          visible: ".*Job Offers.*"
+          timeout: 8000
+      - tapOn:
+          text: "Apply"
+          index: 2
+      - takeScreenshot: "docs/recon/screens/04a-apply-multi-picker"
+      - tapOn: ".*Location option: Gdansk.*"      # choose a specific location
+      - extendedWaitUntil:
+          visible: ".*Applied to.*"               # snackbar token (known from apply-single)
+          timeout: 5000
+      - takeScreenshot: "docs/recon/screens/04b-apply-multi-snackbar"
+
+# === reg-email — invalid email format; capture error text + position ===
+- runFlow:
+    when:
+      true: ${STAGE == "reg-email"}
+    commands:
+      - launchApp:
+          clearState: true
+      - tapOn: ".*Don't have an account.*"
+      - tapOn: ".*Email input field.*"
+      - inputText: "notanemail"
+      - tapOn: ".*Password input field.*"
+      - inputText: "ReconPass123"
+      - tapOn: ".*Confirm password input field.*"
+      - inputText: "ReconPass123"
+      - hideKeyboard
+      - tapOn: "Register"
+      - takeScreenshot: "docs/recon/screens/06-reg-email-error"
+
+# === reg-pwd — password under 8 chars; capture error text + position ===
+- runFlow:
+    when:
+      true: ${STAGE == "reg-pwd"}
+    commands:
+      - launchApp:
+          clearState: true
+      - tapOn: ".*Don't have an account.*"
+      - tapOn: ".*Email input field.*"
+      - inputText: "recon.user@example.com"
+      - tapOn: ".*Password input field.*"
+      - inputText: "short"
+      - tapOn: ".*Confirm password input field.*"
+      - inputText: "short"
+      - hideKeyboard
+      - tapOn: "Register"
+      - takeScreenshot: "docs/recon/screens/07-reg-pwd-error"
+
+# === reg-confirm — confirm-password mismatch; capture error text + position ===
+- runFlow:
+    when:
+      true: ${STAGE == "reg-confirm"}
+    commands:
+      - launchApp:
+          clearState: true
+      - tapOn: ".*Don't have an account.*"
+      - tapOn: ".*Email input field.*"
+      - inputText: "recon.user@example.com"
+      - tapOn: ".*Password input field.*"
+      - inputText: "ReconPass123"
+      - tapOn: ".*Confirm password input field.*"
+      - inputText: "Different123"
+      - hideKeyboard
+      - tapOn: "Register"
+      - takeScreenshot: "docs/recon/screens/08-reg-confirm-error"
+
+# === profile-history — apply to mixed offers, open profile, capture history ===
+- runFlow:
+    when:
+      true: ${STAGE == "profile-history"}
+    commands:
+      - launchApp:
+          clearState: true
+      - tapOn: ".*Don't have an account.*"
+      - tapOn: ".*Email input field.*"
+      - inputText: "recon.user@example.com"
+      - tapOn: ".*Password input field.*"
+      - inputText: "ReconPass123"
+      - tapOn: ".*Confirm password input field.*"
+      - inputText: "ReconPass123"
+      - hideKeyboard
+      - tapOn: "Register"
+      - extendedWaitUntil:
+          visible: ".*Job Offers.*"
+          timeout: 8000
+      # Apply 1 — Senior QA Engineer (no-salary, multi-location) -> picker -> Warsaw
+      - tapOn:
+          text: "Apply"
+          index: 0
+      - tapOn: ".*Location option: Warsaw.*"
+      - extendedWaitUntil:
+          visible: ".*Applied to.*"
+          timeout: 5000
+      - extendedWaitUntil:
+          notVisible: ".*Applied to.*"
+          timeout: 6000
+      # Apply 2 — Junior Flutter Developer (salaried, single location Krakow)
+      - tapOn:
+          text: "Apply"
+          index: 1
+      - extendedWaitUntil:
+          visible: ".*Applied to.*"
+          timeout: 5000
+      - extendedWaitUntil:
+          notVisible: ".*Applied to.*"
+          timeout: 6000
+      # Apply 3 — Senior QA / QualityAssurance (raw-JSON salary, multi-location) -> London
+      - scrollUntilVisible:
+          element:
+            text: ".*QualityAssurance.*"
+          direction: DOWN
+      - tapOn:
+          text: "Apply"
+          below:
+            text: ".*QualityAssurance.*"
+      - tapOn: ".*Location option: London.*"
+      - extendedWaitUntil:
+          visible: ".*Applied to.*"
+          timeout: 5000
+      - extendedWaitUntil:
+          notVisible: ".*Applied to.*"
+          timeout: 6000
+      # open profile / application history
+      - tapOn: ".*Profile button.*"
+      - takeScreenshot: "docs/recon/screens/09-history"
+
+# === login-logout (R5) — register -> logout from profile -> re-login (in session) ===
+- runFlow:
+    when:
+      true: ${STAGE == "login-logout"}
+    commands:
+      - launchApp:
+          clearState: true
+      - tapOn: ".*Don't have an account.*"
+      - tapOn: ".*Email input field.*"
+      - inputText: "recon.user@example.com"
+      - tapOn: ".*Password input field.*"
+      - inputText: "ReconPass123"
+      - tapOn: ".*Confirm password input field.*"
+      - inputText: "ReconPass123"
+      - hideKeyboard
+      - tapOn: "Register"
+      - extendedWaitUntil:
+          visible: ".*Job Offers.*"
+          timeout: 8000
+      - tapOn: ".*Profile button.*"
+      - extendedWaitUntil:
+          visible: ".*Application History.*"
+          timeout: 5000
+      - tapOn: "Logout"
+      - extendedWaitUntil:
+          visible: ".*Welcome Back.*"               # spec-backed: logout returns to login
+          timeout: 6000
+      - takeScreenshot: "docs/recon/screens/10-after-logout"
+      - tapOn: ".*Email input field.*"
+      - inputText: "recon.user@example.com"
+      - tapOn: ".*Password input field.*"
+      - inputText: "ReconPass123"
+      - hideKeyboard
+      - tapOn: "Login"
+      - extendedWaitUntil:
+          visible: ".*Job Offers.*"                  # spec-backed: re-login with reg creds works
+          timeout: 8000
+      - takeScreenshot: "docs/recon/screens/11-after-relogin"
+
+# === persistence (EXPLORATION ONLY) — restart without clearState; observe, do NOT assert ===
+# Spec (R3) is SILENT on surviving an app restart. This act only OBSERVES the
+# post-restart state. It deliberately contains NO assertion that history/session
+# persists — asserting that would be an anti-case (over-interpreting the app).
+- runFlow:
+    when:
+      true: ${STAGE == "persistence"}
+    commands:
+      - launchApp:
+          clearState: true
+      - tapOn: ".*Don't have an account.*"
+      - tapOn: ".*Email input field.*"
+      - inputText: "recon.user@example.com"
+      - tapOn: ".*Password input field.*"
+      - inputText: "ReconPass123"
+      - tapOn: ".*Confirm password input field.*"
+      - inputText: "ReconPass123"
+      - hideKeyboard
+      - tapOn: "Register"
+      - extendedWaitUntil:
+          visible: ".*Job Offers.*"
+          timeout: 8000
+      - tapOn:                                        # seed history: Junior Flutter (single-loc)
+          text: "Apply"
+          index: 1
+      - extendedWaitUntil:
+          visible: ".*Applied to.*"
+          timeout: 5000
+      - extendedWaitUntil:
+          notVisible: ".*Applied to.*"
+          timeout: 6000
+      - stopApp
+      - launchApp                                     # NO clearState -> real restart
+      - takeScreenshot: "docs/recon/screens/12-after-restart"
+      # OBSERVE only (no persistence assertion): open profile to see post-restart state
+      - tapOn: ".*Profile button.*"
+      - takeScreenshot: "docs/recon/screens/13-after-restart-profile"

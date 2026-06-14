@@ -1,0 +1,100 @@
+element_num,depth,attributes,parent_num
+0,0,"",
+1,1,"",0
+2,2,"bounds=[0,0][1080,136]; enabled=true; class=android.widget.FrameLayout; important-for-accessibility=true; enabled=true",1
+3,3,"resource-id=com.android.systemui:id/status_bar_launch_animation_container; bounds=[0,0][1080,136]; enabled=true; class=android.widget.FrameLayout; enabled=true",2
+4,3,"resource-id=com.android.systemui:id/status_bar_container; bounds=[0,0][1080,136]; enabled=true; class=android.widget.FrameLayout; enabled=true",2
+5,4,"bounds=[0,0][1080,136]; enabled=true; class=androidx.compose.ui.platform.ComposeView; important-for-accessibility=true; enabled=true",4
+6,5,"bounds=[0,0][1080,136]; enabled=true; class=android.view.View; enabled=true",5
+7,6,"bounds=[0,0][1080,136]; enabled=true; class=androidx.compose.ui.viewinterop.ViewFactoryHolder; important-for-accessibility=true; enabled=true",6
+8,7,"resource-id=com.android.systemui:id/status_bar; bounds=[0,0][1080,136]; enabled=true; class=android.widget.FrameLayout; important-for-accessibility=true; enabled=true",7
+9,8,"resource-id=com.android.systemui:id/status_bar_contents; bounds=[47,0][1027,136]; enabled=true; class=android.widget.LinearLayout; enabled=true",8
+10,9,"resource-id=com.android.systemui:id/status_bar_start_side_container; bounds=[47,1][459,136]; enabled=true; class=android.widget.FrameLayout; enabled=true",9
+11,10,"resource-id=com.android.systemui:id/status_bar_start_side_content; bounds=[47,1][220,136]; enabled=true; class=android.widget.FrameLayout; important-for-accessibility=true; enabled=true",10
+12,11,"resource-id=com.android.systemui:id/status_bar_start_side_except_heads_up; bounds=[47,1][220,136]; enabled=true; class=android.widget.LinearLayout; enabled=true",11
+13,12,"text=1:54; accessibilityText=1:54 AM; resource-id=com.android.systemui:id/clock; bounds=[47,39][162,97]; enabled=true; class=android.widget.TextView; important-for-accessibility=true; enabled=true",12
+14,12,"resource-id=com.android.systemui:id/start_side_notif_and_chip_container; bounds=[162,1][220,136]; enabled=true; class=android.widget.FrameLayout; enabled=true",12
+15,13,"resource-id=com.android.systemui:id/notification_icon_area; bounds=[162,1][220,136]; enabled=true; class=android.widget.FrameLayout; enabled=true",14
+16,14,"resource-id=com.android.systemui:id/notificationIcons; bounds=[162,1][220,136]; enabled=true; class=android.view.ViewGroup; enabled=true",15
+17,15,"accessibilityText=Security & privacy notification: ; bounds=[162,1][220,136]; enabled=true; class=android.widget.ImageView; important-for-accessibility=true; enabled=true",16
+18,9,"resource-id=com.android.systemui:id/cutout_space_view; bounds=[459,1][604,136]; enabled=true; class=android.view.View; enabled=true",9
+19,9,"resource-id=com.android.systemui:id/status_bar_end_side_container; bounds=[604,1][1016,136]; enabled=true; class=android.widget.FrameLayout; enabled=true",9
+20,10,"resource-id=com.android.systemui:id/status_bar_end_side_content; bounds=[799,1][1016,136]; enabled=true; class=android.widget.LinearLayout; enabled=true",19
+21,11,"resource-id=com.android.systemui:id/system_icons; bounds=[799,39][1016,97]; enabled=true; class=android.widget.LinearLayout; important-for-accessibility=true; enabled=true",20
+22,12,"resource-id=com.android.systemui:id/statusIcons; bounds=[807,39][935,97]; enabled=true; class=android.widget.LinearLayout; enabled=true",21
+23,13,"accessibilityText=T-Mobile, signal full.; resource-id=com.android.systemui:id/mobile_combo; bounds=[807,39][868,97]; enabled=true; class=android.widget.FrameLayout; important-for-accessibility=true; enabled=true",22
+24,14,"resource-id=com.android.systemui:id/mobile_group; bounds=[815,39][860,97]; enabled=true; class=android.widget.LinearLayout; enabled=true",23
+25,15,"bounds=[815,52][860,84]; enabled=true; class=android.widget.FrameLayout; enabled=true",24
+26,16,"resource-id=com.android.systemui:id/mobile_signal; bounds=[815,52][860,84]; enabled=true; class=android.widget.ImageView; enabled=true",25
+27,13,"resource-id=com.android.systemui:id/wifi_combo; bounds=[868,39][927,97]; enabled=true; class=android.widget.FrameLayout; enabled=true",22
+28,14,"resource-id=com.android.systemui:id/wifi_group; bounds=[876,39][919,97]; enabled=true; class=android.widget.LinearLayout; enabled=true",27
+29,15,"resource-id=com.android.systemui:id/wifi_combo; bounds=[876,52][919,84]; enabled=true; class=android.widget.FrameLayout; enabled=true",28
+30,16,"accessibilityText=Wifi signal full.; resource-id=com.android.systemui:id/wifi_signal; bounds=[876,52][919,84]; enabled=true; class=android.widget.ImageView; important-for-accessibility=true; enabled=true",29
+31,12,"bounds=[935,51][1005,85]; enabled=true; class=androidx.compose.ui.platform.ComposeView; important-for-accessibility=true; enabled=true",21
+32,13,"bounds=[935,51][1005,85]; enabled=true; class=android.view.View; enabled=true",31
+33,14,"resource-id=com.android.systemui:id/battery; bounds=[935,51][1005,85]; enabled=true; class=android.view.View; enabled=true",32
+34,15,"accessibilityText=Battery 100 percent.; bounds=[935,51][998,85]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",33
+35,2,"bounds=[0,0][1080,2400]; enabled=true; class=android.widget.FrameLayout; important-for-accessibility=true; enabled=true",1
+36,3,"bounds=[0,0][1080,2400]; enabled=true; class=android.widget.LinearLayout; enabled=true",35
+37,4,"resource-id=android:id/content; bounds=[0,0][1080,2400]; enabled=true; class=android.widget.FrameLayout; enabled=true",36
+38,5,"bounds=[0,0][1080,2400]; enabled=true; focused=true; class=android.widget.FrameLayout; enabled=true; focused=true",37
+39,6,"bounds=[0,0][1080,2400]; enabled=true; class=android.view.View; enabled=true",38
+40,7,"bounds=[0,0][1080,2400]; enabled=true; class=android.view.View; enabled=true",39
+41,8,"bounds=[0,0][1080,2400]; enabled=true; class=android.view.View; enabled=true",40
+42,9,"bounds=[0,0][1080,2400]; enabled=true; class=android.view.View; enabled=true",41
+43,10,"bounds=[0,0][1080,283]; enabled=true; class=android.view.View; enabled=true",42
+44,11,"accessibilityText=Back; clickable=true; bounds=[11,147][137,273]; enabled=true; class=android.widget.Button; important-for-accessibility=true; clickable=true; enabled=true",43
+45,11,"accessibilityText=Job Offers screen title
+Job Offers; bounds=[189,173][460,246]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",43
+46,11,"accessibilityText=Profile button; bounds=[954,147][1080,273]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",43
+47,12,"clickable=true; bounds=[954,147][1080,273]; enabled=true; class=android.widget.Button; important-for-accessibility=true; clickable=true; enabled=true",46
+48,10,"bounds=[0,283][1080,2400]; enabled=true; class=android.view.View; enabled=true",42
+49,11,"bounds=[0,283][1080,2400]; enabled=true; scrollable=true; class=android.widget.ScrollView; important-for-accessibility=true; enabled=true",48
+50,12,"bounds=[0,283][1080,842]; enabled=true; class=android.view.View; enabled=true",49
+51,13,"bounds=[0,283][1080,842]; enabled=true; class=android.view.View; enabled=true",50
+52,14,"accessibilityText=Job title: Senior QA Engineer
+Senior QA Engineer; bounds=[63,346][488,414]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",51
+53,14,"accessibilityText=Company: TechCorp
+TechCorp; bounds=[63,435][248,496]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",51
+54,14,"accessibilityText=Locations: WarsawBerlinLondon
+WarsawBerlinLondon; bounds=[63,517][422,569]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",51
+55,14,"accessibilityText=Salary: not specified
+null; bounds=[63,590][125,643]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",51
+56,14,"accessibilityText=Apply button for Senior QA Engineer; bounds=[63,674][588,779]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",51
+57,15,"accessibilityText=Apply; clickable=true; bounds=[63,674][588,779]; enabled=true; class=android.widget.Button; important-for-accessibility=true; clickable=true; enabled=true",56
+58,12,"bounds=[0,842][1080,1401]; enabled=true; class=android.view.View; enabled=true",49
+59,13,"bounds=[0,842][1080,1401]; enabled=true; class=android.view.View; enabled=true",58
+60,14,"accessibilityText=Job title: Junior Flutter Developer
+Junior Flutter Developer; bounds=[63,905][591,973]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",59
+61,14,"accessibilityText=Company: StartupXYZ
+StartupXYZ; bounds=[63,994][284,1055]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",59
+62,14,"accessibilityText=Locations: Krakow
+Krakow; bounds=[63,1076][189,1128]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",59
+63,14,"accessibilityText=Salary: 5000-8000 PLN
+5000-8000 PLN; bounds=[63,1149][330,1202]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",59
+64,14,"accessibilityText=Apply button for Junior Flutter Developer; bounds=[63,1233][588,1338]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",59
+65,15,"accessibilityText=Apply; clickable=true; bounds=[63,1233][588,1338]; enabled=true; class=android.widget.Button; important-for-accessibility=true; clickable=true; enabled=true",64
+66,12,"bounds=[0,1401][1080,1960]; enabled=true; class=android.view.View; enabled=true",49
+67,13,"bounds=[0,1401][1080,1960]; enabled=true; class=android.view.View; enabled=true",66
+68,14,"accessibilityText=Job title: QA Automation Engineer
+QA Automation Engineer; bounds=[63,1464][600,1533]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",67
+69,14,"accessibilityText=Company: BigTech Inc
+BigTech Inc; bounds=[63,1554][288,1614]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",67
+70,14,"accessibilityText=Locations: WarsawGdansk
+WarsawGdansk; bounds=[63,1635][326,1687]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",67
+71,14,"accessibilityText=Salary: 8000-12000 PLN
+8000-12000 PLN; bounds=[63,1708][351,1761]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",67
+72,14,"accessibilityText=Apply button for QA Automation Engineer; bounds=[63,1792][588,1897]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",67
+73,15,"accessibilityText=Apply; clickable=true; bounds=[63,1792][588,1897]; enabled=true; class=android.widget.Button; important-for-accessibility=true; clickable=true; enabled=true",72
+74,12,"bounds=[0,1960][1080,2400]; enabled=true; class=android.view.View; enabled=true",49
+75,13,"bounds=[0,1960][1080,2400]; enabled=true; class=android.view.View; enabled=true",74
+76,14,"accessibilityText=Job title: Mobile QA Tester
+Mobile QA Tester; bounds=[63,2023][441,2092]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",75
+77,14,"accessibilityText=Company: MobileFirst
+MobileFirst; bounds=[63,2113][280,2173]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",75
+78,14,"accessibilityText=Locations: Wroclaw
+Wroclaw; bounds=[63,2194][209,2247]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",75
+79,14,"accessibilityText=Salary: 6000-9000 PLN
+6000-9000 PLN; bounds=[63,2268][330,2320]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",75
+80,14,"accessibilityText=Apply button for Mobile QA Tester; bounds=[63,2352][588,2400]; enabled=true; class=android.view.View; important-for-accessibility=true; enabled=true",75
+81,15,"accessibilityText=Apply; clickable=true; bounds=[63,2352][588,2400]; enabled=true; class=android.widget.Button; important-for-accessibility=true; clickable=true; enabled=true",80
