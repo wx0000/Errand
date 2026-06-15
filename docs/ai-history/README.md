@@ -27,4 +27,6 @@ of each session (see `CLAUDE.md` → End-of-Session Cycle, step 5).
 | — | P1 | planning | `p1-recon.md` | Archived P1 recon plan — decision layer (recon architecture, STAGE acts, verify-in-build tweaks). |
 | 2026-06-15 | P2 | build | `2026-06-15-p2-build.txt` | Plan-mode design + build of subflows + R4/R5 flows; suite 3/3 green; commit `5f61654`. **Create via `/export` before the commit.** |
 | — | P2 | planning | `p2-subflows-reg-login.md` | Archived P2 plan — decision layer (subflow boundaries, selector map, `register-user` signature, the env-default reconcile). |
+| 2026-06-15 | P3 | build | `2026-06-15-p3-build.txt` | apply (R2 green) + history (R3 C4/BUG-B + C5/BUG-C findings, adjudicated on artifacts) + `register-user` IME-flake fix; suite 3× clean; commits `c8c90a6`, `4664018`. **Create via `/export` before the commit.** |
+| — | P3 | planning | `p3-apply-history.md` | Archived P3 plan — decision layer (`apply-to-offer` tap-only, R2 single+multi in one flow, two isolated R3 finding flows, anti-case table). |
 | — | P1+P2 | judgment-log | `WORKING-WITH-AI.md` | Running judgment-moments log (P1 + P2; consolidate at closeout). |

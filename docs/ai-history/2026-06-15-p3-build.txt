@@ -1,0 +1,2069 @@
+ ▐▛███▜▌   Claude Code v2.1.173
+▝▜█████▛▘  Opus 4.8 · Claude Max
+  ▘▘ ▝▝    ~/AIAIAI/Claude/Errand
+
+
+❯ START P3. Najpierw zgruntuj sie: przeczytaj CLAUDE.md, PROGRESS.md,           
+  docs/SPEC-MATRIX.md — ustal faze i stan (P1+P2 zamkniete, R4->06+07 zielone,  
+  R5->08 zielone, R1/R2/R3 dalej TBD). Potem ten brief.                         
+                                                                                
+  P3 — apply + history. PLAN MODE: projekt → STOP na approval → zero kodu flow  
+  do mojej akceptacji. Plan zweryfikuje sie wzgledem emulatora w buildzie; jak  
+  rzeczywistosc przeczy planowi -> STOP i pogodz.                               
+                                                                                
+  ZAKRES (baseline, dokladnie tyle):                                            
+  - subflow apply-to-offer — BEZ env defaults (konwencja CLAUDE.md z P2;        
+  inaczej powtorzysz false-red). Asseruje tylko wlasny scope, outcome w flow.   
+  - flow R2 (apply z listy): "Apply" na kafelku BEZ wchodzenia w detal;         
+  snackbar = title I location (oba). Multi-loc -> najpierw picker popup, po     
+  wyborze snackbar z wybrana lokalizacja. R2 = PASS -> spodziewane zielone.     
+  - flow R3 (history z profilu): open-profile (juz jest) -> history; wpis =     
+  title / company / chosen-location / salary. Spec: no-salary entry -> BRAK     
+  linii salary; salary jako range, nie raw JSON.                                
+  - anti-case table + persistence anti-case — landuja TU (recon ma restart      
+  screeny 12/13 jako evidence persistence).                                     
+  - numeracja flow z puli 01–05 (06–08 zajete; R1 offers list -> P4).           
+                                                                                
+  KARDYNALNE — R3 to pierwszy realny FINDING:                                   
+  - R3 = BUG per adjudykacja: C4 (no-salary i tak pokazuje linie salary, render 
+  "—" / "salary: not specified") + C5 (raw JSON {"min":10000,"max":15000}       
+  przecieka do history). Flow asseruje SPEC: assertNotVisible linii salary dla  
+  no-salary entry; salary ma byc range nie JSON.                                
+  - App sie wyklada -> CZERWONY ZOSTAJE CZERWONY = FINDING. NIE naginasz        
+  asercji do app (zaden assertVisible JSON-a zeby bylo zielone). To grzech      
+  kardynalny projektu.                                                          
+  - ALE w obie strony: zanim oglosisz finding, udowodnij ze flow POPRAWNIE      
+  napedza app (dotarl do history, wlasciwy entry) — jak w P2 czerwony najpierw  
+  weryfikujesz mechanike. Finding = app realnie lamie spec, nie twoj flow sie   
+  sypie.                                                                        
+  - czerwony R3 -> STOP + artefakt (screenshot + hierarchy), raport, czekasz na 
+  moja adjudykacje. NIE commitujesz findingu bez OK. Linkowanie czerwonych      
+  artefaktow do BUGS.md = P5, nie teraz.                                        
+                                                                                
+  KONWENCJE (CLAUDE.md, load-bearing):                                          
+  - snackbar transient, NIE ma go w a11y hierarchy -> lap in-flow screenshotem  
+  + extendedWaitUntil na tokenie (.*Applied to.*); screenshot = dowod.          
+  - picker = modal, parkable -> hierarchy out-of-band (maestro hierarchy) jesli 
+  trzeba.                                                                       
+  - selektory: regex anchored do pelnego node text, DOTALL; tap clickable       
+  Button nie wrapper.                                                           
+                                                                                
+  ZALEZNOSC do rozwiazania w planie: history (R3) wymaga wczesniejszego apply   
+  -> zaprojektuj flow tak, zeby R3 mial content (register/login -> apply ->     
+  open-profile -> history).                                                     
+                                                                                
+  POZA ZAKRESEM: R1 offers list (P4), rejected extras (tags/CI/iOS/perf/visual  
+  -> README future work). Zadnych extras w kodzie.                              
+                                                                                
+  Plan ma zawierac: layout plikow, mape selektorow z recon dumps (02-offers,    
+  03/04-apply, 09-history), ktore asercje = spec, build-verify items, decyzje   
+  do rozstrzygniecia ze mna. End-of-Session jeszcze NIE.                        
+  ⎿  ⧉ Selected 43 lines from docs/ai-history/WORKING-WITH-AI.md in Visual Studio Code
+
+⏺ Zaczynam P3. Najpierw się gruntuję — czytam stan projektu i równolegle
+  rozpoznaję strukturę repo oraz dumpy recon, na których oprę mapę selektorów.
+
+  Searched for 1 pattern, read 2 files (ctrl+o to expand)
+
+⏺ Stan zgruntowany: P0/P1/P2 zamknięte, R4→06+07 zielone, R5→08 zielone,
+  R1/R2/R3 dalej TBD. Teraz czytam load-bearing evidence dla P3 — recon dumpy
+  (02 offers, 04 picker, 09 history) i istniejące subflow/flow, żeby mapa
+  selektorów była oparta na realnych stringach, nie zgadywana.
+
+  Read 4 files (ctrl+o to expand)
+
+⏺ Recon evidence to ręka. Mam dokładne node-texty dla offers/picker/history.
+  Teraz czytam udowodnioną mechanikę z recon.yaml (jak recon realnie tapnął
+  Apply konkretnego kafelka, obsłużył snackbar i picker) oraz istniejące
+  subflow/flow/config, żeby P3 dziedziczył konwencje 1:1.
+
+  Read 6 files (ctrl+o to expand)
+
+⏺ Mam udowodnioną mechanikę z recon. Teraz czytam istniejące flow (06/07/08),
+  żeby zobaczyć jak flow wołają subflowy przez runFlow … env:, jak strukturyzują
+  asercje i takeScreenshot — P3 musi być spójny stylistycznie.
+
+  Read 3 files (ctrl+o to expand)
+
+⏺ Czytam docs/BUGS.md, żeby asercje R3 były zgodne z zaadjudykowanymi defektami
+  (BUG-B/BUG-C) — flow ma asertować dokładnie to, co spec wymaga, a co app
+  łamie.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Mam pełny, ugruntowany obraz. Zsyntetyzuję kluczowe ustalenia z recon i
+  istniejącego kodu, zanim spiszę plan:
+
+  Mechanika udowodniona w recon (recon.yaml) — dziedziczę 1:1:
+  - Apply konkretnego kafelka: tap clickable Button "Apply" z relatywnym below: 
+  <kotwica kafelka>. Recon zakotwiczył na firmie (.*QualityAssurance.*) — każda
+  firma jest unikalna, a Senior QA koliduje z Senior QA Engineer, więc kotwica =
+  company line, nie title.
+  - Snackbar (transient): extendedWaitUntil: visible: ".*Applied to.*" łapie go
+  in-flow; po asercji extendedWaitUntil: notVisible czeka aż zniknie przed
+  kolejnym apply. Screenshot = artefakt.
+  - Picker (multi-loc): po tapie Apply pojawia się modal Select Location for 
+  <title> z clickable Buttonami Location option: <loc>.
+  - History: Profile button → Profile screen title; wpisy jako Applied job 
+  title/company/location/salary: <val>.
+
+  Realne stringi dla asercji R3 (findings):
+  - C4 (no-salary, Senior QA Engineer/TechCorp): history renderuje Applied job 
+  salary: not specified / — → spec: BRAK linii salary.
+  - C5 (Senior QA/QualityAssurance Ltd, London): history renderuje Applied job 
+  salary: {"min": 10000, "max": 15000} → spec: range 10000-15000.
+
+  Dwie decyzje strukturalne realnie zmieniają layout plików i chcę je
+  rozstrzygnąć z Tobą, zanim sfinalizuję plan (reszta — drobne — pójdzie do
+  sekcji Decisions z moją rekomendacją).
+
+⏺ User answered Claude's questions:
+  ⎿  · R3 to FINDING (app łamie spec). Maestro przerywa flow na PIERWSZEJ 
+     nieudanej asercji — więc jeden flow asertujący i C4 (no-salary), i C5 (raw 
+     JSON) pokaże tylko PIERWSZY finding; drugi zostanie zamaskowany. Jak 
+     strukturyzować R3? → Opcja 1 (dwa flow R3) co do kierunku OK: kazdy finding
+     wlasny czerwony + wlasny artefakt, zero maskowania. Ale popraw dwie rzeczy
+     zanim sfinalizujesz plan.
+
+     1. Numeracja. Flow R3 to 04-history-no-salary (C4) i 
+     05-history-salary-format (C5), NIE 02/03. Pula 01-05: 01+02 zarezerwowane 
+     dla R1 offers list (P4), 03 dla R2. Nie ruszaj 01/02.
+
+     2. R2 = JEDEN flow: 03-apply, pokrywa single I multi w jednym przebiegu. 
+     Oba to PASS, wiec asercje przechodza i nic sie nie maskuje: apply 
+     single-loc -> assert snackbar title+location -> extendedWaitUntil 
+     notVisible (snackbar znika) -> apply multi-loc -> picker -> wybor -> assert
+     snackbar title+chosen-location. Single i multi to warianty tego samego 
+     wymagania (R2 apply), wiec to nie lamie one-flow-one-requirement.
+
+     3. STOP-warunek na buildzie: punkt 2 zaklada, ze R2 jest caly zielony. 
+     Jesli build pokaze defekt R2 (np. snackbar sam tytul, brak location), 
+     pierwsza czerwona asercja zamaskuje multi w tym samym flow - wtedy STOP, 
+     raportuj, czekaj na moja decyzje (rozdzielimy R2 albo zbundlujemy R3). Nie 
+     obchodz tego sam.
+
+     Reszta bez zmian: dwa flow R3 izolowane (wlasny clearState, register/login 
+     -> apply do wlasciwej oferty -> open-profile -> history), czerwony R3 -> 
+     STOP + screenshot + hierarchy + raport, czekasz na adjudykacje, zero 
+     commita findingu, linkowanie do BUGS.md = P5. Docelowo: 8 flow, ciagle 
+     01-08 (01,02 R1/P4; 03 R2; 04,05 R3; 06,07 R4; 08 R5). Dokoncz plan 
+     (layout, mapa selektorow z recon, ktore asercje = spec, build-verify items,
+     decisions) i STOP na approval. Zostan w plan mode.
+     · Subflow apply-to-offer — jaki zakres? Picker (multi-loc) jako modal 
+     wymaga wyboru lokalizacji; single-loc nie ma pickera. Maestro słabo radzi 
+     sobie z warunkowym pominięciem kroku. → Tap-only (param OFFER)
+
+⏺ Decyzje rozstrzygnięte — przyjmuję Twoje poprawki: numeracja 03=R2, 04+05=R3
+  (01/02 zarezerwowane R1/P4), R2 jako jeden flow (single+multi, oba PASS),
+  STOP-warunek na buildzie jeśli R2 pokaże defekt (nie obchodzę sam), dwa
+  izolowane flow R3, apply-to-offer = tap-only (param OFFER). Spisuję plan do
+  pliku.
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Plan spisany do .claude/plans/start-p3-najpierw-zgruntuj-composed-codd.md.
+  Wychodzę z plan mode po Twoją akceptację — zero kodu flow przed Twoim OK,
+  zostaję zgodnie z briefem przy regule kardynalnej i STOP na czerwonym R3.
+
+⏺ User approved Claude's plan
+  ⎿  Plan saved to: ~/.claude/plans/start-p3-najpierw-zgruntuj-composed-codd.md 
+     · /plan to edit
+     P3 — Apply + History (R2 + R3)
+
+     Context
+
+     P0–P2 are closed: scaffold + CLAUDE.md (P0), recon + SPEC-MATRIX +
+     adjudication (P1), and the
+     registration/login suite (P2 — 06+07 R4 green, 08 R5 green, 4 subflows +
+     config.yaml).
+     The suite is 3/3 green. R1 (offers list), R2 (apply), R3 (history) are
+     still unassigned.
+
+     P3 delivers R2 (apply directly from the offers list) and R3 (application
+     history from the
+     profile). Per the SPEC-MATRIX + BUGS.md adjudication:
+     - R2 = PASS → expected green.
+     - R3 = BUG → two adjudicated manifestations on the history surface:
+       - C4 → BUG-B (history): a no-salary offer still renders a salary line
+     (Applied job salary: not specified / —). Spec: no salary line at all.
+       - C5 → BUG-C (history): an object-shaped salary leaks as raw JSON
+     ({"min": 10000, "max": 15000}). Spec: a formatted range like every other
+     offer.
+
+     R3 is therefore the suite's first real FINDING. The flows assert the SPEC;
+     a red R3
+     result is the correct result. Cardinal rule (binding): we never bend an
+     assertion to a buggy
+     app. But it cuts both ways — before declaring a finding we prove the flow 
+     correctly drove the
+     app (reached history, the right entry) so a red is the app violating spec,
+     not the flow failing.
+
+     R3 has a real dependency: history needs prior applies → each R3 flow does
+     register → apply (to the right offer) → open-profile → history.
+
+     ---
+     File layout (final numbering — confirmed with the lead)
+
+     Pool 01–05: 01,02 reserved for R1 offers list (P4), 03 R2, 04,05 R3.
+     Target end-state: 8 flows, contiguous 01–08 (01,02 R1/P4 · 03 R2 · 04,05 R3
+     ·
+     06,07 R4 · 08 R5).
+
+     ┌─────────────────────────────────────┬─────────┬─────────────────────────┐
+     │              New file               │   Req   │       Expectation       │
+     ├─────────────────────────────────────┼─────────┼─────────────────────────┤
+     │                                     │         │ tap-only helper (param  │
+     │ subflows/apply-to-offer.yaml        │ —       │ OFFER); own-scope gate  │
+     │                                     │         │ only                    │
+     ├─────────────────────────────────────┼─────────┼─────────────────────────┤
+     │                                     │         │ single-loc + multi-loc  │
+     │ flows/03-apply.yaml                 │ R2      │ apply in one run · PASS │
+     │                                     │         │  → green                │
+     ├─────────────────────────────────────┼─────────┼─────────────────────────┤
+     │                                     │ R3 / C4 │ no-salary entry → no    │
+     │ flows/04-history-no-salary.yaml     │  /      │ salary line · BUG → red │
+     │                                     │ BUG-B   │  = finding              │
+     ├─────────────────────────────────────┼─────────┼─────────────────────────┤
+     │                                     │ R3 / C5 │ object salary → range,  │
+     │ flows/05-history-salary-format.yaml │  /      │ not JSON · BUG → red =  │
+     │                                     │ BUG-C   │ finding                 │
+     └─────────────────────────────────────┴─────────┴─────────────────────────┘
+
+     Doc edits (build phase): docs/SPEC-MATRIX.md (assign R2→03, R3→04+05; fill
+     the anti-case
+     table) and PROGRESS.md (check off P3). Evidence artifacts under docs/runs/
+     (screens/ + hierarchy/) — kept separate from P1 docs/recon/.
+
+     ---
+     Selector map (anchored to real recon dumps — quoted strings)
+
+     All selectors are regex anchored to the FULL node text (DOTALL); tap the
+     clickable
+     Button, not the wrapper View (CLAUDE.md convention). Company lines are
+     unique per offer;
+     the title Senior QA is a substring of Senior QA Engineer, so anchor tiles 
+     on company.
+
+     Offers list — docs/recon/hierarchy/02-offers-list-{top,bottom}.txt (5
+     offers):
+
+     ┌──────────────────────┬─────────────────────────┬───────────────┬────────┐
+     │   Offer (title /     │        Locations        │  Salary (as   │  Loc   │
+     │       company)       │                         │   rendered)   │  type  │
+     ├──────────────────────┼─────────────────────────┼───────────────┼────────┤
+     │ Senior QA Engineer / │                         │ Salary: not   │        │
+     │  TechCorp            │ WarsawBerlinLondon      │ specified /   │ multi  │
+     │                      │                         │ null          │        │
+     ├──────────────────────┼─────────────────────────┼───────────────┼────────┤
+     │ Junior Flutter       │                         │               │        │
+     │ Developer /          │ Krakow                  │ 5000-8000 PLN │ single │
+     │ StartupXYZ           │                         │               │        │
+     ├──────────────────────┼─────────────────────────┼───────────────┼────────┤
+     │ QA Automation        │                         │ 8000-12000    │        │
+     │ Engineer / BigTech   │ WarsawGdansk            │ PLN           │ multi  │
+     │ Inc                  │                         │               │        │
+     ├──────────────────────┼─────────────────────────┼───────────────┼────────┤
+     │ Mobile QA Tester /   │ Wroclaw                 │ 6000-9000 PLN │ single │
+     │ MobileFirst          │                         │               │        │
+     ├──────────────────────┼─────────────────────────┼───────────────┼────────┤
+     │ Senior QA /          │                         │ {"min":       │        │
+     │ QualityAssurance Ltd │ WarsawBerlinLondonParis │ 10000, "max": │ multi  │
+     │                      │                         │  15000}       │        │
+     └──────────────────────┴─────────────────────────┴───────────────┴────────┘
+
+     - Per-tile Apply (clickable Button, generic text Apply) → disambiguate by
+     company anchor:
+     tapOn: { text: "Apply", below: { text: "${OFFER}" } } (recon-proven with
+     .*QualityAssurance.*).
+     - List header: .*Job Offers.* · Profile entry (used by open-profile):
+     .*Profile button.*.
+
+     Picker (multi-loc modal) — docs/recon/hierarchy/04-apply-multi-picker.txt:
+     - Title node: Select Location for <title> (e.g. .*Select Location for QA 
+     Automation Engineer.*).
+     - Options (clickable Buttons): .*Location option: Warsaw.*, .*Location 
+     option: Gdansk.*,
+     .*Location option: London.*.
+
+     Snackbar (transient — caught in-flow, not in a parked dump) — token
+     .*Applied to.*;
+     full content is one node Applied to <title> - <location> (SPEC-MATRIX R2).
+     Assert title AND
+     location together via extendedWaitUntil: visible: on the content regex;
+     takeScreenshot = artifact.
+
+     History — docs/recon/hierarchy/09-history.txt (reached via open-profile):
+     - Section gate: .*Application History.* · entry lines: Applied job 
+     title|company|location|salary: <val>.
+     - C4 node (no-salary): Applied job salary: not specified / —.
+     - C5 node (object salary): Applied job salary: {"min": 10000, "max": 
+     15000}.
+
+     ---
+     Implementation detail (which assertions = SPEC)
+
+     subflows/apply-to-offer.yaml — tap-only (param OFFER)
+
+     Single responsibility = tap the Apply Button of the target tile. Own-scope
+     gate only; the
+     outcome (snackbar for single-loc, picker for multi-loc) is the caller's
+     assertion territory —
+     mirrors register-user (attempt, no outcome). NO env: defaults (Maestro
+     2.6.1 precedence
+     bug; caller passes OFFER, a missing one then errors loudly).
+
+     - assertVisible: ".*Job Offers.*"          # own-scope gate
+     - scrollUntilVisible: { element: { text: "${OFFER}" }, direction: DOWN }
+     - tapOn: { text: "Apply", below: { text: "${OFFER}" } }   # this tile's
+     clickable Apply
+
+     flows/03-apply.yaml — R2 (PASS, expected green)
+
+     launchApp clearState → unique email (evalScript + Date.now()) →
+     register-user →
+     extendedWaitUntil .*Job Offers.*. Then two cases of the same requirement in
+     one run (both
+     PASS, so no assertion masks another):
+     - Single-loc (Junior / StartupXYZ): apply-to-offer OFFER=.*StartupXYZ.* →
+     SPEC:
+     extendedWaitUntil visible ".*Applied to.*Junior Flutter 
+     Developer.*Krakow.*" (title AND
+     location) → takeScreenshot docs/runs/screens/03-apply-single-snackbar →
+     extendedWaitUntil notVisible ".*Applied to.*" (dismiss before next apply).
+     - Multi-loc (QA Automation / BigTech): apply-to-offer OFFER=.*BigTech.* →
+     SPEC:
+     assertVisible ".*Select Location for QA Automation Engineer.*" (picker
+     opens first) →
+     tapOn ".*Location option: Gdansk.*" → SPEC:
+     extendedWaitUntil visible ".*Applied to.*QA Automation Engineer.*Gdansk.*"
+     (title AND
+     chosen location) → takeScreenshot 
+     docs/runs/screens/03-apply-multi-snackbar.
+
+     flows/04-history-no-salary.yaml — R3 / C4 / BUG-B (BUG, expected red)
+
+     register → apply-to-offer OFFER=.*TechCorp.* (Senior QA Engineer; multi-loc
+     → assertVisible ".*Select Location for Senior QA Engineer.*" → tapOn 
+     ".*Location option: Warsaw.*") →
+     snackbar visible/notVisible → open-profile → extendedWaitUntil 
+     ".*Application History.*".
+     - Mechanic proof (green): assertVisible title .*Applied job title: Senior 
+     QA Engineer.*,
+     company .*Applied job company: TechCorp.*, location .*Applied job location:
+     Warsaw.* →
+     takeScreenshot docs/runs/screens/04-history-no-salary.
+     - SPEC assertion (the finding): assertNotVisible: ".*Applied job salary.*"
+     — a no-salary
+     entry must have no salary line at all (single-entry history → no legit
+     salary line to catch).
+     Buggy renders not specified/— → this fails → RED = C4. We do not assert the
+     placeholder present (that would rubber-stamp BUG-B).
+
+     flows/05-history-salary-format.yaml — R3 / C5 / BUG-C (BUG, expected red)
+
+     register → apply-to-offer OFFER=.*QualityAssurance.* (Senior QA /
+     QualityAssurance Ltd;
+     multi-loc → assertVisible ".*Select Location for Senior QA.*" → tapOn 
+     ".*Location option: London.*") → snackbar visible/notVisible → open-profile
+     → extendedWaitUntil ".*Application History.*".
+     - Mechanic proof (green): assertVisible company .*Applied job company: 
+     QualityAssurance Ltd.* + location .*Applied job location: London.* (company
+     is unique; avoids the Senior QA
+     substring trap) → takeScreenshot 
+     docs/runs/screens/05-history-salary-format.
+     - SPEC assertion (the finding): assertVisible: ".*Applied job salary: 
+     10000-15000.*" —
+     salary shown as a formatted range (the known data is min 10000 / max 15000,
+     PLN-agnostic
+     regex). Buggy leaks raw JSON → the range text is absent → this fails → RED 
+     = C5. We do
+     not assert the JSON visible (that would rubber-stamp BUG-C).
+
+     ---
+     Anti-case table (drafted — for the lead to ratify at approval)
+
+     SPEC-MATRIX flags anti-cases as the human's judgment. These rows replace
+     the format-example
+     placeholders (lines 96–101) and are derived directly from the adjudicated
+     bugs + the cardinal
+     rule. They are presented for ratification, not authored unilaterally.
+
+     Anti-case (do NOT assert): snackbar shows only the title (omit the applied
+       location)
+     Why it would over-interpret: R2 requires title AND location; title-only
+     locks
+       in an under-spec snackbar
+     Related Req: R2
+     ────────────────────────────────────────
+     Anti-case (do NOT assert): a no-salary history entry renders a salary
+       line/placeholder (— / "not specified")
+     Why it would over-interpret: spec omits salary for no-salary offers;
+     asserting
+       the placeholder present rubber-stamps BUG-B
+     Related Req: R3
+     ────────────────────────────────────────
+     Anti-case (do NOT assert): an object salary asserted as raw JSON {"min": …}
+     Why it would over-interpret: spec requires a formatted range; asserting the
+
+       JSON rubber-stamps BUG-C
+     Related Req: R3
+     ────────────────────────────────────────
+     Anti-case (do NOT assert): application history / session survives an app 
+       restart
+     Why it would over-interpret: spec is silent on restart; recon (screens
+     12/13)
+       shows it survives, but asserting persistence over-interprets the app
+     Related Req: R3 (persistence)
+
+     The R1/BUG-A anti-case (multi-location concatenation asserted as one token)
+     lands with P4's R1 flows.
+
+     ---
+     Build-verify items (verify against the real emulator BEFORE/while 
+     implementing)
+
+     The build does not execute this plan blindly — if reality contradicts it,
+     STOP and reconcile.
+
+     1. Preflight: adb devices (emulator up), maestro on PATH, app installed
+     (adb shell pm list packages | grep buggy).
+     2. Snackbar content regex catchability (highest risk): confirm
+     extendedWaitUntil catches the
+     full .*Applied to.*<title>.*<loc>.* (recon only proved the bare .*Applied 
+     to.* token).
+     The snackbar text is a single node, so the stricter regex should match the
+     same node — but if it
+     does not catch, STOP and reconcile (do not silently weaken to title-only —
+     that is the
+     R2 anti-case).
+     3. Apply disambiguation: confirm tapOn { text: Apply, below: company } taps
+     the intended
+     tile (recon-proven for QualityAssurance); confirm single-loc Junior goes
+     straight to the
+     snackbar (no picker), multi-loc opens the picker.
+     4. R2 must be green. If the build shows an R2 defect (e.g. snackbar
+     title-only, no
+     location), the first red assertion masks the multi case in the same flow →
+     STOP, report,
+     wait for the lead's decision (split R2, or bundle R3). Do not route around 
+     this.
+     5. R3 findings reproduce: confirm the no-salary entry still renders not 
+     specified/— (C4)
+     and the object salary still leaks {"min": …} (C5). The mechanic-proof
+     asserts (title/company/
+     location) must pass green first — proving the red is the app, not the flow.
+
+     ---
+     Run / report / STOP (End-of-Session is NOT now)
+
+     1. Build subflow + 03 → maestro test flows/03-apply.yaml → expect green
+     (else item 4 above).
+     2. Build 04,05 → run each individually → expect red at the salary 
+     assertion, green
+     mechanic-proof first. Immediately after each red run, park-then-dump
+     (nothing in between):
+     maestro hierarchy > docs/runs/hierarchy/04|05-…txt while the app is parked
+     on history.
+     3. Full suite maestro test . → report the matrix: 03/06/07/08 green, 04/05
+     red =
+     findings. Paste the real Maestro output (no fabrication).
+     4. Update SPEC-MATRIX (flow assignments + anti-case table) + PROGRESS.
+     5. STOP with the red R3 artifacts (screenshots + hierarchy dumps) + a
+     report → wait for the
+     lead's adjudication. Do NOT commit the findings. Linking the red artifacts
+     to BUGS.md
+     is P5, not now. The full End-of-Session cycle (commit/export/archive) is
+     deferred.
+
+     ---
+     Decisions
+
+     Resolved with the lead (this session):
+     - R3 = two isolated flows (04 C4, 05 C5) — Maestro aborts on the first
+     failed assertion,
+     so one combined flow would mask the second finding.
+     - Numbering: 03 R2, 04+05 R3 (01,02 reserved for R1/P4).
+     - R2 = one flow (03) covering single + multi — both PASS, same requirement,
+     nothing masks.
+     - Build STOP-condition if R2 shows a defect (don't route around — item 4).
+     - apply-to-offer = tap-only (param OFFER); picker + snackbar handled in the
+     flow.
+
+     My recommendations (minor — ratify at approval):
+     - Evidence dir = docs/runs/{screens,hierarchy}/ (separate from P1
+     docs/recon/).
+     - Tile anchor = company line (unique; avoids the Senior QA ⊂ Senior QA 
+     Engineer trap).
+     - C4 assertion = assertNotVisible ".*Applied job salary.*" (no salary line
+     at all; safe because
+     the isolated flow's history has exactly one entry).
+     - C5 assertion = assertVisible ".*Applied job salary: 10000-15000.*"
+     (positive spec: a range;
+     PLN-agnostic), not assertNotVisible the JSON.
+
+     Out of scope (P3)
+
+     R1 offers list (P4). Rejected extras (tags/selective-run, CI, iOS, perf,
+     visual) → README future
+     work, never suite code. End-of-Session cycle + commit + BUGS.md linking →
+     later (P5 for linking).
+
+⏺ Plan zatwierdzony. Zakładam listę zadań P3 i zaczynam od preflightu — build
+  weryfikuje plan względem realnego emulatora, zanim cokolwiek napiszę (klauzula
+  „verify before implement").
+⏺ Zaczynam od preflightu (build-verify #1). To czysto diagnostyczne, read-only
+  komendy: sprawdzam czy emulator jest podłączony (adb devices), czy maestro
+  jest na PATH (+ wersja, bo konwencje są pod 2.6.1), i czy app
+  com.example.buggy jest zainstalowany. Nic nie modyfikuje urządzenia.
+  ⎿  Invalid tool parameters
+
+⏺ Preflight — diagnostyka read-only:
+
+⏺ Bash(echo "=== adb devices ===" && adb devices; echo; echo "=== maestro
+      version ===" && maestro --version 2>&1 | head -5; echo; echo "=== app
+      installed? ===" && adb…)
+  ⎿  === adb devices ===
+     (eval):1: command not found: adb
+     … +5 lines (ctrl+o to expand)
+
+⏺ adb to PATH-gap (jak w P1 KROK 0), nie brak instalacji — maestro 2.6.1 zgadza
+  się z konwencjami. Lokalizuję adb w domyślnym SDK i sprawdzam urządzenie pełną
+  ścieżką (read-only).
+
+⏺ Bash(ADB="$HOME/Library/Android/sdk/platform-tools/adb"; echo "=== adb at $ADB
+      ? ===" && ls -l "$ADB" 2>&1; echo; echo "=== devices ===" && "$ADB"
+      devices 2>&1; echo…)
+  ⎿  === adb at /Users/wx0000/Library/Android/sdk/platform-tools/adb ? ===
+     -rwxr-xr-x@ 1 wx0000  staff  19993936 Jun 12 23:43 /Users/wx0000/Libra
+     ry/Android/sdk/platform-tools/adb
+     … +8 lines (ctrl+o to expand)
+
+⏺ Preflight zielony: emulator-5554 podłączony, adb zainstalowany (PATH-gap pod
+  ~/Library/Android/sdk/platform-tools/), maestro 2.6.1 (zgodne z konwencjami),
+  com.example.buggy zainstalowany. Aktualizuję taski i przechodzę do budowy
+  subflow + 03 (R2).
+
+⏺ Preflight zaliczony. Piszę subflow apply-to-offer (tap-only, param OFFER, zero
+  env: defaults — konwencja P2) w stylu istniejących subflow:
+
+⏺ Write(subflows/apply-to-offer.yaml)
+  ⎿  Wrote 18 lines to subflows/apply-to-offer.yaml
+         a unique line of the targetr anchored by OFFER (a regex matching
+      2 # tile — its company line; titles like "Senior QA" are substrings
+      3 # names are not). Taps the clickable Apply Button of THAT tile. A
+        sserts ONLY its own scope (on the
+        e — the snackbar (single-loc) orable). Does NOT assert the outcom
+      5 # the location picker (multi-loc) is the calling flow's assertion
+      6 # NO `env:` defaults: in Maestro 2.6.1 a subflow env default OVER
+        RIDES the runFlow-passed value
+         then errors loudly.ion) — the caller passes OFFER; a missing one
+      8 appId: com.examp
+     … +18 lines (ctrl+o to expand)
+
+⏺ Teraz flow 03-apply.yaml (R2) — register → apply single-loc (snackbar
+  title+location) → apply multi-loc (picker → wybór → snackbar
+  title+chosen-location). Styl jak 07/08:
+
+⏺ Write(flows/03-apply.yaml)
+  ⎿  Wrote 52 lines to flows/03-apply.yaml
+       2 # Spec: Apply sits on the tile; the confirmation snackbar contai
+       3 # location (both, not title alone). A multi-location offer: Appl
+         y first opens a location picker;
+         tion. Single-loc and multi-loc arews the title + the CHOSEN loca
+       5 # two variants of the SAME requirement (R2 apply), so they live 
+       6 # R2 = PASS, expected green. (If a defect surfaces here, the fir
+       7 # this flow — that is a STOP-and-report, per the build plan, not
+          an in-place fix.)
+       9 ---Id: com.example.buggy
+      10 - launchApp:
+     … +58 lines (ctrl+o to expand)
+
+⏺ Flow napisany. Tworzę katalogi na evidence (docs/runs/screens/ +
+  docs/runs/hierarchy/), do których flow zapisują screenshoty — to commitowalne
+  artefakty deliverable, w zakresie planu:
+
+⏺ Bash(mkdir -p docs/runs/screens docs/runs/hierarchy && echo "created:" && ls
+      -ld docs/runs docs/runs/screens docs/runs/hierarchy)  ⎿  created:
+     drwxr-xr-x@ 4 wx0000  staff  128 Jun 15 19:53 docs/runs
+     drwxr-xr-x@ 2 wx0000  staff   64 Jun 15 19:53 docs/runs/hierarchy
+     drwxr-xr-x@ 2 wx0000  staff   64 Jun 15 19:53 docs/runs/screens
+
+⏺ Katalogi gotowe. Uruchamiam flow R2 indywidualnie względem żywego emulatora —
+  to weryfikuje naraz build-item 2 (czy pełny regex snackbara .*Applied 
+  to.*<title>.*<loc>.* łapie transient), item 3 (disambiguacja Apply przez
+  below: company, single bez pickera / multi z pickerem) i item 4 (R2 =
+  zielony). Czekam na realny output, nic nie prejudykuję.
+
+⏺ Bash(maestro test flows/03-apply.yaml 2>&1 | tail -40)
+  ⎿  Running on emulator-5554
+      > Flow 03-apply
+     Launch app "com.example.buggy" with clear state... COMPLETED
+     … +35 lines (ctrl+o to expand)
+  ⎿  (timeout 4m)
+
+⏺ Reality kontruje plan — STOP i reconcile (klauzula „verify before implement").
+  Flow padł nie na snackbarze ani R2, tylko na bramce gotowości .*Job Offers.*
+  po rejestracji — a to ten sam wzorzec, który w 07 jest zielony. Nie zgaduję;
+  oglądam realny stan z debug-artefaktów Maestro (screenshot + hierarchy
+  ostatniego stanu), żeby zobaczyć, co faktycznie było na ekranie.
+
+⏺ Bash(D="/Users/wx0000/.maestro/tests/2026-06-15_195402"; echo "=== contents
+      ===" && ls -la "$D" 2>&1; echo; echo "=== last commands log tail ===" &&
+      ls "$D"/*.txt "$…)
+  ⎿  Error: Exit code 1
+     === contents ===
+     total 432
+     drwxr-xr-x@  5 wx0000  staff     160 Jun 15 19:54 .
+     drwxr-xr-x@ 62 wx0000  staff    1984 Jun 15 19:54 ..
+     -rw-r--r--@  1 wx0000  staff   79641 Jun 15 19:54 
+     commands-(03-apply.yaml).json
+     -rw-r--r--@  1 wx0000  staff   25833 Jun 15 19:54 maestro.log
+     -rw-r--r--@  1 wx0000  staff  109548 Jun 15 19:54 
+     screenshot-❌-1781546082792-(03-apply.yaml).png
+
+     === last commands log tail ===
+     … +1 line (ctrl+o to expand)
+
+⏺ Jest screenshot stanu porażki. Oglądam go — to pokaże, co realnie było na
+  ekranie, gdy bramka .*Job Offers.* nie przeszła (zamiast zgadywać przyczynę):
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Screenshot ujawnia przyczynę — i to mechanika mojego flow, NIE finding 
+  aplikacji (app słusznie odrzucił niepoprawną rejestrację). Widać konkretnie:
+
+  - Email = ...@example.comValidPass123 → hasło dokleiło się do pola Email
+  - Password = puste („Password is required")
+  - Confirm = wypełnione
+
+  Czyli tapOn ".*Password input field.*" nie przeniósł fokusu na pole hasła,
+  więc inputText ${PASSWORD} dopisało się do Email → rejestracja padła → bramka
+  „Job Offers" słusznie czerwona. To ten sam typ momentu co w P2 (czerwony =
+  najpierw weryfikuj mechanikę), ale inna przyczyna.
+
+  Kluczowe pytanie: subflow register-user jest identyczny z tym w 07/08, które
+  są zielone. Więc albo (a) selektor .*Password input field.* jest dwuznaczny
+  (łapie też „Confirm password input field"), albo (b) to flaky tap-timing.
+  Sprawdzam definitywnie realne a11y-labelki pól z dumpa rejestracji:
+
+  Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Definitywne labelki: Email input field, Password input field, Confirm password
+  input field. Selektor .*Password input field.* (capital P) jednoznacznie
+  trafia w pole hasła (w „Confirm password input field" jest małe „password"), o
+  ile Maestro matchuje case-sensitive. Ale objaw — hasło w polu Email, nie w
+  Confirm — wskazuje raczej, że tap na pole hasła nie przeniósł fokusu
+  (occlusion/timing), niż na dwuznaczność selektora.
+
+  Kluczowe: register-user jest identyczny z tym w 07/08 (zielone w P2). Zbieram
+  twarde dane empiryczne zamiast zgadywać — odpalam najpierw 07 (znany-zielony 
+  baseline P2), potem ponownie 03. Jeśli 07 też padnie → subflow jest
+  flaky/regresja; jeśli 07 zielony a 03 czerwony → przyczyna specyficzna dla 03.
+
+⏺ Bash(echo "########## RUN 07 (known-green P2 baseline) ##########" && maestro
+      test flows/07-registration-autologin.yaml 2>&1 | tail -25)
+  ⎿  ########## RUN 07 (known-green P2 baseline) ##########
+     Running on emulator-5554
+      > Flow 07-registration-autologin
+     … +16 lines (ctrl+o to expand)
+  ⎿  (timeout 4m)
+
+⏺ 07 zielony — register-user działa, nie jest zepsuty globalnie. Część
+  rejestracyjna 03 jest identyczna z 07, więc porażka 03 wygląda na flaky
+  (intermittentny tap na pole hasła nie złapał fokusu), nie deterministyczną.
+  Jedna porażka to za mało, by scharakteryzować — a suite musi być stabilny (P5
+  odpala go 3×). Zbieram dane: odpalam 03 trzykrotnie i liczę pass/fail, zanim
+  cokolwiek utwardzę. Czekam na realny wynik.
+
+⏺ Bash(for i in 1 2 3; do
+        echo "########## 03 RUN $i ##########"…)
+  ⎿  ########## 03 RUN 1 ##########
+       Assert that ".*Job Offers.*" is visible... COMPLETED
+       Scrolling DOWN until "${OFFER}" is visible with speed 40, visibility
+     … +26 lines (ctrl+o to expand)
+  ⎿  (timeout 10m)
+
+⏺ R2 = 3/3 zielony — w tym pełny regex snackbara złapał transient w obu
+  wariantach (.*Applied to.*Junior Flutter Developer.*Krakow.* przeszło, bo flow
+  doszedł do multi; .*Applied to.*QA Automation Engineer.*Gdansk.* COMPLETED).
+  Build-verify items 2/3/4 zaliczone. Pierwsza porażka 03 to był jednorazowy 
+  flaky tap w register-user (focus-race na polu hasła) — 07 zielony + 03×3
+  zielony to potwierdza. To kwestia stabilności harnessu (nie finding, nie
+  reguła kardynalna); odnotuję ją jako moment osądu / pozycję P5 i będę czujny
+  przy 04/05.
+
+  Potwierdzam, że artefakty-dowody R2 powstały, i aktualizuję taski:
+
+  Listed 1 directory (ctrl+o to expand)
+
+⏺ Dowody R2 są. Rzucam okiem na screenshot single-snackbar — to artefakt
+  human-facing, chcę potwierdzić, że faktycznie złapał snackbar z
+  tytułem+lokalizacją (asercja już przeszła, ale screenshot to dowód):
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Dowód R2 idealny: snackbar u dołu = „Applied to Junior Flutter Developer - 
+  Krakow" (tytuł + lokalizacja). Lista ofert też zgodna z recon (widoczne nawet
+  bugi R1: null, WarsawBerlinLondon — dane niezmienione). R2 zamknięte zielono.
+
+  Teraz flow R3 — pierwsze realne findingi. Piszę 04-history-no-salary
+  (C4/BUG-B): apply do oferty no-salary (Senior QA Engineer/TechCorp, multi-loc
+  → picker → Warsaw) → profil → history → najpierw zielony dowód mechaniki
+  (dotarł do właściwego wpisu), potem asercja spec assertNotVisible linii salary
+  = spodziewany RED.
+
+⏺ Write(flows/04-history-no-salary.yaml)
+  ⎿  Wrote 52 lines to flows/04-history-no-salary.yaml
+        alary line (spec, consistent withsalary offer must NOT render a s
+      2 # the offers list omitting the salary element when absent). Buggy
+      3 # "Applied job salary: not specified" / "—" (adjudicated BUG-B, h
+        istory surface; candidate C4).
+      5 # This flow asserts the SPEC; a RED result here is the CORRECT re
+        sult = the finding. We do NOT
+        mp the bug — a disqualifying move).eholder (that would rubber-sta
+      7 # Before the spec assertion it PROVES the mechanic reached the ri
+      8 # location visible, green) — so a red is the app violating the sp
+        ec, not the flow failing to drive it.
+     … +59 lines (ctrl+o to expand)
+⏺ Teraz 05-history-salary-format (C5/BUG-C): apply do oferty z JSON-salary
+  (Senior QA/QualityAssurance Ltd, multi-loc → picker → London) → profil →
+  history → zielony dowód mechaniki (company+location, kotwica na firmie omija
+  pułapkę Senior QA ⊂ Senior QA Engineer), potem asercja spec assertVisible
+  range 10000-15000 = spodziewany RED:
+
+⏺ Write(flows/05-history-salary-format.yaml)
+  ⎿  Wrote 53 lines to flows/05-history-salary-format.yaml
+         as a formatted range, like everybject-shaped salary must render 
+         max": 15000}" into historyy leaks the raw JSON "{"min": 10000, "
+       3 # (adjudicated BUG-C, history surface; candidate C5).
+       5 # This flow asserts the SPEC; a RED result here is the CORRECT r
+         esult = the finding. We do NOT
+         tamp the bug — a disqualifying move). green (that would rubber-s
+         ight history entry (company/locationS the mechanic reached the r
+       8 # visible, green) — so a red is the app violating the spec, not 
+       9 appId: com.example.buggye it.
+      10 ---
+     … +62 lines (ctrl+o to expand)
+
+⏺ Oba flow R3 napisane. Uruchamiam 04 indywidualnie — weryfikuję, że mechanika
+  zielono dochodzi do właściwego wpisu no-salary (title/company/location), a
+  asercja spec (brak linii salary) słusznie idzie na RED, bo Buggy renderuje
+  placeholder. Czytam pełny output; jeśli register flaknie (jak raz w 03),
+  rozpoznam to po porażce PRZED history i powtórzę.
+
+⏺ Bash(echo "########## 04-history-no-salary (expect RED at salary assertion)
+      ##########" && maestro test flows/04-history-no-salary.yaml 2>&1 | tail
+      -35)
+  ⎿  ########## 04-history-no-salary (expect RED at salary assertion) #####
+     #####
+       Tap on "Register"... COMPLETED
+     … +33 lines (ctrl+o to expand)
+  ⎿  (timeout 4m)
+
+⏺ 04 = RED dokładnie jak zaprojektowano — C4 finding potwierdzony. Mechanika
+  przeszła zielono aż do właściwego wpisu: picker Select Location for Senior QA 
+  Engineer ✓, history ✓, dowód tożsamości wpisu — title Senior QA Engineer +
+  company TechCorp + location Warsaw wszystkie visible ✓. Dopiero asercja spec
+  assertNotVisible ".*Applied job salary.*" FAILED → linia salary JEST widoczna
+  dla oferty bez wynagrodzenia → RED = app łamie spec (BUG-B), nie flow się
+  sypie.
+
+  App jest zaparkowany na history po nieudanej asercji — dumpuję hierarchy
+  natychmiast (reguła park-then-dump: nic pomiędzy), żeby uchwycić dokładny node
+  linii salary jako artefakt findingu:
+
+⏺ Bash(maestro hierarchy --compact >
+      docs/runs/hierarchy/04-history-no-salary.txt 2>/dev/null && echo "dumped
+      $(wc -l < docs/runs/hierarchy/04-history-no-salary.txt) l…)
+  ⎿  dumped       68 lines
+     === salary node(s) in the parked history ===
+     56,14,"accessibilityText=Applied job salary: not specified
+
+⏺ Hierarchy uchwycona: node accessibilityText=Applied job salary: not specified
+  (wartość — w kolejnej linii node'a) — dokładnie zgodne z recon 09-history.txt.
+  To dowód C4: wpis bez wynagrodzenia renderuje linię salary. Oglądam
+  screenshot 04, by potwierdzić, że artefakt human-facing pokazuje „—"
+  wizualnie:
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ 04 screenshot = idealny dowód C4: wpis history „Senior QA Engineer / TechCorp
+  / Warsaw / —" — czwarta linia to placeholder salary „—", którego spec zabrania
+  dla oferty bez wynagrodzenia (BUG-B). Jeden wpis (izolacja potwierdzona),
+  właściwa lokalizacja (Warsaw = wybór). C4 udokumentowany: screenshot +
+  hierarchy + nieudana asercja.
+
+  Aktualizuję taski i uruchamiam 05 (C5/BUG-C) — ten sam wzorzec, RED
+  spodziewany na asercji range:
+
+⏺ Bash(echo "########## 05-history-salary-format (expect RED at range assertion)
+      ##########" && maestro test flows/05-history-salary-format.yaml 2>&1 |
+      tail -30)
+  ⎿  ########## 05-history-salary-format (expect RED at range assertion) ##
+     ########
+       Assert that ".*Job Offers.*" is visible... COMPLETED
+     … +28 lines (ctrl+o to expand)
+  ⎿  (timeout 4m)
+
+⏺ 05 = RED dokładnie jak zaprojektowano — C5 finding potwierdzony. Mechanika
+  zielona aż do wpisu (picker Select Location for Senior QA ✓, company
+  QualityAssurance Ltd + location London ✓), a asercja spec assertVisible 
+  ".*Applied job salary: 10000-15000.*" FAILED → sformatowany range NIE
+  występuje → RED = app przecieka raw JSON zamiast range (BUG-C).
+
+  App zaparkowany na history — dumpuję hierarchy natychmiast (park-then-dump) i
+  wyłuskuję node salary jako dowód:
+
+⏺ Bash(maestro hierarchy --compact >
+      docs/runs/hierarchy/05-history-salary-format.txt 2>/dev/null && echo
+      "dumped $(wc -l < docs/runs/hierarchy/05-history-salary-forma…)
+  ⎿  dumped       68 lines
+     === salary node(s) in the parked history ===
+     56,14,"accessibilityText=Applied job salary: {""min"": 10000, ""max"":
+      15000}
+
+⏺ C5 dowód uchwycony: accessibilityText=Applied job salary: {"min": 10000, 
+  "max": 15000} — raw JSON przecieka do history, zgodnie z recon 09. Oglądam
+  screenshot 05, by potwierdzić wizualny artefakt:
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ 05 screenshot = idealny dowód C5: wpis „Senior QA / QualityAssurance Ltd /
+  London / {"min": 10000, "max": 15000}" — linia salary to raw JSON zamiast
+  sformatowanego range (BUG-C). Jeden wpis (izolacja), właściwa lokalizacja
+  (London). C5 udokumentowany: screenshot + hierarchy + nieudana asercja.
+
+  Oba findingi R3 kompletne. Aktualizuję taski i odpalam pełny suite (maestro 
+  test .) dla macierzy raportu. Uwaga na flake register-user — jeśli któryś
+  zielony flow padnie na bramce przed-history, to flake, nie finding; rozpoznam
+  i powtórzę:
+
+⏺ Bash(echo "########## FULL SUITE: maestro test . ##########" && maestro test .
+      2>&1 | grep -E "Flow|COMPLETED|FAILED|passed|failed|Passed|Failed|✅|❌"
+      | tail -60)
+  ⎿  ########## FULL SUITE: maestro test . ##########
+     [Failed] 05-history-salary-format (1m 5s) (Assertion is false: ".*Appl
+     ied job salary: 10000-15000.*" is visible)
+     … +7 lines (ctrl+o to expand)
+  ⎿  (timeout 10m)
+
+⏺ Pełny suite = dokładnie spodziewana macierz P3 (czysty przebieg, zero flake'a
+  w tej rundzie):
+
+  ┌────────────────────────────┬───────┬────────────────────────────┐
+  │            Flow            │  Req  │           Wynik            │
+  ├────────────────────────────┼───────┼────────────────────────────┤
+  │ 03-apply                   │ R2    │ [Passed] ✓                 │
+  ├────────────────────────────┼───────┼────────────────────────────┤
+  │ 06-registration-validation │ R4    │ [Passed] ✓                 │
+  ├────────────────────────────┼───────┼────────────────────────────┤
+  │ 07-registration-autologin  │ R4    │ [Passed] ✓                 │
+  ├────────────────────────────┼───────┼────────────────────────────┤
+  │ 08-login-logout            │ R5    │ [Passed] ✓                 │
+  ├────────────────────────────┼───────┼────────────────────────────┤
+  │ 04-history-no-salary       │ R3/C4 │ [Failed] = finding (BUG-B) │
+  ├────────────────────────────┼───────┼────────────────────────────┤
+  │ 05-history-salary-format   │ R3/C5 │ [Failed] = finding (BUG-C) │
+  └────────────────────────────┴───────┴────────────────────────────┘
+
+  2/6 Failed — i są to dokładnie dwa findingi R3, każdy na asercji spec salary.
+  Cztery zielone (R2/R4/R5 = PASS) trzymają. Czerwony = finding, zgodnie z
+  regułą kardynalną.
+
+  Aktualizuję SPEC-MATRIX (przypisanie flow + tabela anti-case ratyfikowana przy
+  approvalu planu) — to edycje working-tree, nie commit:
+
+⏺ Update(docs/SPEC-MATRIX.md)  ⎿  Added 1 line, removed 1 line
+      18  
+      19  | Req | Flow | Expected per spec | Actual (from recon) | Verdic
+          t (PASS/BUG) |
+      20  |-----|------|-------------------|---------------------|-------
+          -------------|
+      21 -| R1  | _TBD — P2_ | **Offers list — tile data.** Each tile sho
+         -ws title, company, location, salary range. Location: single = o
+         -ne value; multiple = comma-separated. Salary: present → range s
+         -hown; **absent → the salary element does not exist at all** (no
+         - placeholder, no "no data"). | "Job Offers" list, **5 offers**.
+         - Multi-location values are concatenated **without separators**:
+         - `WarsawBerlinLondon`, `WarsawGdansk`, `WarsawBerlinLondonParis
+         -`. No-salary offer renders a salary element: `Salary: not speci
+         -fied` + value `null` (Senior QA Engineer). One salary rendered 
+         -as raw JSON: `{"min": 10000, "max": 15000}` (Senior QA / Qualit
+         -yAssurance). Normal ranges fine (`5000-8000 PLN`). Single-locat
+         -ion fine (`Krakow`). Evidence: `docs/recon/hierarchy/02-offers-
+         -list-top.txt` + `02-offers-list-bottom.txt`; `docs/recon/screen
+         -s/02-offers-top.png` + `02-offers-bottom.png`. → candidates **C
+         -1–C3** | **BUG** — C1→BUG-A, C2→BUG-B (list), C3→BUG-C (list) |
+      21 +| R1  | _TBD — P4_ | **Offers list — tile data.** Each tile sho
+         +ws title, company, location, salary range. Location: single = o
+         +ne value; multiple = comma-separated. Salary: present → range s
+         +hown; **absent → the salary element does not exist at all** (no
+         + placeholder, no "no data"). | "Job Offers" list, **5 offers**.
+         + Multi-location values are concatenated **without separators**:
+         + `WarsawBerlinLondon`, `WarsawGdansk`, `WarsawBerlinLondonParis
+         +`. No-salary offer renders a salary element: `Salary: not speci
+         +fied` + value `null` (Senior QA Engineer). One salary rendered 
+         +as raw JSON: `{"min": 10000, "max": 15000}` (Senior QA / Qualit
+         +yAssurance). Normal ranges fine (`5000-8000 PLN`). Single-locat
+         +ion fine (`Krakow`). Evidence: `docs/recon/hierarchy/02-offers-
+         +list-top.txt` + `02-offers-list-bottom.txt`; `docs/recon/screen
+         +s/02-offers-top.png` + `02-offers-bottom.png`. → candidates **C
+         +1–C3** | **BUG** — C1→BUG-A, C2→BUG-B (list), C3→BUG-C (list) |
+      22  | R2  | _TBD — P2_ | **Apply from the list.** Apply directly vi
+          a an "Apply" button on the tile, **without opening the offer de
+          tail**. Confirmation **snackbar contains the offer title AND th
+          e applied location** (both, not title alone). Multi-location of
+          fer: "Apply" **first opens a location-picker popup**; after cho
+          osing, the application is saved for the chosen location and the
+           snackbar shows title + that chosen location. | "Apply" sits **
+          on each tile** (no detail screen). Single-loc (Junior Flutter D
+          eveloper): snackbar `Applied to Junior Flutter Developer - Krak
+          ow` (title + location). Multi-loc (QA Automation Engineer): App
+          ly opens a **modal popup** `Select Location for QA Automation E
+          ngineer` with separate options `Warsaw` / `Gdansk`; choosing Gd
+          ansk → snackbar `Applied to QA Automation Engineer - Gdansk` (t
+          itle + chosen location). Picker splits locations correctly (con
+          trast C1). Evidence: `docs/recon/screens/03-apply-single-snackb
+          ar.png`, `04a-apply-multi-picker.png`, `04b-apply-multi-snackba
+          r.png`; `docs/recon/hierarchy/04-apply-multi-picker.txt`. No ca
+          ndidate observed in recon (human adjudicates). | **PASS** |
+      23  | R3  | _TBD — P2_ | **Application history.** Reached from the 
+          profile (header profile icon); lists the offers applied to. Ent
+          ry = **4 lines**: (1) title, (2) company, (3) chosen location, 
+          (4) salary range. No-salary offer → **no salary line** (consist
+          ent with the list). | Profile button (header) → "Profile" with 
+          "User Information" (email) + "Application History". Entry = tit
+          le / company / **chosen location** / salary; chosen location pe
+          rsists correctly (`Warsaw`, `Krakow`, `London`). Salaried entry
+           fine (`5000-8000 PLN`). **No-salary entry STILL shows a salary
+           line** rendered `—` (a11y `Applied job salary: not specified`)
+           → **C4**. **Raw-JSON salary leaks into history**: `{"min": 100
+          00, "max": 15000}` (Senior QA / QualityAssurance) → **C5**. Evi
+          dence: `docs/recon/hierarchy/09-history.txt`; `docs/recon/scree
+          ns/09-history.png`. | **BUG** — C4→BUG-B (history), C5→BUG-C (h
+          istory) |
+      24  | R4  | 06 + 07 | **Registration.** Successful registration **s
+          aves the user and auto-logs them in**. Validation: email basic 
+          format; password **≥ 8 characters**; confirm-password **must eq
+          ual** the password. Validation error messages rendered **ABOVE 
+          the relevant field (not below)**. | **Auto-login confirmed** (v
+          alid register → lands on "Job Offers", no separate login). All 
+          3 validations present; each error rendered **ABOVE** its field 
+          (objective: error top-y < input top-y, + visual): email `Please
+           enter a valid email address` (936 < 1002); password `Password 
+          must be at least 8 characters` (1135 < 1201); confirm `Password
+          s do not match` (1335 < 1401). Evidence: `docs/recon/hierarchy/
+          06-reg-email-error.txt`, `07-reg-pwd-error.txt`, `08-reg-confir
+          m-error.txt`; `docs/recon/screens/06/07/08-reg-*-error.png` (06
+           shows the red error above the Email box). **No candidate obser
+          ved** (human adjudicates). | **PASS** |
+
+⏺ Update(docs/SPEC-MATRIX.md)
+  ⎿  Added 1 line, removed 1 line
+      19  | Req | Flow | Expected per spec | Actual (from recon) | Verdic
+          t (PASS/BUG) |
+      20  |-----|------|-------------------|---------------------|-------
+          -------------|
+      21  | R1  | _TBD — P4_ | **Offers list — tile data.** Each tile sho
+          ws title, company, location, salary range. Location: single = o
+          ne value; multiple = comma-separated. Salary: present → range s
+          hown; **absent → the salary element does not exist at all** (no
+           placeholder, no "no data"). | "Job Offers" list, **5 offers**.
+           Multi-location values are concatenated **without separators**:
+           `WarsawBerlinLondon`, `WarsawGdansk`, `WarsawBerlinLondonParis
+          `. No-salary offer renders a salary element: `Salary: not speci
+          fied` + value `null` (Senior QA Engineer). One salary rendered 
+          as raw JSON: `{"min": 10000, "max": 15000}` (Senior QA / Qualit
+          yAssurance). Normal ranges fine (`5000-8000 PLN`). Single-locat
+          ion fine (`Krakow`). Evidence: `docs/recon/hierarchy/02-offers-
+          list-top.txt` + `02-offers-list-bottom.txt`; `docs/recon/screen
+          s/02-offers-top.png` + `02-offers-bottom.png`. → candidates **C
+          1–C3** | **BUG** — C1→BUG-A, C2→BUG-B (list), C3→BUG-C (list) |
+      22 -| R2  | _TBD — P2_ | **Apply from the list.** Apply directly vi
+         -a an "Apply" button on the tile, **without opening the offer de
+         -tail**. Confirmation **snackbar contains the offer title AND th
+         -e applied location** (both, not title alone). Multi-location of
+         -fer: "Apply" **first opens a location-picker popup**; after cho
+         -osing, the application is saved for the chosen location and the
+         - snackbar shows title + that chosen location. | "Apply" sits **
+         -on each tile** (no detail screen). Single-loc (Junior Flutter D
+         -eveloper): snackbar `Applied to Junior Flutter Developer - Krak
+         -ow` (title + location). Multi-loc (QA Automation Engineer): App
+         -ly opens a **modal popup** `Select Location for QA Automation E
+         -ngineer` with separate options `Warsaw` / `Gdansk`; choosing Gd
+         -ansk → snackbar `Applied to QA Automation Engineer - Gdansk` (t
+         -itle + chosen location). Picker splits locations correctly (con
+         -trast C1). Evidence: `docs/recon/screens/03-apply-single-snackb
+         -ar.png`, `04a-apply-multi-picker.png`, `04b-apply-multi-snackba
+         -r.png`; `docs/recon/hierarchy/04-apply-multi-picker.txt`. No ca
+         -ndidate observed in recon (human adjudicates). | **PASS** |    
+      22 +| R2  | 03 | **Apply from the list.** Apply directly via an "Ap
+         +ply" button on the tile, **without opening the offer detail**. 
+         +Confirmation **snackbar contains the offer title AND the applie
+         +d location** (both, not title alone). Multi-location offer: "Ap
+         +ply" **first opens a location-picker popup**; after choosing, t
+         +he application is saved for the chosen location and the snackba
+         +r shows title + that chosen location. | "Apply" sits **on each 
+         +tile** (no detail screen). Single-loc (Junior Flutter Developer
+         +): snackbar `Applied to Junior Flutter Developer - Krakow` (tit
+         +le + location). Multi-loc (QA Automation Engineer): Apply opens
+         + a **modal popup** `Select Location for QA Automation Engineer`
+         + with separate options `Warsaw` / `Gdansk`; choosing Gdansk → s
+         +nackbar `Applied to QA Automation Engineer - Gdansk` (title + c
+         +hosen location). Picker splits locations correctly (contrast C1
+         +). Evidence: `docs/recon/screens/03-apply-single-snackbar.png`,
+         + `04a-apply-multi-picker.png`, `04b-apply-multi-snackbar.png`; 
+         +`docs/recon/hierarchy/04-apply-multi-picker.txt`. No candidate 
+         +observed in recon (human adjudicates). | **PASS** |            
+      23  | R3  | _TBD — P2_ | **Application history.** Reached from the 
+          profile (header profile icon); lists the offers applied to. Ent
+          ry = **4 lines**: (1) title, (2) company, (3) chosen location, 
+          (4) salary range. No-salary offer → **no salary line** (consist
+          ent with the list). | Profile button (header) → "Profile" with 
+          "User Information" (email) + "Application History". Entry = tit
+          le / company / **chosen location** / salary; chosen location pe
+          rsists correctly (`Warsaw`, `Krakow`, `London`). Salaried entry
+           fine (`5000-8000 PLN`). **No-salary entry STILL shows a salary
+           line** rendered `—` (a11y `Applied job salary: not specified`)
+           → **C4**. **Raw-JSON salary leaks into history**: `{"min": 100
+          00, "max": 15000}` (Senior QA / QualityAssurance) → **C5**. Evi
+          dence: `docs/recon/hierarchy/09-history.txt`; `docs/recon/scree
+          ns/09-history.png`. | **BUG** — C4→BUG-B (history), C5→BUG-C (h
+          istory) |
+      24  | R4  | 06 + 07 | **Registration.** Successful registration **s
+          aves the user and auto-logs them in**. Validation: email basic 
+          format; password **≥ 8 characters**; confirm-password **must eq
+          ual** the password. Validation error messages rendered **ABOVE 
+          the relevant field (not below)**. | **Auto-login confirmed** (v
+          alid register → lands on "Job Offers", no separate login). All 
+          3 validations present; each error rendered **ABOVE** its field 
+          (objective: error top-y < input top-y, + visual): email `Please
+           enter a valid email address` (936 < 1002); password `Password 
+          must be at least 8 characters` (1135 < 1201); confirm `Password
+          s do not match` (1335 < 1401). Evidence: `docs/recon/hierarchy/
+          06-reg-email-error.txt`, `07-reg-pwd-error.txt`, `08-reg-confir
+          m-error.txt`; `docs/recon/screens/06/07/08-reg-*-error.png` (06
+           shows the red error above the Email box). **No candidate obser
+          ved** (human adjudicates). | **PASS** |
+      25  | R5  | 08 | **Login / logout.** User can **log out from the pr
+          ofile**, and can **log back in** with the email + password crea
+          ted at registration. | **Logout** button in profile → returns t
+          o the login screen (`Welcome Back`) ✓. **Re-login** with the re
+          gistration creds (`recon.user@example.com` / `ReconPass123`) → 
+          back to `Job Offers` ✓ (same session). Evidence: `docs/recon/sc
+          reens/10-after-logout.png` (login), `11-after-relogin.png` (off
+          ers); `docs/recon/hierarchy/11-after-relogin.txt`. **No candida
+          te observed** (human adjudicates). | **PASS** |
+
+⏺ Update(docs/SPEC-MATRIX.md)
+  ⎿  Added 1 line, removed 1 line
+      20  |-----|------|-------------------|---------------------|-------
+          -------------|
+      21  | R1  | _TBD — P4_ | **Offers list — tile data.** Each tile sho
+          ws title, company, location, salary range. Location: single = o
+          ne value; multiple = comma-separated. Salary: present → range s
+          hown; **absent → the salary element does not exist at all** (no
+           placeholder, no "no data"). | "Job Offers" list, **5 offers**.
+           Multi-location values are concatenated **without separators**:
+           `WarsawBerlinLondon`, `WarsawGdansk`, `WarsawBerlinLondonParis
+          `. No-salary offer renders a salary element: `Salary: not speci
+          fied` + value `null` (Senior QA Engineer). One salary rendered 
+          as raw JSON: `{"min": 10000, "max": 15000}` (Senior QA / Qualit
+          yAssurance). Normal ranges fine (`5000-8000 PLN`). Single-locat
+          ion fine (`Krakow`). Evidence: `docs/recon/hierarchy/02-offers-
+          list-top.txt` + `02-offers-list-bottom.txt`; `docs/recon/screen
+          s/02-offers-top.png` + `02-offers-bottom.png`. → candidates **C
+          1–C3** | **BUG** — C1→BUG-A, C2→BUG-B (list), C3→BUG-C (list) |
+      22  | R2  | 03 | **Apply from the list.** Apply directly via an "Ap
+          ply" button on the tile, **without opening the offer detail**. 
+          Confirmation **snackbar contains the offer title AND the applie
+          d location** (both, not title alone). Multi-location offer: "Ap
+          ply" **first opens a location-picker popup**; after choosing, t
+          he application is saved for the chosen location and the snackba
+          r shows title + that chosen location. | "Apply" sits **on each 
+          tile** (no detail screen). Single-loc (Junior Flutter Developer
+          ): snackbar `Applied to Junior Flutter Developer - Krakow` (tit
+          le + location). Multi-loc (QA Automation Engineer): Apply opens
+           a **modal popup** `Select Location for QA Automation Engineer`
+           with separate options `Warsaw` / `Gdansk`; choosing Gdansk → s
+          nackbar `Applied to QA Automation Engineer - Gdansk` (title + c
+          hosen location). Picker splits locations correctly (contrast C1
+          ). Evidence: `docs/recon/screens/03-apply-single-snackbar.png`,
+           `04a-apply-multi-picker.png`, `04b-apply-multi-snackbar.png`; 
+          `docs/recon/hierarchy/04-apply-multi-picker.txt`. No candidate 
+          observed in recon (human adjudicates). | **PASS** |
+      23 -| R3  | _TBD — P2_ | **Application history.** Reached from the 
+         -profile (header profile icon); lists the offers applied to. Ent
+         -ry = **4 lines**: (1) title, (2) company, (3) chosen location, 
+         -(4) salary range. No-salary offer → **no salary line** (consist
+         -ent with the list). | Profile button (header) → "Profile" with 
+         -"User Information" (email) + "Application History". Entry = tit
+         -le / company / **chosen location** / salary; chosen location pe
+         -rsists correctly (`Warsaw`, `Krakow`, `London`). Salaried entry
+         - fine (`5000-8000 PLN`). **No-salary entry STILL shows a salary
+         - line** rendered `—` (a11y `Applied job salary: not specified`)
+         - → **C4**. **Raw-JSON salary leaks into history**: `{"min": 100
+         -00, "max": 15000}` (Senior QA / QualityAssurance) → **C5**. Evi
+         -dence: `docs/recon/hierarchy/09-history.txt`; `docs/recon/scree
+         -ns/09-history.png`. | **BUG** — C4→BUG-B (history), C5→BUG-C (h
+         -istory) |                                                      
+      23 +| R3  | 04 + 05 | **Application history.** Reached from the pro
+         +file (header profile icon); lists the offers applied to. Entry 
+         += **4 lines**: (1) title, (2) company, (3) chosen location, (4)
+         + salary range. No-salary offer → **no salary line** (consistent
+         + with the list). | Profile button (header) → "Profile" with "Us
+         +er Information" (email) + "Application History". Entry = title 
+         +/ company / **chosen location** / salary; chosen location persi
+         +sts correctly (`Warsaw`, `Krakow`, `London`). Salaried entry fi
+         +ne (`5000-8000 PLN`). **No-salary entry STILL shows a salary li
+         +ne** rendered `—` (a11y `Applied job salary: not specified`) → 
+         +**C4**. **Raw-JSON salary leaks into history**: `{"min": 10000,
+         + "max": 15000}` (Senior QA / QualityAssurance) → **C5**. Eviden
+         +ce: `docs/recon/hierarchy/09-history.txt`; `docs/recon/screens/
+         +09-history.png`. | **BUG** — C4→BUG-B (history), C5→BUG-C (hist
+         +ory) |                                                         
+      24  | R4  | 06 + 07 | **Registration.** Successful registration **s
+          aves the user and auto-logs them in**. Validation: email basic 
+          format; password **≥ 8 characters**; confirm-password **must eq
+          ual** the password. Validation error messages rendered **ABOVE 
+          the relevant field (not below)**. | **Auto-login confirmed** (v
+          alid register → lands on "Job Offers", no separate login). All 
+          3 validations present; each error rendered **ABOVE** its field 
+          (objective: error top-y < input top-y, + visual): email `Please
+           enter a valid email address` (936 < 1002); password `Password 
+          must be at least 8 characters` (1135 < 1201); confirm `Password
+          s do not match` (1335 < 1401). Evidence: `docs/recon/hierarchy/
+          06-reg-email-error.txt`, `07-reg-pwd-error.txt`, `08-reg-confir
+          m-error.txt`; `docs/recon/screens/06/07/08-reg-*-error.png` (06
+           shows the red error above the Email box). **No candidate obser
+          ved** (human adjudicates). | **PASS** |
+      25  | R5  | 08 | **Login / logout.** User can **log out from the pr
+          ofile**, and can **log back in** with the email + password crea
+          ted at registration. | **Logout** button in profile → returns t
+          o the login screen (`Welcome Back`) ✓. **Re-login** with the re
+          gistration creds (`recon.user@example.com` / `ReconPass123`) → 
+          back to `Job Offers` ✓ (same session). Evidence: `docs/recon/sc
+          reens/10-after-logout.png` (login), `11-after-relogin.png` (off
+          ers); `docs/recon/hierarchy/11-after-relogin.txt`. **No candida
+          te observed** (human adjudicates). | **PASS** |
+      26  
+
+⏺ Teraz tabela anti-case — zastępuję placeholdery (FORMAT PLACEHOLDERS) realnymi
+  anti-case'ami wywiedzionymi z zaadjudykowanych bugów + reguły kardynalnej
+  (ratyfikowane przy approvalu planu):
+
+⏺ Update(docs/SPEC-MATRIX.md)
+  ⎿  Added 8 lines, removed 6 lines
+       89  but the spec does not require (or forbids). Asserting an anti-
+           case bakes a bug into a "green"
+       90  test.
+       91  
+       92 -> **The rows below are FORMAT PLACEHOLDERS taken from the prom
+          -pt — NOT real Buggy findings.**                               
+       93 -> They show the shape/columns only. **Real anti-cases are fill
+          -ed only after R1–R5 + recon, and                              
+       94 -> are the human's judgment.** Do not treat these as ready app 
+          -cases.                                                        
+       92 +> **Real anti-cases — filled at P3 from R1–R5 + recon + the ad
+          +judicated bugs (`docs/BUGS.md`),                              
+       93 +> ratified by the human at the P3 plan approval.** Each follow
+          +s directly from a defect's                                    
+       94 +> expected-per-spec + the cardinal rule (don't bend an asserti
+          +on to a buggy app). The R1/BUG-A                              
+       95 +> row lands with the P4 R1 flows.                             
+       96  
+       97  | Anti-case (do NOT assert) | Why it would be over-interpretat
+           ion | Related Req |
+       98  |---------------------------|---------------------------------
+           ----|-------------|
+       98 -| _format example:_ snackbar shows only the title instead of t
+          -itle + location | Spec requires title **and** location; assert
+          -ing title-only locks in the defect | _TBD_ |                  
+       99 -| _format example:_ a placeholder text the spec forbids | Spec
+          - forbids the placeholder; asserting it present contradicts spe
+          -c | _TBD_ |                                                   
+      100 -| _format example:_ validation error rendered **below** the in
+          -put instead of above | Spec dictates the error position; asser
+          -ting the wrong position rubber-stamps it | _TBD_ |            
+       99 +| snackbar shows only the title (omit the applied location) | 
+          +R2 requires title **and** location; asserting title-only locks
+          + in an under-spec snackbar | R2 (flow 03) |                   
+      100 +| a no-salary history entry renders a salary line / placeholde
+          +r (`—` / "not specified") | spec omits the salary element for 
+          +a no-salary offer; asserting the placeholder present rubber-st
+          +amps **BUG-B** | R3 (flow 04) |                               
+      101 +| an object salary asserted as raw JSON `{"min": …}` | spec re
+          +quires a formatted range; asserting the JSON rubber-stamps **B
+          +UG-C** | R3 (flow 05) |                                       
+      102 +| application history / session **survives an app restart** | 
+          +spec is **silent** on restart; recon (screens 12/13) shows it 
+          +survives, but asserting persistence over-interprets the app | 
+          +R3 (persistence) |                                            
+
+⏺ SPEC-MATRIX zaktualizowany. Teraz PROGRESS — odhaczam zbudowane elementy P3,
+  uczciwie zaznaczając że czerwone findingi R3 czekają na adjudykację przed
+  commitem:
+
+⏺ Update(PROGRESS.md)
+  ⎿  Added 5 lines, removed 3 lines
+      26    - [x] Login flow — `08-login-logout` (R5)
+      27    - [x] Suite **3/3 green** (R4/R5 PASS, as adjudicated); commi
+          t `5f61654`
+      28  
+      29 -- [ ] **P3 — Applying + history**                              
+      30 -  - [ ] Apply-to-offer flow                                    
+      31 -  - [ ] History flow                                           
+      29 +- [~] **P3 — Applying + history** — **BUILD DONE; R3 reds await
+         +ing adjudication (no commit yet)**                             
+      30 +  - [x] `apply-to-offer` subflow (tap-only, param `OFFER`) + `0
+         +3-apply` (R2) — suite **green** (PASS)                         
+      31 +  - [x] History flows `04-history-no-salary` (R3/C4→BUG-B) + `0
+         +5-history-salary-format` (R3/C5→BUG-C)                         
+      32 +        — **red = findings**, evidence (screenshot + hierarchy)
+         + in `docs/runs/`; await human adjudication                     
+      33 +  - [x] Anti-case table filled (R2 + R3 + persistence) in `docs
+         +/SPEC-MATRIX.md`; R1/BUG-A row → P4                            
+      34  
+      35  - [ ] **P4 — Offers list**
+      36    - [ ] Offers list flow(s)
+
+⏺ Dokumenty zaktualizowane. Sprawdzam stan working-tree (git status) — żeby
+  raport był rzetelny i potwierdzić, że są tylko realne deliverables P3 (zero
+  scratchu); commit i tak nie następuje (czekam na adjudykację):
+
+⏺ Bash(git -C /Users/wx0000/AIAIAI/Claude/Errand status --short && echo "---" &&
+      echo "untracked 'STOP' file (present at session start, not mine):" &&
+      head -c 300 /Use…)
+  ⎿   M PROGRESS.md
+      M docs/SPEC-MATRIX.md
+     ?? STOP
+     … +7 lines (ctrl+o to expand)
+
+⏺ Working-tree czysty (tylko realne deliverables P3 + dwa zmodyfikowane docsy).
+  Plik STOP jest pusty i był obecny na starcie sesji — nie mój, zostawiam
+  nietknięty. Maestro debug-dumpy żyją w ~/.maestro/ poza repo. Commita nie 
+  robię — to jest STOP na Twoją adjudykację.
+
+  ---
+  P3 — RAPORT (STOP na adjudykację)
+
+  Macierz suite (maestro test ., czysty przebieg)
+
+  [Passed] 03-apply                  (R2)      ✓ zielony = PASS
+  [Passed] 06-registration-validation(R4)      ✓
+  [Passed] 07-registration-autologin (R4)      ✓
+  [Passed] 08-login-logout           (R5)      ✓
+  [Failed] 04-history-no-salary      (R3/C4)   ✗ RED = FINDING
+  [Failed] 05-history-salary-format  (R3/C5)   ✗ RED = FINDING
+  2/6 Flows Failed
+  Dwie czerwienie = dokładnie dwa zaadjudykowane defekty R3. Cztery zielone
+  trzymają. Reguła kardynalna dotrzymana: nie nagiąłem żadnej asercji do app — w
+  04/05 najpierw zielony dowód mechaniki, potem asercja spec (nie app) na
+  czerwono.
+
+  R2 (zielony, jak spec)
+
+  - 03-apply pokrywa single+multi jednym przebiegiem. Snackbar asertowany z 
+  tytułem I lokalizacją razem (.*Applied to.*<title>.*<loc>.*) — pełny regex
+  łapie transient (build-verify potwierdzony, 03×3 zielony).
+  - Single: snackbar „Applied to Junior Flutter Developer - Krakow" →
+  docs/runs/screens/03-apply-single-snackbar.png.
+  - Multi: picker Select Location for QA Automation Engineer → wybór Gdansk →
+  „Applied to QA Automation Engineer - Gdansk" (chosen location) →
+  03-apply-multi-snackbar.png.
+
+  FINDING C4 → BUG-B (flow 04) — czeka na Twoje OK
+
+  - Spec: oferta bez wynagrodzenia → brak linii salary w history.
+  - App: wpis „Senior QA Engineer / TechCorp / Warsaw" ma 4. linię „—".
+  - Asercja spec (czerwona): assertNotVisible ".*Applied job salary.*" → FAILED.
+  - Node: accessibilityText=Applied job salary: not specified / —.
+  - Evidence: docs/runs/screens/04-history-no-salary.png +
+  docs/runs/hierarchy/04-history-no-salary.txt.
+
+  FINDING C5 → BUG-C (flow 05) — czeka na Twoje OK
+
+  - Spec: salary jako sformatowany range, jak inne oferty (10000-15000 PLN).
+  - App: wpis „Senior QA / QualityAssurance Ltd / London" ma salary {"min": 
+  10000, "max": 15000} (raw JSON).
+  - Asercja spec (czerwona): assertVisible ".*Applied job salary: 10000-15000.*"
+  → FAILED.
+  - Node: accessibilityText=Applied job salary: {"min": 10000, "max": 15000}.
+  - Evidence: docs/runs/screens/05-history-salary-format.png +
+  docs/runs/hierarchy/05-history-salary-format.txt.
+
+  Moment osądu — flake register-user (do Twojej decyzji)
+
+  Pierwszy run 03 padł czerwono na bramce „Job Offers" — ale to mechanika mojego
+  flow, NIE finding: screenshot pokazał hasło doklejone do pola Email (tap na
+  pole hasła nie złapał fokusu → rejestracja słusznie odrzucona przez app).
+  Rozpoznałem jak w P2 (czerwony → najpierw weryfikuj mechanikę), nie pomyliłem
+  z R-findingiem. Potem 07 zielony + 03×3 zielony + 6/6 registerów w pełnym 
+  suite zielonych — flake intermittentny, ~1 na ~11 wywołań tej sesji, nie
+  nawrócił. register-user to kod P2 (committed); stabilność jest jawnie pozycją
+  P5 („suite 3×"). Nie ruszałem go.
+
+  Working tree (NIEcommitowane)
+
+  - Nowe: subflows/apply-to-offer.yaml, flows/03|04|05-*.yaml,
+  docs/runs/{screens,hierarchy}/
+  - Zmienione: docs/SPEC-MATRIX.md (flow: R2→03, R3→04+05, R1→P4; tabela
+  anti-case wypełniona realnie), PROGRESS.md (P3 build done, R3 czeka)
+  - STOP (pusty, obecny na starcie, nie mój) — zostawiony
+
+  ---
+  Czekam na Twoją decyzję (dwie rzeczy):
+
+  1. Adjudykacja czerwieni R3 — potwierdzasz 04→C4/BUG-B i 05→C5/BUG-C jako
+  findingi (zgodnie z istniejącym verdyktem R3=BUG)? Po OK commituję P3.
+  2. Flake register-user — utwardzić teraz (minimalna zmiana w kodzie P2) czy
+  zostawić do stabilizacji P5?
+
+  Linkowanie czerwonych artefaktów do BUGS.md = P5 (nie teraz). End-of-Session =
+  nie teraz. Nie commituję bez Twojego OK.
+
+✻ Crunched for 6h 48m 50s
+
+❯ Domykamy P3. Findingi C4/C5 zaadjudykowane (potwierdzone, realne). Trzy       
+  kroki, potem STOP bez commita.                                                
+                                                                                
+  1. HARTUJ register-user (flake focus-race). Pierwszy run 03 padl bo haslo     
+  trafilo w pole email - tap na pole hasla nie zlapal fokusu (najpewniej        
+  soft-keyboard zaslania kolejne pole). Zdiagnozuj dokladny mechanizm i dodaj   
+  krok stabilizujacy miedzy inputami (hideKeyboard albo assert ze wlasciwe pole 
+  ma fokus przed inputText). NIE ruszaj tresci asercji - tylko mechanika. Nie   
+  zgaduj fixa, potwierdz mechanizm na artefakcie.                               
+                                                                                
+  2. PELNY SUITE 3x (wszystkie 6 flow). Raportuj macierz kazdego runu. Prog: 0  
+  flake, 03/06/07/08 zielone, 04/05 czerwone-findingi we wszystkich trzech. Jak 
+  flake wraca - STOP, raportuj, nie commituj.                                   
+                                                                                
+  3. PODMIEN cala sekcje "## Anti-cases" w docs/SPEC-MATRIX.md (naglowek +      
+  wstep + ewentualny draft/placeholder + tabela), od "## Anti-cases" do         
+  nastepnego "## " (albo EOF), na ponizsze. Reszta pliku nietknieta:            
+                                                                                
+  ## Anti-cases                                                                 
+                                                                                
+  What the suite must NOT assert. Each row is a way the tests could over-read   
+  the app: either rubber-stamping an adjudicated defect by asserting the broken 
+  output as correct, or asserting behaviour the spec never requires. The suite  
+  asserts the SPEC, not what the app happens to do.                             
+                                                                                
+  | Anti-case (do NOT assert) | Why it over-interprets the app | Req |          
+  |---|---|---|                                                                 
+  | Concatenated locations (`WarsawGdansk`, `WarsawBerlinLondon`) treated as    
+  correct display | Spec requires a comma-separated list for multi-location     
+  offers; asserting the run-together string locks in BUG-A | R1 |               
+  | A salary placeholder present for a no-salary offer (`null` on the list, `—` 
+  in history) | Spec forbids any placeholder when salary is absent, on the      
+  list and in history alike; asserting the placeholder rubber-stamps BUG-B |    
+  R1, R3 |                                                                      
+  | Raw JSON salary (`{"min":10000,"max":15000}`) treated as the displayed      
+  value | Spec requires a formatted range like every other offer; asserting the 
+  JSON rubber-stamps BUG-C | R1, R3 |                                           
+  | Snackbar asserted on the title alone (applied location omitted) | Spec      
+  requires title AND applied location in the confirmation snackbar; a           
+  title-only assertion would pass on an under-spec snackbar | R2 |              
+  | Application history surviving an app restart | Spec is silent on restart;   
+  the app does persist (datastore, recon screens 12/13), but asserting          
+  persistence reads app behaviour, not a requirement | R3 |                     
+                                                                                
+  4. STOP. NIE commituj. Zaraportuj: na czym polegal fix register-user, pelny   
+  output suite 3x, git diff --stat. Czekam na OK do commita.                    
+
+⏺ C4/C5 zaadjudykowane — przyjmuję. Trzy kroki, potem STOP bez commita. Zaczynam
+  od kroku 1 — hartowanie register-user, i zgodnie z Twoim poleceniem nie 
+  zgaduję fixa — najpierw potwierdzam mechanizm na artefakcie.
+
+  Hipoteza: soft-keyboard zasłania kolejne pole, więc tap ląduje na klawiaturze,
+  fokus nie wędruje, a inputText trafia w poprzednio sfokusowane pole (email).
+  Piszę scratch-probe w /tmp (nigdy nie commitowany), który odtwarza sekwencję i
+  robi screenshot ze wstałą klawiaturą zaraz po wpisaniu emaila — to pokaże
+  geometrię: czy pole Password jest pod klawiaturą.
+
+⏺ Write(/tmp/_probe-register-focus.yaml)
+  ⎿  Wrote 16 lines to ../../../../../tmp/_probe-register-focus.yaml
+         cus-race mechanism.EVER committed. Confirms the register-user fo
+       2 # Reproduces the field-entry sequence and screenshots with the s
+         oft keyboard UP, right after
+         sit under the keyboard.ee whether the Password / Confirm fields 
+       4 appId: com.example.buggy
+       5 ---
+       7     clearState: true
+       8 - tapOn: ".*Don't have an account.*"
+       9 - assertVisible: ".*Create Account.*"
+      10 - tapOn: ".*Email input field.*"
+     … +10 lines (ctrl+o to expand)
+
+⏺ Bash(echo "########## PROBE run ##########" && maestro test
+      /tmp/_probe-register-focus.yaml 2>&1 | tail -15)
+  ⎿  ########## PROBE run ##########
+     Running on emulator-5554
+      > Flow _probe-register-focus
+     … +9 lines (ctrl+o to expand)
+  ⎿  (timeout 2m)
+
+⏺ Probe przeszedł, oba screenshoty są. Oglądam: (1) stan z klawiaturą po
+  wpisaniu emaila — czy pole Password jest pod klawiaturą; (2) gdzie wylądował
+  MARKER999 po tapie na pole hasła.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Niespodzianka — to nie klasyczna okluzja dolną klawiaturą. Wszystkie trzy pola
+  są widoczne (Email/Password/Confirm), a zamiast dokowanej klawiatury QWERTY
+  jest pływający floating IME-toolbar Gboard po LEWEJ
+  (mikrofon/backspace/✓/emoji/menu) zachodzący na lewą krawędź pól. Mechanizm
+  wygląda inaczej niż zakładaliśmy — muszę zobaczyć drugi screenshot (gdzie
+  wylądował MARKER999), to rozstrzyga:
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Mechanizm potwierdzony na artefakcie — i jest inny niż zakładaliśmy. To nie
+  okluzja dolną klawiaturą (wszystkie pola widoczne), lecz race ze stanem IME:
+
+  - Screenshot 1 (po wpisaniu emaila): Gboard jest w przejściowym stanie 
+  floating-toolbara (pionowa pigułka mic/✓/emoji po lewej), zachodzącym na pola
+  — brak dokowanej klawiatury. Tap na pole hasła wykonany W TRAKCIE tej
+  tranzycji zostaje wchłonięty/odbity przez overlay → fokus nie wędruje →
+  inputText trafia w wciąż-sfokusowany email (objaw z pierwszego runu 03).
+  - Screenshot 2 (po settle, dokowana klawiatura): ten sam tap ląduje poprawnie
+  — MARKER999 w polu Password (••••••••9). Dlatego flake jest intermittentny:
+  zależy od timingu tapa względem tranzycji IME.
+
+  Fix (czysta mechanika, zero zmian w asercjach): hideKeyboard po każdym
+  inputText, przed tapem na kolejne pole — to usuwa overlay IME, więc każdy tap
+  pola dzieje się na czystym ekranie, deterministycznie. To pierwsza z dwóch
+  opcji, które wskazałeś, i bezpośrednio adresuje potwierdzony mechanizm.
+  Aplikuję:
+
+⏺ Update(subflows/register-user.yaml)
+  ⎿  Added 9 lines
+       5  # NO `env:` defaults here: in Maestro 2.6.1 a subflow's env def
+          ault OVERRIDES the value passed by
+       6  # the caller (the same precedence bug CLAUDE.md notes for `-e`)
+          , which resolves every field to ""
+       7  # and fails registration. Without defaults the caller's values 
+          are used; a missing one errors loudly.
+       8 +#                                                              
+       9 +# hideKeyboard BETWEEN every field (P3 fix): right after inputT
+         +ext the Gboard IME is briefly in a                             
+      10 +# transitional floating-toolbar state (overlay on the left of t
+         +he form, no docked keyboard). A field                          
+      11 +# tap fired during that transition is absorbed by the overlay, 
+         +so focus does not move and the next                            
+      12 +# inputText lands in the previously-focused field (intermittent
+         +ly typed PASSWORD into the EMAIL                               
+      13 +# field -> registration failed). Confirmed on artifacts (/tmp p
+         +robe screenshots, P3). Dismissing the                          
+      14 +# keyboard before each field tap removes the overlay -> every t
+         +ap lands on a clean screen.                                    
+      15  appId: com.example.buggy
+      16  ---
+      17  - tapOn: ".*Don't have an account.*"        # clickable Button 
+          (the wrapper View is not clickable)
+      18  - assertVisible: ".*Create Account.*"        # own-scope gate: 
+          on the register form (auto-waits, no sleep)
+      19  - tapOn: ".*Email input field.*"
+      20  - inputText: "${EMAIL}"
+      21 +- hideKeyboard                               # settle the IME b
+         +efore the next field tap (focus-race fix)                      
+      22  - tapOn: ".*Password input field.*"
+      23  - inputText: "${PASSWORD}"
+      24 +- hideKeyboard                                                 
+      25  - tapOn: ".*Confirm password input field.*"
+      26  - inputText: "${CONFIRM}"
+      27  - hideKeyboard
+⏺ Fix zaaplikowany (czysta mechanika: 3× hideKeyboard, jeden przed każdym tapem
+  pola; treść asercji nietknięta). Sprzątam scratch z /tmp i przechodzę do kroku
+  2 — pełny suite 3×. Zakładam taski i odpalam run #1 (każdy suite osobno, by
+  zaraportować macierz per-run; każdy ~6 min, pod limitem):
+
+⏺ Bash(rm -f /tmp/_probe-register-focus.yaml
+      /tmp/_probe-after-email-keyboard-up.png /tmp/_probe-after-password-tap.png
+      && echo "scratch probe removed from /tmp")
+  ⎿  scratch probe removed from /tmp
+
+⏺ Bash(echo "########## SUITE RUN 1/3 ##########" && maestro test . 2>&1 | grep
+      -E "\[Passed\]|\[Failed\]|Flows" )
+  ⎿  ########## SUITE RUN 1/3 ##########
+     [Failed] 05-history-salary-format (1m 4s) (Assertion is false: ".*Appl
+     ied job salary: 10000-15000.*" is visible)
+     … +7 lines (ctrl+o to expand)
+  ⎿  (timeout 10m)
+
+⏺ Run 1/3 ✓ — 03/06/07/08 zielone, 04/05 czerwone-findingi, 0 flake. Run 2/3:
+
+⏺ Bash(echo "########## SUITE RUN 2/3 ##########" && maestro test . 2>&1 | grep
+      -E "\[Passed\]|\[Failed\]|Flows")
+  ⎿  ########## SUITE RUN 2/3 ##########
+     [Failed] 05-history-salary-format (1m 4s) (Assertion is false: ".*Appl
+     ied job salary: 10000-15000.*" is visible)
+     … +7 lines (ctrl+o to expand)
+  ⎿  (timeout 10m)
+
+⏺ Run 2/3 ✓ — identycznie, 0 flake. Run 3/3:
+
+⏺ Bash(echo "########## SUITE RUN 3/3 ##########" && maestro test . 2>&1 | grep
+      -E "\[Passed\]|\[Failed\]|Flows")
+  ⎿  ########## SUITE RUN 3/3 ##########
+     [Failed] 05-history-salary-format (1m 4s) (Assertion is false: ".*Appl
+     ied job salary: 10000-15000.*" is visible)
+     … +7 lines (ctrl+o to expand)
+  ⎿  (timeout 10m)
+
+⏺ Run 3/3 ✓ — identycznie. Próg SPEŁNIONY: 3/3 runy czyste, 0 flake (18 wywołań
+  register-user łącznie, wszystkie zielone — fix trzyma). 03/06/07/08 zielone,
+  04/05 czerwone-findingi we wszystkich trzech.
+
+  Krok 3 — podmieniam całą sekcję ## Anti-cases. Czytam jej aktualny stan (do
+  EOF), żeby zrobić precyzyjną podmianę bez ruszania reszty pliku:
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Sekcja ## Anti-cases biegnie od linii 86 do EOF. Podmieniam ją w całości na
+  Twoją treść; reszta pliku nietknięta:
+
+⏺ Update(docs/SPEC-MATRIX.md)
+  ⎿  Added 9 lines, removed 15 lines
+       83    `docs/recon/screens/12-after-restart.png`, `13-after-restart
+           -profile.png`;
+       84    `docs/recon/hierarchy/13-after-restart-profile.txt`.
+       85  
+       86 -## Anti-cases — what a test must NOT assert                   
+       86 +## Anti-cases                                                 
+       87  
+       88 -These guard against **over-interpreting the app**: asserting s
+          -omething the app happens to show                              
+       89 -but the spec does not require (or forbids). Asserting an anti-
+          -case bakes a bug into a "green"                               
+       90 -test.                                                         
+       88 +What the suite must NOT assert. Each row is a way the tests co
+          +uld over-read the app: either rubber-stamping an adjudicated d
+          +efect by asserting the broken output as correct, or asserting 
+          +behaviour the spec never requires. The suite asserts the SPEC,
+          + not what the app happens to do.                              
+       89  
+       92 -> **Real anti-cases — filled at P3 from R1–R5 + recon + the ad
+          -judicated bugs (`docs/BUGS.md`),                              
+       93 -> ratified by the human at the P3 plan approval.** Each follow
+          -s directly from a defect's                                    
+       94 -> expected-per-spec + the cardinal rule (don't bend an asserti
+          -on to a buggy app). The R1/BUG-A                              
+       95 -> row lands with the P4 R1 flows.                             
+       96 -                                                              
+       97 -| Anti-case (do NOT assert) | Why it would be over-interpretat
+          -ion | Related Req |                                           
+       98 -|---------------------------|---------------------------------
+          -----|-------------|                                           
+       99 -| snackbar shows only the title (omit the applied location) | 
+          -R2 requires title **and** location; asserting title-only locks
+          - in an under-spec snackbar | R2 (flow 03) |                   
+      100 -| a no-salary history entry renders a salary line / placeholde
+          -r (`—` / "not specified") | spec omits the salary element for 
+          -a no-salary offer; asserting the placeholder present rubber-st
+          -amps **BUG-B** | R3 (flow 04) |                               
+      101 -| an object salary asserted as raw JSON `{"min": …}` | spec re
+          -quires a formatted range; asserting the JSON rubber-stamps **B
+          -UG-C** | R3 (flow 05) |                                       
+      102 -| application history / session **survives an app restart** | 
+          -spec is **silent** on restart; recon (screens 12/13) shows it 
+          -survives, but asserting persistence over-interprets the app | 
+          -R3 (persistence) |                                            
+       90 +| Anti-case (do NOT assert) | Why it over-interprets the app |
+          + Req |                                                        
+       91 +|---|---|---|                                                 
+       92 +| Concatenated locations (`WarsawGdansk`, `WarsawBerlinLondon`
+          +) treated as correct display | Spec requires a comma-separated
+          + list for multi-location offers; asserting the run-together st
+          +ring locks in BUG-A | R1 |                                    
+       93 +| A salary placeholder present for a no-salary offer (`null` o
+          +n the list, `—` in history) | Spec forbids any placeholder whe
+          +n salary is absent, on the list and in history alike; assertin
+          +g the placeholder rubber-stamps BUG-B | R1, R3 |              
+       94 +| Raw JSON salary (`{"min":10000,"max":15000}`) treated as the
+          + displayed value | Spec requires a formatted range like every 
+          +other offer; asserting the JSON rubber-stamps BUG-C | R1, R3 |
+       95 +| Snackbar asserted on the title alone (applied location omitt
+          +ed) | Spec requires title AND applied location in the confirma
+          +tion snackbar; a title-only assertion would pass on an under-s
+          +pec snackbar | R2 |                                           
+       96 +| Application history surviving an app restart | Spec is silen
+          +t on restart; the app does persist (datastore, recon screens 1
+          +2/13), but asserting persistence reads app behaviour, not a re
+          +quirement | R3 |                                              
+
+⏺ Sekcja anti-case podmieniona. Krok 4 — STOP. Zbieram materiał do raportu: git 
+  diff --stat, pełny status oraz diff register-user (by pokazać, że fix to
+  czysta mechanika — zero zmian w asercjach). Wszystko read-only, commita nie 
+  ma:
+
+⏺ Bash(cd /Users/wx0000/AIAIAI/Claude/Errand
+      echo "=== git diff --stat (tracked modifications) ===" && git diff
+      --stat…)
+  ⎿  === git diff --stat (tracked modifications) ===
+      PROGRESS.md                 |  8 +++++---
+      docs/SPEC-MATRIX.md         | 28 ++++++++++++----------------
+     … +43 lines (ctrl+o to expand)
+⏺ Mark task done and present the STOP report.
+
+⏺ Wszystkie trzy kroki wykonane. STOP — nie commituję, czekam na Twoje OK.
+
+  ---
+  P3 — RAPORT KOŃCOWY (STOP przed commitem)
+
+  1. Fix register-user — mechanizm potwierdzony na artefakcie, czysta mechanika
+
+  Nie była to okluzja dolną klawiaturą. Probe-screenshot (scratch, /tmp, już
+  usunięty) pokazał: zaraz po inputText na email Gboard jest w przejściowym 
+  stanie floating-toolbara (pionowa pigułka mic/✓/emoji po lewej, brak dokowanej
+  klawiatury) zachodzącym na pola. Tap na pole hasła wykonany w trakcie tej
+  tranzycji zostaje wchłonięty przez overlay → fokus nie wędruje → inputText 
+  ${PASSWORD} trafia w wciąż-sfokusowany email. Drugi screenshot (po settle,
+  dokowana klawiatura) — ten sam tap ląduje poprawnie. Stąd intermittentność.
+
+  Fix: hideKeyboard po każdym inputText, przed tapem na kolejne pole — usuwa
+  overlay IME, każdy tap pola dzieje się na czystym ekranie. Diff = tylko 
+  mechanika (3× hideKeyboard + komentarz), zero zmian w treści asercji (gate
+  assertVisible Create Account nietknięty):
+   - inputText: "${EMAIL}"
+  +- hideKeyboard
+   - tapOn: ".*Password input field.*"
+   - inputText: "${PASSWORD}"
+  +- hideKeyboard
+   - tapOn: ".*Confirm password input field.*"
+
+  2. Pełny suite 3× — próg SPEŁNIONY (0 flake)
+
+  RUN 1/3:  [Passed] 03  06  07  08   |  [Failed] 04 (C4)  05 (C5)   →  2/6
+  Failed
+  RUN 2/3:  [Passed] 03  06  07  08   |  [Failed] 04 (C4)  05 (C5)   →  2/6
+  Failed
+  RUN 3/3:  [Passed] 03  06  07  08   |  [Failed] 04 (C4)  05 (C5)   →  2/6
+  Failed
+  - 04 czerwony zawsze na assertNotVisible ".*Applied job salary.*" (C4/BUG-B).
+  - 05 czerwony zawsze na assertVisible ".*Applied job salary: 10000-15000.*"
+  (C5/BUG-C).
+  - 18 wywołań register-user (6 flow × 3 runy) — wszystkie zielone. Zero flake.
+  Fix trzyma.
+
+  3. Sekcja ## Anti-cases w docs/SPEC-MATRIX.md
+
+  Podmieniona w całości na Twoją treść (5 wierszy: BUG-A locations, BUG-B
+  placeholder, BUG-C JSON, snackbar title-only, persistence-on-restart). Reszta
+  pliku nietknięta.
+
+  git diff --stat + status
+
+   PROGRESS.md                 |  8 +++++---
+   docs/SPEC-MATRIX.md         | 28 ++++++++++++----------------
+   subflows/register-user.yaml |  9 +++++++++
+   3 files changed, 26 insertions(+), 19 deletions(-)
+
+  untracked: flows/03-apply.yaml  flows/04-history-no-salary.yaml
+  flows/05-history-salary-format.yaml
+             subflows/apply-to-offer.yaml  docs/runs/  (+ STOP — pusty, nie mój,
+  zostawiony)
+
+  Dwie uwagi do domknięcia przy commicie
+
+  1. PROGRESS.md wciąż mówi „R3 reds awaiting adjudication" — teraz
+  zaadjudykowane; zaktualizuję przy commicie/End-of-Session (nie ruszałem poza 4
+  krokami).
+  2. CLAUDE.md — wartałoby dopisać konwencję „hideKeyboard między polami (IME
+  floating-toolbar race)" do load-bearing learnings, jak swojego czasu
+  env-defaults. Też proponuję przy commicie.
+
+  Czekam na OK do commita (P3: subflow apply-to-offer, flow 03/04/05, fix
+  register-user, docs SPEC-MATRIX/PROGRESS, evidence docs/runs/). Linkowanie
+  czerwonych artefaktów do BUGS.md = P5. End-of-Session = osobno, na Twój
+  sygnał.
+
+✻ Baked for 23m 30s
+
+※ recap: Building the P3 Maestro test suite for the Buggy app: apply + history flows are done, register-user flakiness is fixed, and the full suite ran clean 3× with the two R3 findings red as expected. Next: commit on your OK. (disable recaps in /config)
+
+❯ Domykamy P3 commitem. NIE push. Dwa commity, potem self-audit i STOP.         
+                                                                                
+  KROK A - update docs przed commitem:                                          
+  - PROGRESS.md:                                                                
+    - P3 z "R3 reds awaiting adjudication" -> zaadjudykowane na artefaktach, P3 
+  build done (R2 PASS, R3 C4/BUG-B + C5/BUG-C findings potwierdzone;            
+  linkowanie do BUGS.md = P5).                                                  
+    - Dopisz pozycje do sekcji P5 (closeout):                                   
+      - Sync sekcji 10 instrukcji w STRATEGIA-PROJEKT.md: jednorazowy merge     
+  zywych instrukcji (pole "instructions" projektu) z sekcja 10 - rozjazd        
+  dwustronny, nie nadpisywac na slepo (kazda strona ma tresc, ktorej brak w     
+  drugiej). Po merge: master = pole "instructions", sekcja 10 staje sie         
+  mirrorem z data resync.                                                       
+      - Audyt orphanowanych decyzji: przeszukac rozmowy projektu pod katem      
+  ustalen, ktore nie trafily do zadnego dokumentu.                              
+  - CLAUDE.md: dopisz do load-bearing conventions (tam gdzie env-defaults), po  
+  angielsku:                                                                    
+    - Form flows (register-user etc.): `hideKeyboard` after each `inputText`,   
+  before the next field tap. Gboard has a transitional floating-toolbar state   
+  that absorbs a tap fired mid-transition, so focus does not move and the next  
+  `inputText` lands in the previously-focused field (intermittent flake).       
+  Dismissing the keyboard between fields makes every tap land on a clean        
+  screen. Confirmed on artifact (P3).                                           
+                                                                                
+  KROK B - commit 1 (fix stabilnosci, osobno bo to subflow P2):                 
+    git add subflows/register-user.yaml CLAUDE.md                               
+    git commit -m "fix(register-user): dismiss IME between fields to kill       
+  focus-race flake"                                                             
+                                                                                
+  KROK C - commit 2 (feature P3):                                               
+    git add subflows/apply-to-offer.yaml flows/03-apply.yaml                    
+  flows/04-history-no-salary.yaml flows/05-history-salary-format.yaml           
+  docs/SPEC-MATRIX.md PROGRESS.md docs/runs                                     
+    git commit -m "feat(flows): P3 apply (R2 green) + application history (R3   
+  C4/C5 findings)"                                                              
+                                                                                
+  KROK D - self-audit (wykonaj i zaraportuj, ja czytam):                        
+    - git status: plik STOP NIE zacommitowany (untracked, nie nasz); brak       
+  scratchu /tmp; docs/runs ma tylko realne screeny+hierarchy.                   
+    - git diff --stat HEAD~2: tylko pliki z B i C, nic poza tym.                
+    - git log -2 --format='%B': BRAK trailera "Co-Authored-By" i "Generated     
+  with Claude Code".                                                            
+    - Zaraportuj oba hash + diff --stat. STOP. Bez push.                        
+  ⎿  ⧉ Selected 1 lines from docs/runs/hierarchy/04-history-no-salary.txt in Visual Studio Code
+
+⏺ Domykam P3 commitem (×2, bez push). KROK A — docs. Czytam aktualne sekcje,
+  żeby edytować precyzyjnie:
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ KROK A. Aktualizuję sekcję P3 (zaadjudykowane na artefaktach) i dopisuję dwie
+  pozycje P5 (po angielsku — konwencja repo; nazwy własne jak
+  STRATEGIA-PROJEKT.md zostają):
+
+⏺ Update(PROGRESS.md)
+  ⎿  Added 5 lines, removed 2 lines
+      26    - [x] Login flow — `08-login-logout` (R5)
+      27    - [x] Suite **3/3 green** (R4/R5 PASS, as adjudicated); commi
+          t `5f61654`
+      28  
+      29 -- [~] **P3 — Applying + history** — **BUILD DONE; R3 reds await
+         -ing adjudication (no commit yet)**                             
+      29 +- [x] **P3 — Applying + history** — **BUILD DONE; R3 findings a
+         +djudicated on artifacts**                                      
+      30    - [x] `apply-to-offer` subflow (tap-only, param `OFFER`) + `0
+          3-apply` (R2) — suite **green** (PASS)
+      31    - [x] History flows `04-history-no-salary` (R3/C4→BUG-B) + `0
+          5-history-salary-format` (R3/C5→BUG-C)
+      32 -        — **red = findings**, evidence (screenshot + hierarchy)
+         - in `docs/runs/`; await human adjudication                     
+      32 +        — **red = findings, confirmed** (human adjudicated on s
+         +creenshot + hierarchy in `docs/runs/`);                        
+      33 +        linking the red artifacts into `BUGS.md` = P5          
+      34    - [x] Anti-case table filled (R2 + R3 + persistence) in `docs
+          /SPEC-MATRIX.md`; R1/BUG-A row → P4
+      35 +  - [x] Hardened `register-user` (IME focus-race → `hideKeyboar
+         +d` between fields); full suite **3× green/red                  
+      36 +        as expected, 0 flake** (18 register invocations clean) 
+      37  
+      38  - [ ] **P4 — Offers list**
+      39    - [ ] Offers list flow(s)
+
+⏺ Update(PROGRESS.md)
+  ⎿  Added 6 lines
+      44    - [ ] `TEST_PLAN`
+      45    - [ ] `README` (clean-clone bring-up)
+      46    - [ ] Fresh-clone verification
+      47 +  - [ ] **Sync section 10 (instructions) of `STRATEGIA-PROJEKT.
+         +md`** — one-off merge of the live project                      
+      48 +        instructions (the project "instructions" field) with se
+         +ction 10. Two-way divergence: do **NOT**                       
+      49 +        overwrite blindly — each side holds content the other l
+         +acks. After the merge: master = the                            
+      50 +        "instructions" field; section 10 becomes a mirror stamp
+         +ed with the resync date.                                       
+      51 +  - [ ] **Orphaned-decision audit** — sweep the project convers
+         +ations for decisions that never landed                         
+      52 +        in any document.                                       
+      53  
+      54  ## Session Log
+      55  
+
+⏺ Teraz CLAUDE.md — dopisuję konwencję hideKeyboard do load-bearing conventions
+  (przy env-defaults). Czytam sekcję, by trafić w miejsce:
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Dopisuję konwencję hideKeyboard jako nowy bullet zaraz po env-defaults
+  (pokrewna mechanika form/subflow), dokładnie w treści którą podałeś:
+
+⏺ Update(CLAUDE.md)
+  ⎿  Added 5 lines
+       93    silently resolving every `${VAR}` to that default. Reference
+            `${VAR}` directly with no defaults
+       94    block; a missing param then errors loudly instead of typing 
+           blank. (P2: confirmed the hard way —
+       95    empty defaults made every registration field submit blank → 
+           3/3 false red until removed.)
+       96 +- **Form flows (`register-user` etc.): `hideKeyboard` after ea
+          +ch `inputText`, before the next field                         
+       97 +  tap.** Gboard has a transitional floating-toolbar state that
+          + absorbs a tap fired mid-transition, so                       
+       98 +  focus does not move and the next `inputText` lands in the pr
+          +eviously-focused field (intermittent                          
+       99 +  flake). Dismissing the keyboard between fields makes every t
+          +ap land on a clean screen. Confirmed on                       
+      100 +  artifact (P3).                                              
+      101  - **Snackbar = transient, absent from the a11y hierarchy.** Ca
+           tch it in-flow with a screenshot +
+      102    `extendedWaitUntil` on its token (`.*Applied to.*`); the **s
+           creenshot is the evidence**.
+      103  - **Picker = modal, parkable** → dump its hierarchy out-of-ban
+           d (`maestro hierarchy`).
+
+⏺ KROK A gotowe. KROK B — commit 1 (fix stabilności: subflow P2 + konwencja).
+  Stage'uję dokładnie te dwa pliki i commituję wiadomością którą podałeś (bez
+  push, bez trailerów atrybucji):
+
+⏺ Bash(cd /Users/wx0000/AIAIAI/Claude/Errand
+      git add subflows/register-user.yaml CLAUDE.md…)
+  ⎿  [main c8c90a6] fix(register-user): dismiss IME between fields to kill
+     focus-race flake
+      2 files changed, 14 insertions(+)
+
+⏺ Commit 1 = c8c90a6 (2 pliki, +14). KROK C — commit 2 (feature P3: subflow
+  apply, flow 03/04/05, docs, evidence):
+
+⏺ Bash(cd /Users/wx0000/AIAIAI/Claude/Errand
+      git add subflows/apply-to-offer.yaml flows/03-apply.yaml
+      flows/04-history-no-salary.yaml flows/05-history-salary-format.ya…)
+  ⎿  [main 4664018] feat(flows): P3 apply (R2 green) + application history
+     (R3 C4/C5 findings)
+      12 files changed, 337 insertions(+), 19 deletions(-)
+     … +10 lines (ctrl+o to expand)
+
+⏺ Commit 2 = 4664018 (12 plików, +337/−19). KROK D — self-audit. Uruchamiam
+  wszystkie kontrole, które zlecałeś:
+
+⏺ Bash(cd /Users/wx0000/AIAIAI/Claude/Errand
+      echo "=== 1a. git status (working tree) ===" && git status --short…)
+  ⎿  === 1a. git status (working tree) ===
+     ?? STOP
+     … +40 lines (ctrl+o to expand)
+
+⏺ KROK D — self-audit czysty. Wszystko zgodne ze specyfikacją. STOP — bez push.
+
+  ---
+  P3 — DOMKNIĘTE (2 commity, self-audit OK)
+
+  Commity (lokalnie, na main, NIE wypchnięte)
+
+  ┌─────────┬──────┬─────────────────────────────────────────────────────────┐
+  │  Hash   │ Typ  │                           Co                            │
+  ├─────────┼──────┼─────────────────────────────────────────────────────────┤
+  │ c8c90a6 │ fix  │ dismiss IME between fields to kill focus-race flake —   │
+  │         │      │ register-user.yaml + CLAUDE.md (konwencja hideKeyboard) │
+  ├─────────┼──────┼─────────────────────────────────────────────────────────┤
+  │         │      │ P3 apply (R2 green) + application history (R3 C4/C5     │
+  │ 4664018 │ feat │ findings) — subflow apply-to-offer, flow 03/04/05,      │
+  │         │      │ SPEC-MATRIX, PROGRESS, evidence docs/runs/              │
+  └─────────┴──────┴─────────────────────────────────────────────────────────┘
+
+  Self-audit (Twoje 4 kontrole)
+
+  1. git status → tylko ?? STOP (untracked, nie zacommitowany, nie nasz).
+  Working tree poza tym czysty. docs/runs ma wyłącznie realne evidence: 4
+  screeny (03 single/multi, 04, 05) + 2 hierarchy (04, 05). Zero scratchu, brak
+  /tmp/_probe*. ✓
+  2. git diff --stat HEAD~2 → dokładnie 14 plików z B+C, nic poza tym (commit B:
+  CLAUDE.md + register-user.yaml; commit C: 12 plików). ✓
+  3. git log -2 --format=%B → grep co-authored-by|generated with claude = NONE —
+  clean. Brak trailerów atrybucji. ✓
+
+   CLAUDE.md                                        |   5 ++
+   PROGRESS.md                                      |  17 +++++-
+   docs/SPEC-MATRIX.md                              |  28 ++++------
+   docs/runs/hierarchy/04-history-no-salary.txt     |  68 +++++++++
+   docs/runs/hierarchy/05-history-salary-format.txt |  68 +++++++++
+   docs/runs/screens/03-apply-multi-snackbar.png    | Bin
+   docs/runs/screens/03-apply-single-snackbar.png   | Bin
+   docs/runs/screens/04-history-no-salary.png       | Bin
+   docs/runs/screens/05-history-salary-format.png   | Bin
+   flows/03-apply.yaml                              |  52 +++++++
+   flows/04-history-no-salary.yaml                  |  52 +++++++
+   flows/05-history-salary-format.yaml              |  53 ++++++++
+   subflows/apply-to-offer.yaml                     |  18 ++++
+   subflows/register-user.yaml                      |   9 +++
+   14 files changed, 351 insertions(+), 19 deletions(-)
+
+  Stan po P3
+
+  - R2 → 03 zielony (PASS). R3 → 04 (C4/BUG-B) + 05 (C5/BUG-C) czerwone-findingi
+  — potwierdzone, evidence w repo. Suite: 4 zielone + 2 czerwone-findingi,
+  register-user stabilny (3× / 0 flake).
+  - R1 → P4 (oferty list). Linkowanie czerwonych artefaktów do BUGS.md → P5 (+ 2
+  nowe pozycje P5: sync sekcji 10 STRATEGIA-PROJEKT.md, audyt orphanowanych
+  decyzji).
+  - STOP (pusty, nie nasz) zostawiony nietknięty.
+
+  STOP. Nie wypycham. Push i End-of-Session (export /export + archiwizacja planu
+  docs/ai-history/) — na Twój sygnał.
+
+✻ Cogitated for 2m 9s
+❯ End-of-Session P3 + push. IP-gate -> export/archiwum -> commit docs -> push.  
+  STOP z raportem.                                                              
+                                                                                
+  KROK 1 - IP-gate przed pushem (repo PUBLICZNE):                               
+    git ls-files | grep -iE '\.(apk|pdf)$' && echo "!! APK/PDF W TRACKED" ||    
+  echo "OK tracked"                                                             
+    git log --all --diff-filter=A --name-only --pretty=format: | sort -u | grep 
+  -iE '\.(apk|pdf)$' && echo "!! APK/PDF W HISTORII" || echo "OK historia"      
+    Cokolwiek wyjdzie -> STOP, NIE pushuj, raportuj.                            
+                                                                                
+  KROK 2 - export transkryptu (Twoj keystroke): odpal /export, zapisz do        
+    docs/ai-history/2026-06-15-p3-build.txt                                     
+                                                                                
+  KROK 3 - archiwum planu: znajdz plan P3 w .claude/plans/, git mv do           
+  docs/ai-history/                                                              
+                                                                                
+  KROK 4 - indeks ai-history: dopisz wpis P3-build (data, faza P3, rola build,  
+  1 zdanie opisu).                                                              
+                                                                                
+  KROK 5 - commit docs:                                                         
+    git add docs/ai-history                                                     
+    git commit -m "docs(ai-history): archive P3 build session + plan"           
+                                                                                
+  KROK 6 - push (TYLKO po zielonym IP-gate):                                    
+    git push                                                                    
+                                                                                
+  KROK 7 - self-audit + raport (ja czytam): IP-gate wynik, co poszlo do         
+  ai-history, git status (up to date with origin), git log -1 commit docs bez   
+  trailera. Dopisz krotki handoff do nastepnej sesji (P4 = R1 oferty list): co  
+  zrobione, co dalej, ktory plik czytac na start. STOP.                         
+
+⏺ End-of-Session P3 + push. Zaczynam od KROK 1 — IP-gate (repo publiczne — to
+  bramka bezpieczeństwa: APK i task-PDF nigdy nie mogą trafić do tracked ani do
+  historii). Read-only, ale wynik decyduje czy w ogóle pushuję:
+
+⏺ Bash(cd /Users/wx0000/AIAIAI/Claude/Errand
+      echo "=== tracked APK/PDF? ==="…)
+  ⎿  === tracked APK/PDF? ===
+     OK tracked — none
+     … +2 lines (ctrl+o to expand)
+
+⏺ IP-gate ZIELONY: zero APK/PDF w tracked, zero w całej historii. Push
+  bezpieczny od strony IP.
+
+  Przygotowuję KROK 3/4 — sprawdzam plan P3 w .claude/plans/ i format indeksu
+  ai-history:
+
+⏺ Bash(cd /Users/wx0000/AIAIAI/Claude/Errand
+      echo "=== .claude/plans/ ===" && ls -1 .claude/plans/ 2>&1…)
+  ⎿  === .claude/plans/ ===
+     ls: .claude/plans/: No such file or directory
+     … +10 lines (ctrl+o to expand)
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Dwie rzeczy: repo-.claude/plans/ nie istnieje (plan jest w ~/.claude/plans/ —
+  user-level, nie repo). I indeks pokazuje wzorzec: każdy transkrypt ma notę
+  „Create via /export before the commit." — /export to Twój keystroke, którego
+  ja nie mogę odpalić programowo. Najpierw lokalizuję plan P3:
+
+  Listed 1 directory (ctrl+o to expand)
+
+⏺ Plan P3 jest w ~/.claude/plans/ (13.5 KB) — poza repo, więc git mv jest
+  niemożliwy (źródło nietrackowane i spoza drzewa). Zgodnie z CLAUDE.md krok 5
+  („copied") robię cp → docs/ai-history/p3-apply-history.md, potem git add. To
+  uzgodnienie „git mv → cp" wymuszone realiami (źródło w user-level ~/.claude).
+
+  KROK 3 — archiwum planu:
+
+⏺ Bash(cd /Users/wx0000/AIAIAI/Claude/Errand
+      cp ~/.claude/plans/start-p3-najpierw-zgruntuj-composed-codd.md
+      docs/ai-history/p3-apply-history.md…)
+  ⎿  copied -> docs/ai-history/p3-apply-history.md (     213 lines)
+     -rw-r--r--@ 1 wx0000  staff  13513 Jun 16 00:33 docs/ai-history/p3-app
+     ly-history.md
+
+⏺ Plan zarchiwizowany (213 linii). KROK 4 — indeks ai-history. Dopisuję dwa
+  wiersze P3 (build transkrypt + plan), zachowując wzorzec noty /export jak w
+  pozostałych wierszach:
+
+⏺ Update(docs/ai-history/README.md)
+  ⎿  Added 2 lines
+      27  | — | P1 | planning | `p1-recon.md` | Archived P1 recon plan — 
+          decision layer (recon architecture, STAGE acts, verify-in-build
+           tweaks). |
+      28  | 2026-06-15 | P2 | build | `2026-06-15-p2-build.txt` | Plan-mo
+          de design + build of subflows + R4/R5 flows; suite 3/3 green; c
+          ommit `5f61654`. **Create via `/export` before the commit.** |
+      29  | — | P2 | planning | `p2-subflows-reg-login.md` | Archived P2 
+          plan — decision layer (subflow boundaries, selector map, `regis
+          ter-user` signature, the env-default reconcile). |
+      30 +| 2026-06-15 | P3 | build | `2026-06-15-p3-build.txt` | apply (
+         +R2 green) + history (R3 C4/BUG-B + C5/BUG-C findings, adjudicat
+         +ed on artifacts) + `register-user` IME-flake fix; suite 3× clea
+         +n; commits `c8c90a6`, `4664018`. **Create via `/export` before 
+         +the commit.** |                                                
+      31 +| — | P3 | planning | `p3-apply-history.md` | Archived P3 plan 
+         +— decision layer (`apply-to-offer` tap-only, R2 single+multi in
+         + one flow, two isolated R3 finding flows, anti-case table). |  
+      32  | — | P1+P2 | judgment-log | `WORKING-WITH-AI.md` | Running jud
+          gment-moments log (P1 + P2; consolidate at closeout). |
+
+⏺ KROK 3+4 gotowe. Teraz KROK 2 — i tu realne ograniczenie: /export to wbudowana
+  komenda CLI uruchamiana Twoim keystroke'em — nie mogę jej odpalić programowo
+  (Skill/Bash nie obsługują built-inów). Commit KROK 5 (git add docs/ai-history)
+  potrzebuje pliku transkryptu, żeby wiadomość „session + plan" była prawdziwa.
+  Sprawdzam, czy plik już istnieje:
+
+⏺ Bash(cd /Users/wx0000/AIAIAI/Claude/Errand
+      echo "=== transcript present? ===" && ls -l
+      docs/ai-history/2026-06-15-p3-build.txt 2>&1…)
+  ⎿  === transcript present? ===
+     ls: docs/ai-history/2026-06-15-p3-build.txt: No such file or directory
+     … +4 lines (ctrl+o to expand)
+
+⏺ Potwierdzone: transkrypt nie istnieje, a git add docs/ai-history zgarnąłby
+  teraz tylko indeks + plan — bez transkryptu. To jest realna blokada (Twój
+  keystroke), nie flailing. Zatrzymuję się przed commitem.
+
+  ---
+  End-of-Session P3 — STATUS (blokada na /export)
+
+  Zrobione (wszystko po mojej stronie)
+
+  - KROK 1 — IP-gate: ZIELONY. Zero APK/PDF w tracked, zero w całej historii
+  (git log --all --diff-filter=A). Push bezpieczny od IP.
+  - KROK 3 — plan zarchiwizowany. ~/.claude/plans/start-p3-…md →
+  docs/ai-history/p3-apply-history.md (213 linii).
+    - Uzgodnienie: prosiłeś git mv, ale plan leży w user-level ~/.claude/ (poza
+  repo, nietrackowany) — git mv niemożliwy. Zrobiłem cp zgodnie z CLAUDE.md krok
+  5 („copied").
+  - KROK 4 — indeks zaktualizowany. Dwa wiersze P3 (build transkrypt + plan) w
+  docs/ai-history/README.md.
+
+  Blokada — KROK 2 wymaga Twojego keystroke'a
+
+  /export to wbudowana komenda CLI — nie mogę jej uruchomić (Skill tool jawnie
+  zabrania built-inów, Bash jej nie zna). Transkrypt
+  docs/ai-history/2026-06-15-p3-build.txt jeszcze nie istnieje. Bez niego commit
+  KROK 5 („archive P3 build session + plan") zgarnie tylko plan+indeks, a
+  indeks wskaże na brakujący plik — złamany „decision layer".
+
+  Proszę, odpal teraz (jeden keystroke):
+
+  /export docs/ai-history/2026-06-15-p3-build.txt
+
+  Gdy potwierdzisz, że plik jest, dokończę bez przerw:
+  - KROK 5 — git add docs/ai-history && git commit -m "docs(ai-history): archive
+  P3 build session + plan" (zgarnie transkrypt + plan + indeks razem)
+  - KROK 6 — git push (IP-gate już zielony)
+  - KROK 7 — self-audit (status up-to-date with origin, commit bez trailera) +
+  handoff do P4
+
+  Working tree teraz: ?? STOP (nie nasz), ?? 
+  docs/ai-history/p3-apply-history.md,  M docs/ai-history/README.md — czeka na
+  transkrypt, nic nie commituję bez Twojego OK/eksportu.
+
+✻ Churned for 3m 20s
+
+※ recap: Building the P3 Maestro test suite; everything is done and committed except archiving this session's transcript. Next: you run /export docs/ai-history/2026-06-15-p3-build.txt, then I'll commit the docs and push. (disable recaps in /config)
