@@ -150,10 +150,13 @@ If a step does not apply, **say which and why — never skip silently.**
   correct result, adjudicated on `docs/runs/` artifacts). Also hardened `register-user` (IME
   focus-race → `hideKeyboard` between fields); suite **3× / 0 flake**. Commits `c8c90a6` (fix),
   `4664018` (feat), `8a61dcb` (docs) — pushed to `origin/main`.
-- **Next task:** **P4 — offers list (R1).** Flows `01`+`02`. R1 = **BUG** (list surface of the same
-  cluster as R3): C1→BUG-A (multi-loc no separator), C2→BUG-B (no-salary `null`), C3→BUG-C (raw JSON).
-  Expect **red = findings**; assert SPEC (comma-separated locations, no salary element when absent,
-  formatted range), do not bend. Add the **BUG-A anti-case row** to SPEC-MATRIX with these flows.
+- **Next task:** **P4 — offers list (R1).** R1 = **BUG** (list surface of the same cluster as R3):
+  C1→BUG-A (multi-loc no separator), C2→BUG-B (no-salary `null`), C3→BUG-C (raw JSON). Expect
+  **red = findings**; assert SPEC (comma-separated locations, no salary element when absent,
+  formatted range), do not bend. The R1 anti-case rows (BUG-A, BUG-B-list, BUG-C-list) are
+  **already in `docs/SPEC-MATRIX.md`** → don't re-add; the flows build against them. **Flow count =
+  plan-mode decision:** 3 distinct findings + Maestro's first-failure abort imply 3 flows, but only
+  `01`+`02` are free in the 01–08 scheme → reconcile with the lead (extend numbering vs accept masking).
 - **R1–R5 coverage:** **R2 → flow 03** (PASS, green ✓), **R3 → flows 04+05** (BUG, red = findings ✓),
   **R4 → flows 06+07** (PASS, green ✓), **R5 → flow 08** (PASS, green ✓). Still unassigned: **R1**
   (offers list, BUG) → P4 (flows 01+02).
