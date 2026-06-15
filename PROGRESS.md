@@ -56,6 +56,19 @@ Update at the end of every session: check off what's done, note drift if the pla
 > Newest entries at the top. Format:
 > `### YYYY-MM-DD — <phase> — <role>` then bullets: **Done**, **Decisions**, **Drift**.
 
+### 2026-06-15 — P3 — build
+
+- **Done:** subflow `apply-to-offer` + flows `03` (R2 green/PASS), `04`+`05` (R3 **red = findings**,
+  C4/BUG-B + C5/BUG-C, adjudicated on `docs/runs/` artifacts). Hardened `register-user` (IME
+  focus-race → `hideKeyboard` between fields); full suite **3× / 0 flake**. `## Anti-cases` filled.
+  Commits `c8c90a6`/`4664018`/`8a61dcb`, pushed to `origin/main`.
+- **Decisions:** R2 = one flow (single+multi, same requirement); R3 = two isolated flows (first-failed
+  assertion would mask the second finding); `apply-to-offer` tap-only (param `OFFER`); C4 =
+  `assertNotVisible` salary line, C5 = `assertVisible` range — never the JSON/placeholder.
+- **Drift:** none vs the approved plan. Lead-directed additions: `register-user` hardening (P2 subflow)
+  as a separate fix commit; `docs/runs/` evidence dir; 2 new P5 closeout items (STRATEGIA-PROJEKT
+  section-10 sync, orphaned-decision audit).
+
 ### 2026-06-15 — P2 — build
 
 - **Done:** 8 suite files (`config.yaml` + 4 subflows + 3 flows: `06` R4-validation, `07`

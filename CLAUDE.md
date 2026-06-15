@@ -144,20 +144,51 @@ If a step does not apply, **say which and why — never skip silently.**
 
 ## Current Status
 
-- **Phase:** **P2 — DONE** (subflows + registration/login flows). **8 suite files** — `config.yaml`
-  (workspace scope = `flows/` only), 4 subflows (`register-user`, `login`, `logout`, `open-profile`),
-  3 flows (`06` R4-validation, `07` R4-autologin, `08` R5 login/logout). Suite **3/3 green** (R4/R5 =
-  PASS, as adjudicated). Committed `5f61654`.
-- **Next task:** **P3 — applying + history.** `apply-to-offer` subflow + flows for **R2** (apply from
-  the list, snackbar = title **and** location, multi-loc picker) and **R3** (history from profile).
-  R2 = PASS (expected green); R3 = **BUG** (C4→BUG-B, C5→BUG-C) → expect **red = findings**, do not
-  bend. Anti-case table + persistence anti-case land with these bug flows.
-- **R1–R5 coverage:** **R4 → flows 06+07** (PASS, green ✓), **R5 → flow 08** (PASS, green ✓). Still
-  unassigned: **R2** (apply, PASS) → P3; **R3** (history, BUG) → P3; **R1** (offers list, BUG) → P4.
+- **Phase:** **P3 — DONE** (apply + history; pushed). **+4 suite files** — subflow `apply-to-offer`
+  (tap-only, param `OFFER`) + flows `03-apply` (R2), `04-history-no-salary` (R3/C4),
+  `05-history-salary-format` (R3/C5). Suite = **6 flows: 4 green + 2 red-findings** (R3 reds are the
+  correct result, adjudicated on `docs/runs/` artifacts). Also hardened `register-user` (IME
+  focus-race → `hideKeyboard` between fields); suite **3× / 0 flake**. Commits `c8c90a6` (fix),
+  `4664018` (feat), `8a61dcb` (docs) — pushed to `origin/main`.
+- **Next task:** **P4 — offers list (R1).** Flows `01`+`02`. R1 = **BUG** (list surface of the same
+  cluster as R3): C1→BUG-A (multi-loc no separator), C2→BUG-B (no-salary `null`), C3→BUG-C (raw JSON).
+  Expect **red = findings**; assert SPEC (comma-separated locations, no salary element when absent,
+  formatted range), do not bend. Add the **BUG-A anti-case row** to SPEC-MATRIX with these flows.
+- **R1–R5 coverage:** **R2 → flow 03** (PASS, green ✓), **R3 → flows 04+05** (BUG, red = findings ✓),
+  **R4 → flows 06+07** (PASS, green ✓), **R5 → flow 08** (PASS, green ✓). Still unassigned: **R1**
+  (offers list, BUG) → P4 (flows 01+02).
 
 ## Session Log
 
 > Newest entries at the top. Each entry: date, phase, what was done, decisions, judgment moments.
+
+### 2026-06-15 — P3 — build
+
+- **Done:** built P3 from the plan-mode design (archived `p3-apply-history.md`) → subflow
+  `apply-to-offer` (tap-only, param `OFFER`) + flows `03-apply` (R2), `04-history-no-salary`
+  (R3/C4→BUG-B), `05-history-salary-format` (R3/C5→BUG-C). R2 **green** (PASS); R3 **red = findings**
+  (history renders a salary line `—` for a no-salary offer, and raw JSON `{"min":…}` for an object
+  salary — adjudicated on screenshot + hierarchy in `docs/runs/`). Hardened `register-user`; full
+  suite **3× clean, 0 flake**. `## Anti-cases` replaced (R1+R3 BUG rows, snackbar title-only,
+  persistence). Commits `c8c90a6`/`4664018`/`8a61dcb`, pushed to `origin/main`.
+- **Decisions:** `apply-to-offer` = tap-only (param `OFFER` = company anchor; picker + snackbar stay
+  in the flow) — single-responsibility like `register-user`. R2 = one flow (single + multi, same
+  requirement, both PASS → nothing masks). R3 = **two isolated flows** (Maestro aborts on the first
+  failed assertion → one combined flow would mask the second finding). C4 = `assertNotVisible
+  ".*Applied job salary.*"` (no salary line at all; single-entry history); C5 = `assertVisible
+  ".*…salary: 10000-15000.*"` (positive spec range) — never assert the JSON/placeholder (anti-case).
+- **Judgment moments:**
+  1. **Mechanics bug, NOT an app finding (again).** First `03` run red at the `Job Offers` gate; the
+     screenshot showed PASSWORD concatenated into the EMAIL field. Resisted misreading it as an R2
+     finding — re-ran `07` (green) + `03`×3 (green) to prove `register-user` flakes intermittently,
+     not the app.
+  2. **Confirmed the flake mechanism on an artifact before fixing (no guessing).** A scratch `/tmp`
+     probe screenshot caught the real cause — a Gboard transitional floating-toolbar overlay absorbing
+     a field tap fired mid-transition, so focus doesn't move. Fix = `hideKeyboard` between fields
+     (pure mechanics, no assertion change). Verified by 3× suite / 0 flake.
+  3. **Red R3 = the correct result; proved the flow drove the app first.** Each R3 flow asserts the
+     green mechanic-proof (reached the right entry) before the spec assertion, so the red is the app
+     violating spec, not the flow failing. Never bent an assertion to green.
 
 ### 2026-06-15 — P2 — build
 
