@@ -1,0 +1,18 @@
+# Subflow: apply to the offer anchored by OFFER (a regex matching a unique line of the target
+# tile — its company line; titles like "Senior QA" are substrings of "Senior QA Engineer", company
+# names are not). Taps the clickable Apply Button of THAT tile. Asserts ONLY its own scope (on the
+# offers list, target tile reachable). Does NOT assert the outcome — the snackbar (single-loc) or
+# the location picker (multi-loc) is the calling flow's assertion territory, mirroring register-user.
+# NO `env:` defaults: in Maestro 2.6.1 a subflow env default OVERRIDES the runFlow-passed value
+# (CLAUDE.md convention) — the caller passes OFFER; a missing one then errors loudly.
+appId: com.example.buggy
+---
+- assertVisible: ".*Job Offers.*"            # own-scope gate: on the offers list (auto-waits, no sleep)
+- scrollUntilVisible:
+    element:
+      text: "${OFFER}"
+    direction: DOWN
+- tapOn:                                      # this tile's clickable Apply (the wrapper View is not clickable)
+    text: "Apply"
+    below:
+      text: "${OFFER}"                         # disambiguate to THIS tile's Apply (recon-proven, P1)

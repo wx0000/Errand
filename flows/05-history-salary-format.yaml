@@ -1,0 +1,53 @@
+# R3 — application history: an object-shaped salary must render as a formatted range, like every
+# other offer (spec). Buggy leaks the raw JSON "{"min": 10000, "max": 15000}" into history
+# (adjudicated BUG-C, history surface; candidate C5).
+#
+# This flow asserts the SPEC; a RED result here is the CORRECT result = the finding. We do NOT
+# assertVisible the raw JSON to force green (that would rubber-stamp the bug — a disqualifying move).
+# Before the spec assertion it PROVES the mechanic reached the right history entry (company/location
+# visible, green) — so a red is the app violating the spec, not the flow failing to drive it.
+appId: com.example.buggy
+---
+- launchApp:
+    clearState: true
+# Unique email per run so history starts empty and is populated only by this flow's apply.
+- evalScript: ${output.email = 'qa.user.' + Date.now() + '@example.com'}
+- runFlow:
+    file: ../subflows/register-user.yaml
+    env:
+      EMAIL: "${output.email}"
+      PASSWORD: "ValidPass123"
+      CONFIRM: "ValidPass123"
+- extendedWaitUntil:
+    visible: ".*Job Offers.*"
+    timeout: 8000
+# Apply to the object-salary offer — Senior QA (QualityAssurance Ltd). Multi-location -> picker -> London.
+- runFlow:
+    file: ../subflows/apply-to-offer.yaml
+    env:
+      OFFER: ".*QualityAssurance.*"    # company anchor (unique; "Senior QA" alone collides with "Senior QA Engineer")
+- assertVisible: ".*Select Location for Senior QA.*"
+- tapOn: ".*Location option: London.*"
+- extendedWaitUntil:
+    visible: ".*Applied to.*"          # snackbar confirms the apply registered
+    timeout: 5000
+- extendedWaitUntil:
+    notVisible: ".*Applied to.*"        # let it dismiss before navigating
+    timeout: 6000
+# Open the profile / application history.
+- runFlow:
+    file: ../subflows/open-profile.yaml
+- extendedWaitUntil:
+    visible: ".*Application History.*"
+    timeout: 5000
+# --- Mechanic proof (GREEN): the flow reached the correct history entry. ---
+# Anchor on the company (unique) + chosen location; the title "Senior QA" is a substring of the
+# other offer's "Senior QA Engineer", so it is not used as the identity check.
+- assertVisible: ".*Applied job company: QualityAssurance Ltd.*"
+- assertVisible: ".*Applied job location: London.*"
+- takeScreenshot: "docs/runs/screens/05-history-salary-format"
+# --- SPEC assertion (the FINDING): salary shown as a formatted range, like every other offer. ---
+# The underlying data is min 10000 / max 15000, so a correct render is "10000-15000 PLN"
+# (PLN-agnostic regex). Buggy leaks raw JSON -> the range text is absent -> this assertVisible
+# FAILS -> RED = C5 (BUG-C, history). Expected red; do not assert the JSON to force green.
+- assertVisible: ".*Applied job salary: 10000-15000.*"

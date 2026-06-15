@@ -1,0 +1,52 @@
+# R3 — application history: a no-salary offer must NOT render a salary line (spec, consistent with
+# the offers list omitting the salary element when absent). Buggy renders a salary line reading
+# "Applied job salary: not specified" / "—" (adjudicated BUG-B, history surface; candidate C4).
+#
+# This flow asserts the SPEC; a RED result here is the CORRECT result = the finding. We do NOT
+# bend it to assertVisible the placeholder (that would rubber-stamp the bug — a disqualifying move).
+# Before the spec assertion it PROVES the mechanic reached the right history entry (title/company/
+# location visible, green) — so a red is the app violating the spec, not the flow failing to drive it.
+appId: com.example.buggy
+---
+- launchApp:
+    clearState: true
+# Unique email per run so history starts empty and is populated only by this flow's apply.
+- evalScript: ${output.email = 'qa.user.' + Date.now() + '@example.com'}
+- runFlow:
+    file: ../subflows/register-user.yaml
+    env:
+      EMAIL: "${output.email}"
+      PASSWORD: "ValidPass123"
+      CONFIRM: "ValidPass123"
+- extendedWaitUntil:
+    visible: ".*Job Offers.*"
+    timeout: 8000
+# Apply to the no-salary offer — Senior QA Engineer (TechCorp). Multi-location -> picker -> Warsaw.
+- runFlow:
+    file: ../subflows/apply-to-offer.yaml
+    env:
+      OFFER: ".*TechCorp.*"            # company anchor (unique)
+- assertVisible: ".*Select Location for Senior QA Engineer.*"
+- tapOn: ".*Location option: Warsaw.*"
+- extendedWaitUntil:
+    visible: ".*Applied to.*"          # snackbar confirms the apply registered
+    timeout: 5000
+- extendedWaitUntil:
+    notVisible: ".*Applied to.*"        # let it dismiss before navigating
+    timeout: 6000
+# Open the profile / application history.
+- runFlow:
+    file: ../subflows/open-profile.yaml
+- extendedWaitUntil:
+    visible: ".*Application History.*"
+    timeout: 5000
+# --- Mechanic proof (GREEN): the flow reached the correct history entry. ---
+- assertVisible: ".*Applied job title: Senior QA Engineer.*"
+- assertVisible: ".*Applied job company: TechCorp.*"
+- assertVisible: ".*Applied job location: Warsaw.*"
+- takeScreenshot: "docs/runs/screens/04-history-no-salary"
+# --- SPEC assertion (the FINDING): a no-salary entry must have NO salary line at all. ---
+# This flow's history holds exactly one entry, so any "Applied job salary" text is the no-salary
+# entry's. Buggy renders "Applied job salary: not specified" / "—" -> this assertNotVisible FAILS
+# -> RED = C4 (BUG-B, history). Expected red; do not weaken to match the app.
+- assertNotVisible: ".*Applied job salary.*"

@@ -26,9 +26,14 @@ Update at the end of every session: check off what's done, note drift if the pla
   - [x] Login flow — `08-login-logout` (R5)
   - [x] Suite **3/3 green** (R4/R5 PASS, as adjudicated); commit `5f61654`
 
-- [ ] **P3 — Applying + history**
-  - [ ] Apply-to-offer flow
-  - [ ] History flow
+- [x] **P3 — Applying + history** — **BUILD DONE; R3 findings adjudicated on artifacts**
+  - [x] `apply-to-offer` subflow (tap-only, param `OFFER`) + `03-apply` (R2) — suite **green** (PASS)
+  - [x] History flows `04-history-no-salary` (R3/C4→BUG-B) + `05-history-salary-format` (R3/C5→BUG-C)
+        — **red = findings, confirmed** (human adjudicated on screenshot + hierarchy in `docs/runs/`);
+        linking the red artifacts into `BUGS.md` = P5
+  - [x] Anti-case table filled (R2 + R3 + persistence) in `docs/SPEC-MATRIX.md`; R1/BUG-A row → P4
+  - [x] Hardened `register-user` (IME focus-race → `hideKeyboard` between fields); full suite **3× green/red
+        as expected, 0 flake** (18 register invocations clean)
 
 - [ ] **P4 — Offers list**
   - [ ] Offers list flow(s)
@@ -39,6 +44,12 @@ Update at the end of every session: check off what's done, note drift if the pla
   - [ ] `TEST_PLAN`
   - [ ] `README` (clean-clone bring-up)
   - [ ] Fresh-clone verification
+  - [ ] **Sync section 10 (instructions) of `STRATEGIA-PROJEKT.md`** — one-off merge of the live project
+        instructions (the project "instructions" field) with section 10. Two-way divergence: do **NOT**
+        overwrite blindly — each side holds content the other lacks. After the merge: master = the
+        "instructions" field; section 10 becomes a mirror stamped with the resync date.
+  - [ ] **Orphaned-decision audit** — sweep the project conversations for decisions that never landed
+        in any document.
 
 ## Session Log
 

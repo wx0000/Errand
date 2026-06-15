@@ -1,0 +1,52 @@
+# R2 — apply directly from the offers list (no detail screen).
+# Spec: Apply sits on the tile; the confirmation snackbar contains the offer title AND the applied
+# location (both, not title alone). A multi-location offer: Apply first opens a location picker;
+# after choosing, the snackbar shows the title + the CHOSEN location. Single-loc and multi-loc are
+# two variants of the SAME requirement (R2 apply), so they live in one flow. Asserts the SPEC;
+# R2 = PASS, expected green. (If a defect surfaces here, the first red assertion masks the rest of
+# this flow — that is a STOP-and-report, per the build plan, not an in-place fix.)
+appId: com.example.buggy
+---
+- launchApp:
+    clearState: true
+# Unique email per run (timestamp) so no run collides with a prior account.
+- evalScript: ${output.email = 'qa.user.' + Date.now() + '@example.com'}
+- runFlow:
+    file: ../subflows/register-user.yaml
+    env:
+      EMAIL: "${output.email}"
+      PASSWORD: "ValidPass123"
+      CONFIRM: "ValidPass123"          # explicit (= PASSWORD) so registration succeeds
+# Readiness only (NOT the R2 assertion): registered + auto-logged-in on the offers list.
+- extendedWaitUntil:
+    visible: ".*Job Offers.*"
+    timeout: 8000
+
+# --- Case 1: single-location offer — Junior Flutter Developer (StartupXYZ, Krakow) ---
+- runFlow:
+    file: ../subflows/apply-to-offer.yaml
+    env:
+      OFFER: ".*StartupXYZ.*"          # company anchor (unique)
+# R2 assertion — snackbar contains the title AND the location (single value, no picker).
+# The snackbar is transient; extendedWaitUntil catches it in-flow, the screenshot is the artifact.
+- extendedWaitUntil:
+    visible: ".*Applied to.*Junior Flutter Developer.*Krakow.*"
+    timeout: 5000
+- takeScreenshot: "docs/runs/screens/03-apply-single-snackbar"
+- extendedWaitUntil:
+    notVisible: ".*Applied to.*"         # snackbar dismissed before the next apply (no sleep)
+    timeout: 6000
+
+# --- Case 2: multi-location offer — QA Automation Engineer (BigTech Inc, Warsaw/Gdansk) ---
+- runFlow:
+    file: ../subflows/apply-to-offer.yaml
+    env:
+      OFFER: ".*BigTech.*"             # company anchor (unique)
+# R2 assertion — multi-loc Apply opens a location picker FIRST.
+- assertVisible: ".*Select Location for QA Automation Engineer.*"
+- tapOn: ".*Location option: Gdansk.*"   # choose a specific location
+# R2 assertion — snackbar shows the title + the CHOSEN location.
+- extendedWaitUntil:
+    visible: ".*Applied to.*QA Automation Engineer.*Gdansk.*"
+    timeout: 5000
+- takeScreenshot: "docs/runs/screens/03-apply-multi-snackbar"
