@@ -93,6 +93,11 @@ Learned from real recon (P1) and the P2 build against Buggy; load-bearing for P3
   silently resolving every `${VAR}` to that default. Reference `${VAR}` directly with no defaults
   block; a missing param then errors loudly instead of typing blank. (P2: confirmed the hard way —
   empty defaults made every registration field submit blank → 3/3 false red until removed.)
+- **Form flows (`register-user` etc.): `hideKeyboard` after each `inputText`, before the next field
+  tap.** Gboard has a transitional floating-toolbar state that absorbs a tap fired mid-transition, so
+  focus does not move and the next `inputText` lands in the previously-focused field (intermittent
+  flake). Dismissing the keyboard between fields makes every tap land on a clean screen. Confirmed on
+  artifact (P3).
 - **Snackbar = transient, absent from the a11y hierarchy.** Catch it in-flow with a screenshot +
   `extendedWaitUntil` on its token (`.*Applied to.*`); the **screenshot is the evidence**.
 - **Picker = modal, parkable** → dump its hierarchy out-of-band (`maestro hierarchy`).

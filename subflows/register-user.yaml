@@ -5,14 +5,23 @@
 # NO `env:` defaults here: in Maestro 2.6.1 a subflow's env default OVERRIDES the value passed by
 # the caller (the same precedence bug CLAUDE.md notes for `-e`), which resolves every field to ""
 # and fails registration. Without defaults the caller's values are used; a missing one errors loudly.
+#
+# hideKeyboard BETWEEN every field (P3 fix): right after inputText the Gboard IME is briefly in a
+# transitional floating-toolbar state (overlay on the left of the form, no docked keyboard). A field
+# tap fired during that transition is absorbed by the overlay, so focus does not move and the next
+# inputText lands in the previously-focused field (intermittently typed PASSWORD into the EMAIL
+# field -> registration failed). Confirmed on artifacts (/tmp probe screenshots, P3). Dismissing the
+# keyboard before each field tap removes the overlay -> every tap lands on a clean screen.
 appId: com.example.buggy
 ---
 - tapOn: ".*Don't have an account.*"        # clickable Button (the wrapper View is not clickable)
 - assertVisible: ".*Create Account.*"        # own-scope gate: on the register form (auto-waits, no sleep)
 - tapOn: ".*Email input field.*"
 - inputText: "${EMAIL}"
+- hideKeyboard                               # settle the IME before the next field tap (focus-race fix)
 - tapOn: ".*Password input field.*"
 - inputText: "${PASSWORD}"
+- hideKeyboard
 - tapOn: ".*Confirm password input field.*"
 - inputText: "${CONFIRM}"
 - hideKeyboard
