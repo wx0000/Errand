@@ -144,26 +144,58 @@ If a step does not apply, **say which and why — never skip silently.**
 
 ## Current Status
 
-- **Phase:** **P3 — DONE** (apply + history; pushed). **+4 suite files** — subflow `apply-to-offer`
-  (tap-only, param `OFFER`) + flows `03-apply` (R2), `04-history-no-salary` (R3/C4),
-  `05-history-salary-format` (R3/C5). Suite = **6 flows: 4 green + 2 red-findings** (R3 reds are the
-  correct result, adjudicated on `docs/runs/` artifacts). Also hardened `register-user` (IME
-  focus-race → `hideKeyboard` between fields); suite **3× / 0 flake**. Commits `c8c90a6` (fix),
-  `4664018` (feat), `8a61dcb` (docs) — pushed to `origin/main`.
-- **Next task:** **P4 — offers list (R1).** R1 = **BUG** (list surface of the same cluster as R3):
-  C1→BUG-A (multi-loc no separator), C2→BUG-B (no-salary `null`), C3→BUG-C (raw JSON). Expect
-  **red = findings**; assert SPEC (comma-separated locations, no salary element when absent,
-  formatted range), do not bend. The R1 anti-case rows (BUG-A, BUG-B-list, BUG-C-list) are
-  **already in `docs/SPEC-MATRIX.md`** → don't re-add; the flows build against them. **Flow count =
-  plan-mode decision:** 3 distinct findings + Maestro's first-failure abort imply 3 flows, but only
-  `01`+`02` are free in the 01–08 scheme → reconcile with the lead (extend numbering vs accept masking).
-- **R1–R5 coverage:** **R2 → flow 03** (PASS, green ✓), **R3 → flows 04+05** (BUG, red = findings ✓),
-  **R4 → flows 06+07** (PASS, green ✓), **R5 → flow 08** (PASS, green ✓). Still unassigned: **R1**
-  (offers list, BUG) → P4 (flows 01+02).
+- **Phase:** **P4 — DONE** (R1 offers list; local commits, **not pushed**). **+2 flows** —
+  `01-offers-locations` (R1/C1→BUG-A: multi-loc concat) + `02-offers-salary` (R1/C3→BUG-C: raw-JSON
+  salary). Both **read-only on the list** (reuse `register-user`; no new subflow). Suite = **8 flows:
+  4 green + 4 red-findings** (R1 reds 01/02 + R3 reds 04/05 are the correct result; human adjudicates
+  on `docs/runs/` screenshot + hierarchy). Flake **3× / 0** (incl. 01's scroll-back UP). Feat commit
+  `5474ef5`; docs + plan-archive commits this session — local only (push = human's call).
+- **Lead decisions (P4):** 2 flows in the 01–08 scheme (**no renumber**); BUG-A target = **BigTech
+  (`WarsawGdansk`)** — the only tile carrying *just* BUG-A (clean salary) → cleanest single-finding
+  screenshot; **BUG-B on the LIST = accepted documented gap** (root defect already red in `04`
+  history + the SPEC-MATRIX anti-case; the human-facing gap note → **README at P5**). Screenshot 01
+  verified to frame the `Locations: WarsawGdansk` node (not just the company line).
+- **Next task:** **P5 — stabilization + delivery.** Full suite 3× stability; finalize `docs/BUGS.md`
+  (link the P2–P4 red-run artifacts); `TEST_PLAN`; `README` clean-clone bring-up **+ the BUG-B-on-list
+  documented-gap note**; fresh-clone verification; STRATEGIA section-10 sync; orphaned-decision audit.
+- **R1–R5 coverage — ALL ASSIGNED:** **R1 → flows 01+02** (BUG, red = findings ✓), **R2 → flow 03**
+  (PASS ✓), **R3 → flows 04+05** (BUG, red = findings ✓), **R4 → flows 06+07** (PASS ✓), **R5 → flow
+  08** (PASS ✓).
 
 ## Session Log
 
 > Newest entries at the top. Each entry: date, phase, what was done, decisions, judgment moments.
+
+### 2026-06-16 — P4 — build
+
+- **Done:** built P4 from the plan-mode design (archived `p4-r1-offers.md`) → flows
+  `01-offers-locations` (R1/C1→BUG-A) + `02-offers-salary` (R1/C3→BUG-C). Both read-only on the list,
+  reuse `register-user`, no new subflow. R1 **red = findings** (list concatenates multi-location as
+  `WarsawGdansk`, and leaks raw JSON `{"min":10000,"max":15000}` for the object salary). Full suite =
+  **8 flows: 4 green + 4 red-findings**; flake **3× / 0** (incl. 01's scroll-back UP). SPEC-MATRIX R1
+  `Flow` cell → `01, 02` (only edit). Feat commit `5474ef5`; docs + plan-archive commits local
+  (**not pushed**). Evidence: `docs/runs/screens` + `docs/runs/hierarchy` 01/02.
+- **Decisions (lead-directed):** 2 flows in the 01–08 scheme (no renumber); BUG-A target = **BigTech
+  (`WarsawGdansk`)** — only tile with *just* BUG-A (clean salary) → cleanest screenshot evidence; the
+  5-offer green proof scrolls past it, so a `scrollUntilVisible direction: UP` re-positions before the
+  red. **BUG-B on the LIST = accepted documented gap** (Maestro aborts on first failure → can't share
+  01/02 without masking; root defect already red in `04` + anti-case; gap note → README at P5).
+  `01` asserts `.*Warsaw, Gdansk.*` (spec comma form), `02` asserts `.*Salary: 10000-15000.*` (spec
+  range) — never the run-together string or the JSON (anti-case).
+- **Judgment moments:**
+  1. **Re-confirmed ground-truth before writing assertions (hard STOP discipline).** Fresh
+     `maestro hierarchy` vs the 2026-06-14 dumps: all per-tile strings matched, and the spec forms
+     (`Warsaw, Gdansk`, `10000-15000`) were absent everywhere — so the reds are genuine spec
+     violations, not selector misses. Two first-pass grep "misses" were JSON/CSV escaping artifacts,
+     proven on the raw lines — not a divergence, so no false STOP.
+  2. **Verified the screenshot framing the lead flagged, on the real run.** The scroll-back UP could
+     have left `WarsawGdansk` at the viewport edge; inspected `01-offers-locations.png` and confirmed
+     the location node is fully framed (BigTech centred, clean salary beside it) — no reconcile needed.
+  3. **Flagged BUG-B-on-list as a real (narrow) coverage gap rather than silently accepting.** Surfaced
+     it to the lead with the masking constraint; took the "accept + document" call only after the lead
+     ruled. Mechanic-proof precedes every red, so each red is the app violating spec, not a drive miss.
+  4. **Kept the commit clean.** The full-suite run overwrote P2/P3 screenshots (03/04/05); restored
+     them (`git checkout`) so the P4 commit carries only P4 deliverables. Left untracked `.idea/` out.
 
 ### 2026-06-15 — P3 — build
 

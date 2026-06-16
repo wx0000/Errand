@@ -35,8 +35,14 @@ Update at the end of every session: check off what's done, note drift if the pla
   - [x] Hardened `register-user` (IME focus-race → `hideKeyboard` between fields); full suite **3× green/red
         as expected, 0 flake** (18 register invocations clean)
 
-- [ ] **P4 — Offers list**
-  - [ ] Offers list flow(s)
+- [x] **P4 — Offers list** — **BUILD DONE; R1 findings = red, human adjudicates on artifacts**
+  - [x] Offers-list flows `01-offers-locations` (R1/C1→BUG-A: multi-loc concat) + `02-offers-salary`
+        (R1/C3→BUG-C: raw-JSON salary) — **red = findings**; read-only on the list (reuse
+        `register-user`, no new subflow). Suite **8 flows: 4 green + 4 red**; flake **3× / 0**.
+  - [x] SPEC-MATRIX R1 `Flow` cell → `01, 02` (only edit). Evidence: `docs/runs/screens` +
+        `docs/runs/hierarchy` 01/02. Feat commit `5474ef5`; local only (not pushed).
+  - [x] Lead: 2 flows (no renumber); BUG-A target = BigTech (`WarsawGdansk`); **BUG-B-on-list =
+        accepted documented gap** (root defect red in `04` + anti-case; gap note → README at P5)
 
 - [ ] **P5 — Stabilization + delivery**
   - [ ] Run the full suite 3× (stability)
@@ -55,6 +61,20 @@ Update at the end of every session: check off what's done, note drift if the pla
 
 > Newest entries at the top. Format:
 > `### YYYY-MM-DD — <phase> — <role>` then bullets: **Done**, **Decisions**, **Drift**.
+
+### 2026-06-16 — P4 — build
+
+- **Done:** flows `01-offers-locations` (R1/C1→BUG-A) + `02-offers-salary` (R1/C3→BUG-C), read-only
+  on the list, reuse `register-user`. R1 **red = findings**; full suite **8 flows: 4 green + 4 red**;
+  flake **3× / 0** (incl. 01's scroll-back UP). Ground-truth re-confirmed vs the 2026-06-14 dumps (no
+  divergence). SPEC-MATRIX R1 `Flow` → `01, 02`. Feat commit `5474ef5`; docs + plan-archive local
+  (not pushed). Plan `p4-r1-offers.md` archived to `docs/ai-history/`.
+- **Decisions (lead):** 2 flows in the 01–08 scheme (no renumber); BUG-A target = BigTech
+  (`WarsawGdansk`, only tile with just BUG-A → cleanest evidence); **BUG-B-on-list = accepted
+  documented gap** (Maestro first-failure abort → can't share 01/02 without masking; root defect red
+  in `04` + anti-case; gap note → README at P5).
+- **Drift:** none vs the approved plan. All R1–R5 now have flows; remaining work is P5 (stabilization
+  + delivery docs).
 
 ### 2026-06-15 — P3 — build
 
