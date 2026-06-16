@@ -1,0 +1,38 @@
+# R1 — offers list: an object-shaped salary must render as a formatted range, like every other offer
+# (spec). Buggy leaks the raw JSON "{"min": 10000, "max": 15000}" -> adjudicated BUG-C (C3), list surface.
+#
+# Asserts the SPEC; a RED here is the CORRECT result = the finding. We do NOT assert the raw JSON to
+# force green (that rubber-stamps BUG-C — a disqualifying move). Before the red it PROVES (green) a
+# clean range renders correctly and the JSON tile is reached — so a red is the app violating spec.
+appId: com.example.buggy
+---
+- launchApp:
+    clearState: true
+# Unique email per run so registration always succeeds on a clean datastore.
+- evalScript: ${output.email = 'qa.user.' + Date.now() + '@example.com'}
+- runFlow:
+    file: ../subflows/register-user.yaml
+    env:
+      EMAIL: "${output.email}"
+      PASSWORD: "ValidPass123"
+      CONFIRM: "ValidPass123"
+# Readiness (NOT the R1 assertion): registered + auto-logged-in on the offers list.
+- extendedWaitUntil:
+    visible: ".*Job Offers.*"
+    timeout: 8000
+# --- Mechanic proof (GREEN): a normal salary renders as a formatted range. ---
+# StartupXYZ is visible at the top; its "5000-8000 PLN" proves normal salaries format correctly,
+# so the JSON leak is the specific defect (not a broken salary column).
+- assertVisible: ".*StartupXYZ.*"
+- assertVisible: ".*Salary: 5000-8000.*"
+# --- Mechanic proof (GREEN): reach the object-salary tile (QualityAssurance, bottom of the list). ---
+- scrollUntilVisible:
+    element:
+      text: ".*QualityAssurance.*"
+    direction: DOWN
+- assertVisible: ".*QualityAssurance Ltd.*"   # reached the target tile (mechanic proof)
+- takeScreenshot: "docs/runs/screens/02-offers-salary"
+# --- SPEC assertion (the FINDING): salary shown as a formatted range. ---
+# Underlying data is min 10000 / max 15000 -> a correct render is "10000-15000 PLN". Buggy leaks raw
+# JSON -> the range text is absent -> this assertVisible FAILS -> RED = C3 (BUG-C, list). Expected red.
+- assertVisible: ".*Salary: 10000-15000.*"

@@ -1,0 +1,64 @@
+# R1 — offers list: multi-location offers must render a COMMA-SEPARATED list (spec). Buggy
+# concatenates with no separator ("WarsawGdansk") -> adjudicated BUG-A (C1), list surface.
+#
+# Asserts the SPEC; a RED here is the CORRECT result = the finding. We do NOT assert the run-together
+# string to force green (that rubber-stamps BUG-A — a disqualifying move). Before the red it PROVES
+# (green) the list loaded its 5 offers and a clean tile renders correctly, then re-positions to the
+# BigTech tile — so a red is the app violating spec, not the flow failing to drive it.
+appId: com.example.buggy
+---
+- launchApp:
+    clearState: true
+# Unique email per run so registration always succeeds on a clean datastore.
+- evalScript: ${output.email = 'qa.user.' + Date.now() + '@example.com'}
+- runFlow:
+    file: ../subflows/register-user.yaml
+    env:
+      EMAIL: "${output.email}"
+      PASSWORD: "ValidPass123"
+      CONFIRM: "ValidPass123"
+# Readiness (NOT the R1 assertion): registered + auto-logged-in on the offers list.
+- extendedWaitUntil:
+    visible: ".*Job Offers.*"
+    timeout: 8000
+# --- Mechanic proof (GREEN): a CLEAN tile renders correctly (single location + formatted range). ---
+# StartupXYZ (Junior Flutter Developer) is offer 2, visible at the top without scrolling.
+- assertVisible: ".*StartupXYZ.*"
+- assertVisible: ".*Krakow.*"                 # single location renders as one clean value
+- assertVisible: ".*Salary: 5000-8000.*"      # a normal range renders correctly -> the bug is the
+                                              # formatting of malformed data, not a broken list
+# --- Mechanic proof (GREEN): the list loaded all 5 offers (company anchors are unique; top -> bottom). ---
+- scrollUntilVisible:
+    element:
+      text: ".*TechCorp.*"
+    direction: DOWN
+- scrollUntilVisible:
+    element:
+      text: ".*StartupXYZ.*"
+    direction: DOWN
+- scrollUntilVisible:
+    element:
+      text: ".*BigTech.*"
+    direction: DOWN
+- scrollUntilVisible:
+    element:
+      text: ".*MobileFirst.*"
+    direction: DOWN
+- scrollUntilVisible:
+    element:
+      text: ".*QualityAssurance.*"
+    direction: DOWN
+# --- Mechanic proof (GREEN): re-position to the BUG-A target tile (mid-list, scrolled past above). ---
+# BigTech (QA Automation Engineer) is the only tile carrying JUST BUG-A (its salary is clean), so the
+# screenshot is a single unambiguous finding. The screenshot MUST frame the "Locations: WarsawGdansk"
+# node (the BUG-A artifact), not only the company line.
+- scrollUntilVisible:
+    element:
+      text: ".*BigTech.*"
+    direction: UP
+- assertVisible: ".*BigTech.*"                # reached the target tile (mechanic proof)
+- takeScreenshot: "docs/runs/screens/01-offers-locations"
+# --- SPEC assertion (the FINDING): multi-location shown comma-separated. ---
+# BigTech is Warsaw + Gdansk. A correct render is "Warsaw, Gdansk"; Buggy shows "WarsawGdansk"
+# -> this assertVisible FAILS -> RED = C1 (BUG-A, list). Expected red; do not weaken to match the app.
+- assertVisible: ".*Warsaw, Gdansk.*"
