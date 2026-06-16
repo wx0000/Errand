@@ -1,0 +1,1534 @@
+ ▐▛███▜▌   Claude Code v2.1.173
+▝▜█████▛▘  Opus 4.8 · Claude Max
+  ▘▘ ▝▝    ~/AIAIAI/Claude/Errand
+
+
+❯ P4 = R1 offers list. Twoj brief P4 (ten ktory sam napisales) jest baza - uzyj 
+  go, nie pisz od nowa.                                                         
+  Domykam jedyna otwarta decyzje i wchodzisz w plan mode.                       
+                                                                                
+  DECYZJA LEADA - R1 = 2 flow (w schemacie 01-08, bez renumeracji):             
+  - 01: lista laduje 5 ofert + czysty kafelek renderuje poprawnie (ZIELONY      
+  mechanic-proof) -> RED na                                                     
+    BUG-A (concatenation; spec = comma-separated). Finding unikalny dla listy.  
+  - 02: czysty kafelek z poprawnym range (ZIELONY mechanic-proof) -> RED na     
+  BUG-C (raw JSON na liscie;                                                    
+    spec = sformatowany range). Reprezentatywny finding salary-format na        
+  powierzchni listy.                                                            
+  - BUG-B (null na no-salary tile) NIE jest osobnym flow: ten sam defekt juz    
+  czerwony na history (04),                                                     
+    udokumentowany w anti-case. Nie mnozymy flow dla tego samego defektu na     
+  drugiej powierzchni.                                                          
+    Jesli przy projekcie uznasz to za realna luke -> flaguj, pogodzimy.         
+                                                                                
+  PLAN MODE: zaprojektuj 01+02 pod te decyzje, zweryfikuj selektory per-tile na 
+  emulatorze, autoatak                                                          
+  (ryzyko maskowania, selektory, czy mechanic-proof faktycznie zielony PRZED    
+  redem), zapisz plan do                                                        
+  .claude/plans/, STOP na review leada. NIE buduj.                              
+  ⎿  ⧉ Selected 1 lines from docs/runs/hierarchy/04-history-no-salary.txt in Visual Studio Code
+
+⏺ Rozumiem. Domykam P4 pod decyzję leada (R1 = 2 flow, 01+02, bez renumeracji;
+  BUG-B nie dostaje osobnego flow). Wchodzę w plan mode: najpierw rekonesans
+  materiału, potem weryfikacja selektorów per-tile, autoatak na ryzyko
+  maskowania, plan do pliku, STOP. Nie buduję.
+
+  Zaczynam Fazę 1 — równoległy rekon istniejącego materiału (suite + dowody R1 +
+  SPEC).
+
+⏺ 3 Explore agents finished (ctrl+o to expand)
+   ├ Map existing suite structure · 20 tool uses · 30.4k tokens
+   │ ⎿  Done
+   ├ Find R1 offers-list evidence · 5 tool uses · 23.5k tokens
+   │ ⎿  Done
+   └ Read SPEC-MATRIX + BUGS for R1 · 2 tool uses · 13.5k tokens
+     ⎿  Done
+
+⏺ Materiał zebrany. Wykryłem jeden punkt wymagający potwierdzenia wprost (który
+  kafelek niesie który defekt — load-bearing dla izolacji BUG-A), więc czytam
+  surowe dumpy z rekonu, żeby zweryfikować dokładne stringi (regex jest wrażliwy
+  na separatory i spacje w JSON). To akcje read-only.
+
+  Read 2 files (ctrl+o to expand)
+
+⏺ Mam zweryfikowaną ground-truth z surowych dumpów. Kluczowe ustalenie per-tile
+  (load-bearing dla izolacji findingów):
+
+  ┌─────┬──────────┬───────────────┬─────────────────────┬──────────┬───────┐
+  │  #  │  Tytuł   │    Firma      │       Lokacje       │  Salary  │ Defek │
+  │     │          │   (kotwica)   │                     │          │   t   │
+  ├─────┼──────────┼───────────────┼─────────────────────┼──────────┼───────┤
+  │     │ Senior   │               │                     │          │ BUG-A │
+  │ 1   │ QA       │ TechCorp      │ WarsawBerlinLondon  │ null     │  +    │
+  │     │ Engineer │               │                     │          │ BUG-B │
+  ├─────┼──────────┼───────────────┼─────────────────────┼──────────┼───────┤
+  │     │ Junior   │               │                     │          │       │
+  │ 2   │ Flutter  │ StartupXYZ    │ Krakow              │ 5000-800 │ — czy │
+  │     │ Develope │               │                     │ 0 PLN    │ sty   │
+  │     │ r        │               │                     │          │       │
+  ├─────┼──────────┼───────────────┼─────────────────────┼──────────┼───────┤
+  │     │ QA Autom │               │                     │ 8000-120 │ tylko │
+  │ 3   │ ation    │ BigTech Inc   │ WarsawGdansk        │ 00 PLN   │       │
+  │     │ Engineer │               │                     │          │ BUG-A │
+  ├─────┼──────────┼───────────────┼─────────────────────┼──────────┼───────┤
+  │     │ Mobile   │               │                     │ 6000-900 │ — czy │
+  │ 4   │ QA       │ MobileFirst   │ Wroclaw             │ 0 PLN    │ sty   │
+  │     │ Tester   │               │                     │          │       │
+  ├─────┼──────────┼───────────────┼─────────────────────┼──────────┼───────┤
+  │     │          │               │                     │ {"min":  │ BUG-A │
+  │ 5   │ Senior   │ QualityAssura │ WarsawBerlinLondonP │ 10000,   │  +    │
+  │     │ QA       │ nce Ltd       │ aris                │ "max":   │ BUG-C │
+  │     │          │               │                     │ 15000}   │       │
+  └─────┴──────────┴───────────────┴─────────────────────┴──────────┴───────┘
+
+  Autoatak wyłonił dwie realne rozwidlenia, które wolę domknąć z Tobą przed
+  spisaniem planu (jedno z nich to dokładnie ten BUG-B, który prosiłeś flagować
+  jeśli to luka):
+
+⏺ User answered Claude's questions:
+  ⎿  · BUG-B (no-salary tile → `null`) na powierzchni LISTY: R1 wprost wymaga 
+     'brak salary → element nie istnieje'. Defekt jest czerwony tylko w historii
+     (flow 04) + jest w anti-case, ale na liście nie ma egzekwowalnej asercji. 
+     Maestro przerywa na pierwszej czerwonej asercji → nie da się go dołożyć do 
+     01/02 bez maskowania; pełne pokrycie = 3. flow. To realna (choć wąska) luka
+     pokrycia R1 na powierzchni listy. Akceptujemy, czy dokładamy flow? → 
+     Akceptuj (2 flow)
+     · Na którym kaflu flow 01 ma egzekwować BUG-A (sklejone lokacje, spec = 
+     comma-separated)? → BigTech / WarsawGdansk
+
+⏺ Decyzje zatwierdzone: 2 flow (BUG-B-list = akceptowana, udokumentowana luka) i
+  BUG-A → BigTech/WarsawGdansk. Spisuję finalny plan do pliku-mostu.
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Plan zapisany do .claude/plans/p4-r1-offers-stateless-sloth.md. Zatrzymuję się
+  na review — ładuję narzędzie wyjścia z plan mode.
+  ⎿  User rejected Claude's plan:
+     ╭─────────────────────────────────────────────────────────────────────────╮
+     │ P4 — R1 offers list (flows 01 + 02)                                     │
+     │                                                                         │
+     │ Context                                                                 │
+     │                                                                         │
+     │ R1 ("offers list — tile data") is the only requirement still without    │
+     │ executable flows. The human's                                           │
+     │ verdict in docs/SPEC-MATRIX.md is BUG: the offers list is the list      │
+     │ surface of the same                                                     │
+     │ formatting cluster already found in history (R3). Three manifestations  │
+     │ on the list:                                                            │
+     │                                                                         │
+     │ - BUG-A (C1): multi-location values concatenated with no separator      │
+     │ (WarsawGdansk,                                                          │
+     │ WarsawBerlinLondon, WarsawBerlinLondonParis). Spec = comma-separated.   │
+     │ - BUG-B (C2): a no-salary offer renders a salary element (null /        │
+     │ "Salary: not specified").                                               │
+     │ Spec = no salary element at all when salary is absent.                  │
+     │ - BUG-C (C3): an object-shaped salary leaks as raw JSON {"min": 10000,  │
+     │ "max": 15000}.                                                          │
+     │ Spec = a formatted range like every other offer (10000-15000 PLN).      │
+     │                                                                         │
+     │ The tests assert the SPECIFICATION. A RED here is the correct result =  │
+     │ the finding; we never                                                   │
+     │ bend an assertion to the buggy output (cardinal rule). Outcome: 2 new   │
+     │ flows, both expected RED.                                               │
+     │                                                                         │
+     │ Locked decisions (lead, this session)                                   │
+     │                                                                         │
+     │ - 2 flows in the 01-08 scheme, no renumbering. 01 = BUG-A, 02 = BUG-C.  │
+     │ - BUG-B on the LIST surface = accepted, documented gap (not a 3rd       │
+     │ flow). Root defect is already                                           │
+     │ RED in history (04-history-no-salary); the list manifestation is        │
+     │ documented in the SPEC-MATRIX                                           │
+     │ anti-case ("a salary placeholder for a no-salary offer — null on the    │
+     │ list, — in history").                                                   │
+     │ Rationale: Maestro aborts on the first failed assertion, so BUG-B-list  │
+     │ cannot share 01/02 without                                              │
+     │ masking; covering it would need a 3rd flow + reopening the count        │
+     │ decision. Root defect is proven →                                       │
+     │ accept.                                                                 │
+     │ - BUG-A target tile = BigTech Inc (WarsawGdansk) — the only tile        │
+     │ carrying just BUG-A (clean                                              │
+     │ salary 8000-12000 PLN), so the screenshot is a single, unambiguous      │
+     │ finding for the human's                                                 │
+     │ verdict; simplest spec string Warsaw, Gdansk. Cost: one                 │
+     │ scrollUntilVisible direction: UP                                        │
+     │ before the red (the tile is mid-list; the 5-offer proof scrolls past it │
+     │ to the bottom).                                                         │
+     │                                                                         │
+     │ Ground-truth (verified verbatim from recon dumps, 2026-06-14)           │
+     │                                                                         │
+     │ Source: docs/recon/hierarchy/02-offers-list-top.txt +                   │
+     │ 02-offers-list-bottom.txt (offline release                              │
+     │ build → static content; re-confirm with a fresh maestro hierarchy at    │
+     │ build start).                                                           │
+     │                                                                         │
+     │ #: 1                                                                    │
+     │ Title: Senior QA Engineer                                               │
+     │ Company (anchor): TechCorp                                              │
+     │ Locations node: WarsawBerlinLondon                                      │
+     │ Salary node: Salary: not specified / null                               │
+     │ Defect: BUG-A + BUG-B                                                   │
+     │ ────────────────────────────────────────                                │
+     │ #: 2                                                                    │
+     │ Title: Junior Flutter Developer                                         │
+     │ Company (anchor): StartupXYZ                                            │
+     │ Locations node: Krakow                                                  │
+     │ Salary node: Salary: 5000-8000 PLN                                      │
+     │ Defect: clean                                                           │
+     │ ────────────────────────────────────────                                │
+     │ #: 3                                                                    │
+     │ Title: QA Automation Engineer                                           │
+     │ Company (anchor): BigTech Inc                                           │
+     │ Locations node: WarsawGdansk                                            │
+     │ Salary node: Salary: 8000-12000 PLN                                     │
+     │ Defect: BUG-A only                                                      │
+     │ ────────────────────────────────────────                                │
+     │ #: 4                                                                    │
+     │ Title: Mobile QA Tester                                                 │
+     │ Company (anchor): MobileFirst                                           │
+     │ Locations node: Wroclaw                                                 │
+     │ Salary node: Salary: 6000-9000 PLN                                      │
+     │ Defect: clean                                                           │
+     │ ────────────────────────────────────────                                │
+     │ #: 5                                                                    │
+     │ Title: Senior QA                                                        │
+     │ Company (anchor): QualityAssurance Ltd                                  │
+     │ Locations node: WarsawBerlinLondonParis                                 │
+     │ Salary node: Salary: {"min": 10000, "max": 15000}                       │
+     │ Defect: BUG-A + BUG-C                                                   │
+     │                                                                         │
+     │ Anchor on COMPANY, never on title — "Senior QA" (offer 5) is a          │
+     │ substring of "Senior QA Engineer"                                       │
+     │ (offer 1). Company names are all unique substrings (TechCorp,           │
+     │ StartupXYZ, BigTech,                                                    │
+     │ MobileFirst, QualityAssurance). (Same collision the lead highlighted in │
+     │ 04-history-no-salary.)                                                  │
+     │                                                                         │
+     │ Conventions reused (no new subflow)                                     │
+     │                                                                         │
+     │ - Navigation to the list = the proven pattern from 03/04/05: launchApp  │
+     │ clearState →                                                            │
+     │ evalScript unique email → runFlow ../subflows/register-user.yaml        │
+     │ (auto-login) →                                                          │
+     │ extendedWaitUntil ".*Job Offers.*". Flows 01/02 are read-only on the    │
+     │ list — no apply-to-offer,                                               │
+     │ no new subflow.                                                         │
+     │ - Selectors: full-node-text DOTALL regex, tokens wrapped .*….* (per     │
+     │ CLAUDE.md selector notes).                                              │
+     │ - scrollUntilVisible on a company anchor (same primitive as             │
+     │ apply-to-offer).                                                        │
+     │ - Mechanic-proof-then-red pattern from 04/05: all GREEN proofs first,   │
+     │ takeScreenshot, then the                                                │
+     │ single RED spec assertion last (Maestro aborts on first failure).       │
+     │ - config.yaml scopes the workspace to flows/ → 01/02 are auto-included  │
+     │ (verify it does not                                                     │
+     │ enumerate flows explicitly; if it does, add 01/02).                     │
+     │                                                                         │
+     │ Files to create                                                         │
+     │                                                                         │
+     │ flows/01-offers-locations.yaml — R1 / BUG-A (C1)                        │
+     │                                                                         │
+     │ # R1 — offers list: multi-location offers must render a COMMA-SEPARATED │
+     │ list (spec). Buggy                                                      │
+     │ # concatenates with no separator ("WarsawGdansk") -> adjudicated BUG-A  │
+     │ (C1), list surface.                                                     │
+     │ #                                                                       │
+     │ # Asserts the SPEC; a RED here is the CORRECT result = the finding. We  │
+     │ do NOT assert the run-together                                          │
+     │ # string to force green (that rubber-stamps BUG-A — a disqualifying     │
+     │ move). Before the red it PROVES                                         │
+     │ # (green) the list loaded its 5 offers and a clean tile renders         │
+     │ correctly, then reaches the BigTech                                     │
+     │ # tile — so a red is the app violating spec, not the flow failing to    │
+     │ drive it.                                                               │
+     │ appId: com.example.buggy                                                │
+     │ ---                                                                     │
+     │ - launchApp:                                                            │
+     │     clearState: true                                                    │
+     │ - evalScript: ${output.email = 'qa.user.' + Date.now() +                │
+     │ '@example.com'}                                                         │
+     │ - runFlow:                                                              │
+     │     file: ../subflows/register-user.yaml                                │
+     │     env:                                                                │
+     │       EMAIL: "${output.email}"                                          │
+     │       PASSWORD: "ValidPass123"                                          │
+     │       CONFIRM: "ValidPass123"                                           │
+     │ - extendedWaitUntil:                                                    │
+     │     visible: ".*Job Offers.*"                                           │
+     │     timeout: 8000                                                       │
+     │ # --- Mechanic proof (GREEN): a CLEAN tile renders correctly (single    │
+     │ loc + formatted range). ---                                             │
+     │ - assertVisible: ".*StartupXYZ.*"                                       │
+     │ - assertVisible: ".*Krakow.*"                 # single location renders │
+     │ as one clean value                                                      │
+     │ - assertVisible: ".*Salary: 5000-8000.*"      # a normal range renders  │
+     │ correctly                                                               │
+     │ # --- Mechanic proof (GREEN): the list loaded all 5 offers (company     │
+     │ anchors, top -> bottom). ---                                            │
+     │ - scrollUntilVisible: { element: { text: ".*TechCorp.*" }, direction:   │
+     │ DOWN }                                                                  │
+     │ - scrollUntilVisible: { element: { text: ".*StartupXYZ.*" }, direction: │
+     │ DOWN }                                                                  │
+     │ - scrollUntilVisible: { element: { text: ".*BigTech.*" }, direction:    │
+     │ DOWN }                                                                  │
+     │ - scrollUntilVisible: { element: { text: ".*MobileFirst.*" },           │
+     │ direction: DOWN }                                                       │
+     │ - scrollUntilVisible: { element: { text: ".*QualityAssurance.*" },      │
+     │ direction: DOWN }                                                       │
+     │ # --- Mechanic proof (GREEN): re-position to the BUG-A target tile      │
+     │ (mid-list, scrolled past above). ---                                    │
+     │ - scrollUntilVisible: { element: { text: ".*BigTech.*" }, direction: UP │
+     │ }                                                                       │
+     │ - assertVisible: ".*BigTech.*"                # reached the target tile │
+     │ - takeScreenshot: "docs/runs/screens/01-offers-locations"               │
+     │ # --- SPEC assertion (the FINDING): multi-location shown                │
+     │ comma-separated. ---                                                    │
+     │ # BigTech is Warsaw + Gdansk. A correct render is "Warsaw, Gdansk";     │
+     │ Buggy shows "WarsawGdansk"                                              │
+     │ # -> this assertVisible FAILS -> RED = C1 (BUG-A, list). Expected red;  │
+     │ do not weaken to match the app.                                         │
+     │ - assertVisible: ".*Warsaw, Gdansk.*"                                   │
+     │                                                                         │
+     │ flows/02-offers-salary.yaml — R1 / BUG-C (C3)                           │
+     │                                                                         │
+     │ # R1 — offers list: an object-shaped salary must render as a formatted  │
+     │ range, like every other offer                                           │
+     │ # (spec). Buggy leaks the raw JSON "{"min": 10000, "max": 15000}" ->    │
+     │ adjudicated BUG-C (C3), list surface.                                   │
+     │ #                                                                       │
+     │ # Asserts the SPEC; a RED here is the CORRECT result = the finding. We  │
+     │ do NOT assert the raw JSON to                                           │
+     │ # force green (that rubber-stamps BUG-C — a disqualifying move). Before │
+     │ the red it PROVES (green) a                                             │
+     │ # clean range renders correctly and the JSON tile is reached — so a red │
+     │ is the app violating spec.                                              │
+     │ appId: com.example.buggy                                                │
+     │ ---                                                                     │
+     │ - launchApp:                                                            │
+     │     clearState: true                                                    │
+     │ - evalScript: ${output.email = 'qa.user.' + Date.now() +                │
+     │ '@example.com'}                                                         │
+     │ - runFlow:                                                              │
+     │     file: ../subflows/register-user.yaml                                │
+     │     env:                                                                │
+     │       EMAIL: "${output.email}"                                          │
+     │       PASSWORD: "ValidPass123"                                          │
+     │       CONFIRM: "ValidPass123"                                           │
+     │ - extendedWaitUntil:                                                    │
+     │     visible: ".*Job Offers.*"                                           │
+     │     timeout: 8000                                                       │
+     │ # --- Mechanic proof (GREEN): a normal salary renders as a formatted    │
+     │ range. ---                                                              │
+     │ - assertVisible: ".*StartupXYZ.*"                                       │
+     │ - assertVisible: ".*Salary: 5000-8000.*"                                │
+     │ # --- Mechanic proof (GREEN): reach the object-salary tile (bottom of   │
+     │ the list). ---                                                          │
+     │ - scrollUntilVisible: { element: { text: ".*QualityAssurance.*" },      │
+     │ direction: DOWN }                                                       │
+     │ - assertVisible: ".*QualityAssurance Ltd.*"   # reached the target tile │
+     │ - takeScreenshot: "docs/runs/screens/02-offers-salary"                  │
+     │ # --- SPEC assertion (the FINDING): salary shown as a formatted range.  │
+     │ ---                                                                     │
+     │ # Underlying data is min 10000 / max 15000 -> a correct render is       │
+     │ "10000-15000 PLN". Buggy leaks raw                                      │
+     │ # JSON -> the range text is absent -> this assertVisible FAILS -> RED = │
+     │ C3 (BUG-C, list). Expected red.                                         │
+     │ - assertVisible: ".*Salary: 10000-15000.*"                              │
+     │                                                                         │
+     │ Autoatak (self-attack)                                                  │
+     │                                                                         │
+     │ 1. Masking inside a flow. Maestro aborts on the first failed assertion  │
+     │ → each flow carries                                                     │
+     │ exactly one RED, placed last. That is precisely why BUG-B-list cannot   │
+     │ be folded into 01/02                                                    │
+     │ (it would need its own RED → its own flow). ✔                           │
+     │ 2. Mechanic-proof genuinely GREEN before the RED. Each flow proves (a)  │
+     │ on the list (Job Offers),                                               │
+     │ (b) a clean tile renders correctly, (c) the target tile is reached —    │
+     │ all green — before the spec                                             │
+     │ RED. So a red = app violates spec, not flow-failed-to-drive. Mirrors    │
+     │ 04/05. ✔                                                                │
+     │ 3. False-red risk (red for the wrong reason). The RED target must be    │
+     │ VISIBLE when asserted, else                                             │
+     │ assertVisible fails by not-visible (wrong reason). Mitigation: the      │
+     │ company-anchor scroll                                                   │
+     │ (BigTech UP in 01; QualityAssurance DOWN in 02) puts the tile           │
+     │ in-viewport immediately before                                          │
+     │ the red; the red then fails only because the spec string is absent.     │
+     │ Build-time check: confirm                                               │
+     │ the location/salary line of the target is in the same viewport as its   │
+     │ company after the scroll                                                │
+     │ (adjacent in the layout, ~70px below — expected yes; verify on the      │
+     │ run). ✔                                                                 │
+     │ 4. False-green risk (red accidentally passes). Verified against the     │
+     │ dumps: neither                                                          │
+     │ Warsaw, Gdansk nor Salary: 10000-15000 (comma / hyphen-range forms)     │
+     │ appears anywhere in the                                                 │
+     │ list hierarchy. The location picker (which does hold per-location nodes │
+     │ like "Location option:                                                  │
+     │ Warsaw") is a modal we never open in 01/02 → no contamination. ✔        │
+     │ 5. Scroll mechanics / flake. 02 is monotonic DOWN. 01 has one           │
+     │ direction: UP scroll-back — same                                        │
+     │ robust scrollUntilVisible primitive; verify under the suite's           │
+     │ 3×/0-flake standard. ✔                                                  │
+     │ 6. Selectors. Company anchors are unique substrings; never anchor on    │
+     │ the colliding title                                                     │
+     │ "Senior QA". Salary asserted with the Salary: label prefix (matches the │
+     │ a11y label\nvalue                                                       │
+     │ shape) to target the salary element specifically. ✔                     │
+     │                                                                         │
+     │ Documented gap (accepted)                                               │
+     │                                                                         │
+     │ R1's salary-absence rule (BUG-B on the list, TechCorp → null) has no    │
+     │ executable list                                                         │
+     │ assertion under this plan. It is covered by: the RED in                 │
+     │ 04-history-no-salary (same root defect,                                 │
+     │ history surface) + the SPEC-MATRIX anti-case row (R1, R3). This is a    │
+     │ deliberate, lead-approved                                               │
+     │ consequence of the 2-flow decision. Build action: ensure this is stated │
+     │ plainly in the                                                          │
+     │ deliverable (README / SPEC-MATRIX note) so the reviewer sees it is      │
+     │ documented, not missed.                                                 │
+     │                                                                         │
+     │ Verification (at build, not in plan mode — state-changing)              │
+     │                                                                         │
+     │ 1. Re-confirm ground-truth. Fresh maestro hierarchy of the offers list; │
+     │ diff per-tile strings                                                   │
+     │ vs the 2026-06-14 dumps (expect identical — offline static app). If     │
+     │ reality contradicts the plan,                                           │
+     │ STOP and reconcile (plan-bridge rule).                                  │
+     │ 2. Run each flow alone. maestro test flows/01-offers-locations.yaml →   │
+     │ all GREEN through the                                                   │
+     │ screenshot, then RED at .*Warsaw, Gdansk.*. …/02-offers-salary.yaml →   │
+     │ RED at                                                                  │
+     │ .*Salary: 10000-15000.*. Inspect run output + screenshot to confirm the │
+     │ red is the spec                                                         │
+     │ violation, not a drive failure.                                         │
+     │ 3. Full suite. Expect 8 flows: 4 green (03, 06, 07, 08) + 4             │
+     │ red-findings (01, 02, 04, 05). Confirm 01/02 reds do not destabilize    │
+     │ the green flows.                                                        │
+     │ 4. Flake. Run 01/02 ×3 (suite standard 0 flake), with attention to 01's │
+     │ scroll-back-up.                                                         │
+     │ 5. Human adjudication. Screenshots 01-offers-locations +                │
+     │ 02-offers-salary → BUG verdicts                                         │
+     │ (consistent with R1 = BUG already recorded). Claude does not rule       │
+     │ defects.                                                                │
+     │                                                                         │
+     │ Out of scope / closeout                                                 │
+     │                                                                         │
+     │ - No new subflow; no apply-to-offer; flows 01/02 are read-only on the   │
+     │ list.                                                                   │
+     │ - No SPEC-MATRIX edits required for R1 (verdict = BUG and the R1        │
+     │ anti-cases are already present).                                        │
+     │ - Closeout (End-of-Session Cycle): suite green/red report, update       │
+     │ CLAUDE.md Current Status                                                │
+     │ (R1 → flows 01+02; phase P4 done) + Session Log, update PROGRESS.md,    │
+     │ /export, archive this                                                   │
+     │ plan to docs/ai-history/, update the ai-history index, local commit     │
+     │ (separate logical units;                                                │
+     │ push = human's call).                                                   │
+     ╰─────────────────────────────────────────────────────────────────────────╯
+
+⏺ Plan zatwierdzony (design bez zmian). Lead dał korekty closeout i twardsze
+  warunki verify — to feedback do naniesienia w pliku-moście przed ponownym
+  wyjściem z plan mode. Nanoszę trzy poprawki.
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Plan zaktualizowany o trzy korekty leada (SPEC-MATRIX: tylko Flow R1 → 01, 02;
+  brak noty o luce — README na P5; verify: kadrowanie węzła Locations: 
+  WarsawGdansk w screenshocie 01, twardy STOP na rozjeździe, flake ×3 z
+  naciskiem na scroll-back UP). Design flow 01/02 bez zmian. Wychodzę z plan
+  mode do builda.
+
+⏺ User approved Claude's plan
+  ⎿  Plan saved to: ~/.claude/plans/p4-r1-offers-stateless-sloth.md · /plan to 
+     edit
+     P4 — R1 offers list (flows 01 + 02)
+
+     Context
+
+     R1 ("offers list — tile data") is the only requirement still without
+     executable flows. The human's
+     verdict in docs/SPEC-MATRIX.md is BUG: the offers list is the list surface
+     of the same
+     formatting cluster already found in history (R3). Three manifestations on
+     the list:
+
+     - BUG-A (C1): multi-location values concatenated with no separator
+     (WarsawGdansk,
+     WarsawBerlinLondon, WarsawBerlinLondonParis). Spec = comma-separated.
+     - BUG-B (C2): a no-salary offer renders a salary element (null / "Salary:
+     not specified").
+     Spec = no salary element at all when salary is absent.
+     - BUG-C (C3): an object-shaped salary leaks as raw JSON {"min": 10000, 
+     "max": 15000}.
+     Spec = a formatted range like every other offer (10000-15000 PLN).
+
+     The tests assert the SPECIFICATION. A RED here is the correct result = the
+     finding; we never
+     bend an assertion to the buggy output (cardinal rule). Outcome: 2 new
+     flows, both expected RED.
+
+     Locked decisions (lead, this session)
+
+     - 2 flows in the 01-08 scheme, no renumbering. 01 = BUG-A, 02 = BUG-C.
+     - BUG-B on the LIST surface = accepted, documented gap (not a 3rd flow).
+     Root defect is already
+     RED in history (04-history-no-salary); the list manifestation is documented
+     in the SPEC-MATRIX
+     anti-case ("a salary placeholder for a no-salary offer — null on the list,
+     — in history").
+     Rationale: Maestro aborts on the first failed assertion, so BUG-B-list
+     cannot share 01/02 without
+     masking; covering it would need a 3rd flow + reopening the count decision.
+     Root defect is proven →
+     accept.
+     - BUG-A target tile = BigTech Inc (WarsawGdansk) — the only tile carrying
+     just BUG-A (clean
+     salary 8000-12000 PLN), so the screenshot is a single, unambiguous finding
+     for the human's
+     verdict; simplest spec string Warsaw, Gdansk. Cost: one scrollUntilVisible 
+     direction: UP
+     before the red (the tile is mid-list; the 5-offer proof scrolls past it to
+     the bottom).
+
+     Ground-truth (verified verbatim from recon dumps, 2026-06-14)
+
+     Source: docs/recon/hierarchy/02-offers-list-top.txt +
+     02-offers-list-bottom.txt (offline release
+     build → static content; re-confirm with a fresh maestro hierarchy at build
+     start).
+
+     #: 1
+     Title: Senior QA Engineer
+     Company (anchor): TechCorp
+     Locations node: WarsawBerlinLondon
+     Salary node: Salary: not specified / null
+     Defect: BUG-A + BUG-B
+     ────────────────────────────────────────
+     #: 2
+     Title: Junior Flutter Developer
+     Company (anchor): StartupXYZ
+     Locations node: Krakow
+     Salary node: Salary: 5000-8000 PLN
+     Defect: clean
+     ────────────────────────────────────────
+     #: 3
+     Title: QA Automation Engineer
+     Company (anchor): BigTech Inc
+     Locations node: WarsawGdansk
+     Salary node: Salary: 8000-12000 PLN
+     Defect: BUG-A only
+     ────────────────────────────────────────
+     #: 4
+     Title: Mobile QA Tester
+     Company (anchor): MobileFirst
+     Locations node: Wroclaw
+     Salary node: Salary: 6000-9000 PLN
+     Defect: clean
+     ────────────────────────────────────────
+     #: 5
+     Title: Senior QA
+     Company (anchor): QualityAssurance Ltd
+     Locations node: WarsawBerlinLondonParis
+     Salary node: Salary: {"min": 10000, "max": 15000}
+     Defect: BUG-A + BUG-C
+
+     Anchor on COMPANY, never on title — "Senior QA" (offer 5) is a substring of
+     "Senior QA Engineer"
+     (offer 1). Company names are all unique substrings (TechCorp, StartupXYZ,
+     BigTech,
+     MobileFirst, QualityAssurance). (Same collision the lead highlighted in
+     04-history-no-salary.)
+
+     Conventions reused (no new subflow)
+
+     - Navigation to the list = the proven pattern from 03/04/05: launchApp 
+     clearState →
+     evalScript unique email → runFlow ../subflows/register-user.yaml
+     (auto-login) →
+     extendedWaitUntil ".*Job Offers.*". Flows 01/02 are read-only on the list —
+     no apply-to-offer,
+     no new subflow.
+     - Selectors: full-node-text DOTALL regex, tokens wrapped .*….* (per
+     CLAUDE.md selector notes).
+     - scrollUntilVisible on a company anchor (same primitive as
+     apply-to-offer).
+     - Mechanic-proof-then-red pattern from 04/05: all GREEN proofs first,
+     takeScreenshot, then the
+     single RED spec assertion last (Maestro aborts on first failure).
+     - config.yaml scopes the workspace to flows/ → 01/02 are auto-included
+     (verify it does not
+     enumerate flows explicitly; if it does, add 01/02).
+
+     Files to create
+
+     flows/01-offers-locations.yaml — R1 / BUG-A (C1)
+
+     # R1 — offers list: multi-location offers must render a COMMA-SEPARATED 
+     list (spec). Buggy
+     # concatenates with no separator ("WarsawGdansk") -> adjudicated BUG-A 
+     (C1), list surface.
+     #
+     # Asserts the SPEC; a RED here is the CORRECT result = the finding. We do 
+     NOT assert the run-together
+     # string to force green (that rubber-stamps BUG-A — a disqualifying move). 
+     Before the red it PROVES
+     # (green) the list loaded its 5 offers and a clean tile renders correctly, 
+     then reaches the BigTech
+     # tile — so a red is the app violating spec, not the flow failing to drive 
+     it.
+     appId: com.example.buggy
+     ---
+     - launchApp:
+         clearState: true
+     - evalScript: ${output.email = 'qa.user.' + Date.now() + '@example.com'}
+     - runFlow:
+         file: ../subflows/register-user.yaml
+         env:
+           EMAIL: "${output.email}"
+           PASSWORD: "ValidPass123"
+           CONFIRM: "ValidPass123"
+     - extendedWaitUntil:
+         visible: ".*Job Offers.*"
+         timeout: 8000
+     # --- Mechanic proof (GREEN): a CLEAN tile renders correctly (single loc + 
+     formatted range). ---
+     - assertVisible: ".*StartupXYZ.*"
+     - assertVisible: ".*Krakow.*"                 # single location renders as 
+     one clean value
+     - assertVisible: ".*Salary: 5000-8000.*"      # a normal range renders 
+     correctly
+     # --- Mechanic proof (GREEN): the list loaded all 5 offers (company 
+     anchors, top -> bottom). ---
+     - scrollUntilVisible: { element: { text: ".*TechCorp.*" }, direction: DOWN
+     }
+     - scrollUntilVisible: { element: { text: ".*StartupXYZ.*" }, direction:
+     DOWN }
+     - scrollUntilVisible: { element: { text: ".*BigTech.*" }, direction: DOWN }
+     - scrollUntilVisible: { element: { text: ".*MobileFirst.*" }, direction:
+     DOWN }
+     - scrollUntilVisible: { element: { text: ".*QualityAssurance.*" },
+     direction: DOWN }
+     # --- Mechanic proof (GREEN): re-position to the BUG-A target tile 
+     (mid-list, scrolled past above). ---
+     - scrollUntilVisible: { element: { text: ".*BigTech.*" }, direction: UP }
+     - assertVisible: ".*BigTech.*"                # reached the target tile
+     - takeScreenshot: "docs/runs/screens/01-offers-locations"
+     # --- SPEC assertion (the FINDING): multi-location shown comma-separated. 
+     ---
+     # BigTech is Warsaw + Gdansk. A correct render is "Warsaw, Gdansk"; Buggy 
+     shows "WarsawGdansk"
+     # -> this assertVisible FAILS -> RED = C1 (BUG-A, list). Expected red; do 
+     not weaken to match the app.
+     - assertVisible: ".*Warsaw, Gdansk.*"
+
+     flows/02-offers-salary.yaml — R1 / BUG-C (C3)
+
+     # R1 — offers list: an object-shaped salary must render as a formatted 
+     range, like every other offer
+     # (spec). Buggy leaks the raw JSON "{"min": 10000, "max": 15000}" -> 
+     adjudicated BUG-C (C3), list surface.
+     #
+     # Asserts the SPEC; a RED here is the CORRECT result = the finding. We do 
+     NOT assert the raw JSON to
+     # force green (that rubber-stamps BUG-C — a disqualifying move). Before the
+     red it PROVES (green) a
+     # clean range renders correctly and the JSON tile is reached — so a red is 
+     the app violating spec.
+     appId: com.example.buggy
+     ---
+     - launchApp:
+         clearState: true
+     - evalScript: ${output.email = 'qa.user.' + Date.now() + '@example.com'}
+     - runFlow:
+         file: ../subflows/register-user.yaml
+         env:
+           EMAIL: "${output.email}"
+           PASSWORD: "ValidPass123"
+           CONFIRM: "ValidPass123"
+     - extendedWaitUntil:
+         visible: ".*Job Offers.*"
+         timeout: 8000
+     # --- Mechanic proof (GREEN): a normal salary renders as a formatted range.
+     ---
+     - assertVisible: ".*StartupXYZ.*"
+     - assertVisible: ".*Salary: 5000-8000.*"
+     # --- Mechanic proof (GREEN): reach the object-salary tile (bottom of the 
+     list). ---
+     - scrollUntilVisible: { element: { text: ".*QualityAssurance.*" },
+     direction: DOWN }
+     - assertVisible: ".*QualityAssurance Ltd.*"   # reached the target tile
+     - takeScreenshot: "docs/runs/screens/02-offers-salary"
+     # --- SPEC assertion (the FINDING): salary shown as a formatted range. ---
+     # Underlying data is min 10000 / max 15000 -> a correct render is 
+     "10000-15000 PLN". Buggy leaks raw
+     # JSON -> the range text is absent -> this assertVisible FAILS -> RED = C3 
+     (BUG-C, list). Expected red.
+     - assertVisible: ".*Salary: 10000-15000.*"
+
+     Autoatak (self-attack)
+
+     1. Masking inside a flow. Maestro aborts on the first failed assertion →
+     each flow carries
+     exactly one RED, placed last. That is precisely why BUG-B-list cannot be
+     folded into 01/02
+     (it would need its own RED → its own flow). ✔
+     2. Mechanic-proof genuinely GREEN before the RED. Each flow proves (a) on
+     the list (Job Offers),
+     (b) a clean tile renders correctly, (c) the target tile is reached — all
+     green — before the spec
+     RED. So a red = app violates spec, not flow-failed-to-drive. Mirrors 04/05.
+     ✔
+     3. False-red risk (red for the wrong reason). The RED target must be
+     VISIBLE when asserted, else
+     assertVisible fails by not-visible (wrong reason). Mitigation: the
+     company-anchor scroll
+     (BigTech UP in 01; QualityAssurance DOWN in 02) puts the tile in-viewport
+     immediately before
+     the red; the red then fails only because the spec string is absent.
+     Build-time check: confirm
+     the location/salary line of the target is in the same viewport as its
+     company after the scroll
+     (adjacent in the layout, ~70px below — expected yes; verify on the run). ✔
+     4. False-green risk (red accidentally passes). Verified against the dumps:
+     neither
+     Warsaw, Gdansk nor Salary: 10000-15000 (comma / hyphen-range forms) appears
+     anywhere in the
+     list hierarchy. The location picker (which does hold per-location nodes
+     like "Location option:
+     Warsaw") is a modal we never open in 01/02 → no contamination. ✔
+     5. Scroll mechanics / flake. 02 is monotonic DOWN. 01 has one direction: UP
+     scroll-back — same
+     robust scrollUntilVisible primitive; verify under the suite's 3×/0-flake
+     standard. ✔
+     6. Selectors. Company anchors are unique substrings; never anchor on the
+     colliding title
+     "Senior QA". Salary asserted with the Salary: label prefix (matches the
+     a11y label\nvalue
+     shape) to target the salary element specifically. ✔
+
+     Documented gap (accepted)
+
+     R1's salary-absence rule (BUG-B on the list, TechCorp → null) has no 
+     executable list
+     assertion under this plan. It is covered by: the RED in
+     04-history-no-salary (same root defect,
+     history surface) + the SPEC-MATRIX anti-case row (R1, R3). This is a
+     deliberate, lead-approved
+     consequence of the 2-flow decision. Build action: do NOT add a note to
+     SPEC-MATRIX — the
+     "null on the list" anti-case row already documents it. The human-facing gap
+     note goes to the
+     README on P5, not this session.
+
+     Verification (at build, not in plan mode — state-changing)
+
+     Hard STOP on any divergence — never self-resolve silently. If reality
+     contradicts the plan at
+     any step below, stop and reconcile with the lead.
+
+     1. Re-confirm ground-truth. Fresh maestro hierarchy of the offers list;
+     diff per-tile strings
+     vs the 2026-06-14 dumps (expect identical — offline static app). Divergence
+     → STOP + reconcile
+     (plan-bridge rule), do not adjust assertions to whatever the new dump
+     shows.
+     2. Run each flow alone. maestro test flows/01-offers-locations.yaml → all
+     GREEN through the
+     screenshot, then RED at .*Warsaw, Gdansk.*. …/02-offers-salary.yaml → RED
+     at
+     .*Salary: 10000-15000.*. Inspect run output + screenshot to confirm the red
+     is the spec
+     violation, not a drive failure.
+     3. Screenshot framing (01) — load-bearing. The 01-offers-locations
+     screenshot MUST frame
+     the Locations: WarsawGdansk node, not just the BigTech company line — it is
+     the BUG-A
+     adjudication artifact. The scroll … direction: UP may leave the location
+     line at the viewport
+     edge; confirm on the actual run that the location node is fully captured.
+     If it is clipped, STOP
+     and reconcile the scroll target (e.g. anchor the UP scroll closer to the
+     location line) — this is
+     a mechanics fix, never an assertion change.
+     4. Full suite. Expect 8 flows: 4 green (03, 06, 07, 08) + 4 red-findings
+     (01, 02, 04, 05). Confirm 01/02 reds do not destabilize the green flows.
+     5. Flake. Run 01/02 ×3 (suite standard 0 flake), special attention to 01's 
+     scroll-back-up
+     (02 is monotonic DOWN).
+     6. Report, do not rule. After the runs: suite report (green/red) + the
+     screenshot and hierarchy
+     paths for 01 and 02. Do not issue BUG/PASS — the human adjudicates (R1 =
+     BUG already recorded).
+
+     Out of scope / closeout
+
+     - No new subflow; no apply-to-offer; flows 01/02 are read-only on the list.
+     - SPEC-MATRIX: one edit only — set R1's Flow cell (_TBD — P4_) to 01, 02
+     (parity with P3:
+     R2 → 03, R3 → 04+05). Do not add an anti-case row or a gap note — the R1
+     anti-cases
+     (concatenation, null-on-list, raw-JSON) and verdict = BUG are already
+     present.
+     - Closeout (End-of-Session Cycle): suite green/red report, update CLAUDE.md
+     Current Status
+     (R1 → flows 01+02; phase P4 done) + Session Log, update PROGRESS.md,
+     /export, archive this
+     plan to docs/ai-history/, update the ai-history index, local commit
+     (separate logical units;
+     push = human's call).
+
+❯ Zatwierdzam plan P4 (flows 01+02) bez zmian designu. Buduj wg planu.          
+                                                                                
+  Trzymaj twarde warunki z verify section: hard STOP na rozjezdzie ground-truth 
+  (nie naginaj asercji do nowego dumpu), screenshot 01 MUSI kadrowac wezel      
+  "Locations: WarsawGdansk", nie sama firme BigTech, flake x3 z naciskiem na    
+  scroll-back UP w 01. Po przebiegu: raport suite (zielone/czerwone) + sciezki  
+  screenshot i hierarchy dla 01 oraz 02, BEZ orzekania BUG/PASS - orzeka        
+  czlowiek.                                                                     
+  Commit lokalny, nie pushuj. Reszta closeout End-of-Session jak w planie.      
+
+⏺ Plan zatwierdzony — buduję wg planu, trzymając twarde warunki verify. Zaczynam
+  od KROK 0: weryfikacja toolchainu i emulatora (per CLAUDE.md maestro/adb
+  bywają poza PATH), zanim cokolwiek uruchomię.
+
+⏺ Bash(export
+      PATH="$HOME/.maestro/bin:$HOME/Library/Android/sdk/platform-tools:$PATH"
+      echo "== maestro ==" ; which maestro && maestro --version 2>&1 | head -3…)  ⎿  == maestro ==
+     /Users/wx0000/.maestro/bin/maestro
+     2.6.1
+     … +29 lines (ctrl+o to expand)
+
+❯ Zatwierdzam plan P4 (flows 01+02) bez zmian designu. Buduj wg planu.             
+                                                                                   
+  Trzymaj twarde warunki z verify section: hard STOP na rozjezdzie ground-truth    
+  (nie naginaj asercji do nowego dumpu), screenshot 01 MUSI kadrowac wezel         
+  "Locations: WarsawGdansk", nie sama firme BigTech, flake x3 z naciskiem na       
+  scroll-back UP w 01. Po przebiegu: raport suite (zielone/czerwone) + sciezki     
+  screenshot i hierarchy dla 01 oraz 02, BEZ orzekania BUG/PASS - orzeka czlowiek. 
+  Commit lokalny, nie pushuj. Reszta closeout End-of-Session jak w planie.         
+
+⏺ KROK 0 czysty: maestro 2.6.1, adb OK, emulator-5554 żywy, flows 03–08 + 5
+  subflows na miejscu. config.yaml używa globa flows/*.yaml → 01/02 wejdą
+  automatycznie, bez edycji configu (zgodnie z planem).
+
+  Teraz verify krok 1 — re-konfirmacja ground-truth świeżym maestro hierarchy vs
+  dumpy 2026-06-14. Najpierw scratch-flow w /tmp (NIE commitowany), który
+  rejestruje i ląduje na liście ofert; potem zrzucę hierarchię z góry i z dołu
+  listy, i porównam load-bearing stringi. Twardy STOP, jeśli cokolwiek się
+  rozjedzie.
+
+⏺ Write(/tmp/_recon-offers.yaml)
+  ⎿  Wrote 16 lines to ../../../../../tmp/_recon-offers.yaml
+         p, hygiene rule).d-truth re-confirm for P4. NEVER committed (/tm
+       2 # Registers a throwaway account and lands on the offers list so 
+       3 appId: com.example.buggydump it.
+       4 ---
+       5 - launchApp:
+       7 - evalScript: ${output.email = 'qa.user.' + Date.now() + '@examp
+         le.com'}
+       9     file: /Users/wx0000/AIAIAI/Claude/Errand/subflows/register-u
+         ser.yaml
+      10     env:
+     … +10 lines (ctrl+o to expand)
+
+⏺ Uruchamiam scratch-flow, żeby wylądować na liście ofert (rejestracja throwaway
+  konta na świeżym stanie).
+
+⏺ Bash(export
+      PATH="$HOME/.maestro/bin:$HOME/Library/Android/sdk/platform-tools:$PATH"
+      cd /Users/wx0000/AIAIAI/Claude/Errand…)
+  ⎿  Running on Pixel_7
+      > Flow _recon-offers
+     Launch app "com.example.buggy" with clear state... COMPLETED
+     … +18 lines (ctrl+o to expand)
+
+⏺ Wylądowałem na liście. Zrzucam hierarchię z góry listy, potem przewijam (adb 
+  swipe) i zrzucam dół, żeby objąć ofertę 5.
+
+⏺ Bash(export
+      PATH="$HOME/.maestro/bin:$HOME/Library/Android/sdk/platform-tools:$PATH"
+      cd /Users/wx0000/AIAIAI/Claude/Errand…)
+  ⎿  == TOP dump ==
+         1933 /tmp/_offers-top.json
+     == BOTTOM dump ==
+         1909 /tmp/_offers-bottom.json
+
+⏺ Hierarchia zrzucona (góra + dół). Teraz porównanie load-bearing stringów —
+  najpierw pozytywne (muszą być, parytet z 2026-06-14), potem negatywne (muszą
+  NIE istnieć — to dokładnie moje asercje spec, które mają padać na czerwono).
+
+⏺ Bash(cd /tmp
+      echo "===== POSITIVE (must be present) ====="…)
+  ⎿  ===== POSITIVE (must be present) =====
+     top=1 bottom=1  | Locations: WarsawGdansk
+     top=1 bottom=1  | Salary: 8000-12000 PLN
+     … +15 lines (ctrl+o to expand)
+
+⏺ Dwa „top=0/bottom=0" w pozytywach to artefakty escapowania JSON, nie rozjazd —
+  maestro hierarchy zwraca JSON, więc (a) Locations: WarsawBerlinLondon" nie
+  złapało bo po stringu jest \n…, a nie cudzysłów, oraz (b) wewnętrzne
+  cudzysłowy w salary-JSON są escapowane (\"min\": …). Weryfikuję te dwa wprost
+  na surowych liniach, żeby potwierdzić — albo zatrzymać się na realnym
+  rozjeździe.
+
+⏺ Bash(cd /tmp
+      echo "== TechCorp 3-loc (offer 1, top) =="…)
+  ⎿  == TechCorp 3-loc (offer 1, top) ==
+     Locations: WarsawBerlinLondon
+     … +13 lines (ctrl+o to expand)
+
+⏺ Ground-truth potwierdzony — ZERO rozjazdu vs 2026-06-14:
+  - Locations: WarsawBerlinLondon (TechCorp), WarsawGdansk (BigTech, salary
+  8000-12000 PLN czysty), Krakow + 5000-8000 PLN (StartupXYZ),
+  WarsawBerlinLondonParis + Salary: {\"min\": 10000, \"max\": 15000}
+  (QualityAssurance), Salary: not specified (TechCorp) — wszystkie 5 firm obecne
+  ✓
+  - Negatywy: Warsaw, Gdansk = 0 i 10000-15000 = 0 w obu zrzutach → moje asercje
+  spec poprawnie padną na czerwono = findingi ✓
+
+  Dwa „top=0" w pierwszym przebiegu to artefakty escapowania JSON (potwierdzone
+  wprost na surowych liniach), nie rozjazd. Brak STOP. Tworzę dwa flow wg planu
+  (block-style scrollUntilVisible, parytet z apply-to-offer).
+
+⏺ Write(flows/01-offers-locations.yaml)
+  ⎿  Wrote 64 lines to flows/01-offers-locations.yaml
+         PARATED list (spec). Buggylocation offers must render a COMMA-SE
+          BUG-A (C1), list surface.arator ("WarsawGdansk") -> adjudicated
+       3 #
+         ng. We do NOT assert the run-together CORRECT result = the findi
+       5 # string to force green (that rubber-stamps BUG-A — a disqualify
+       6 # (green) the list loaded its 5 offers and a clean tile renders 
+       7 # BigTech tile — so a red is the app violating spec, not the flo
+         w failing to drive it.
+       9 ---Id: com.example.buggy
+      10 - launchApp:
+     … +76 lines (ctrl+o to expand)
+
+⏺ Write(flows/02-offers-salary.yaml)
+  ⎿  Wrote 38 lines to flows/02-offers-salary.yaml
+         matted range, like every other offer salary must render as a for
+       2 # (spec). Buggy leaks the raw JSON "{"min": 10000, "max": 15000}
+       3 # -> adjudicated BUG-C (C3), list surface.
+       4 # Asserts the SPEC; a RED here is the CORRECT result = the findi
+       5 # force green (that rubber-stamps BUG-C — a disqualifying move).
+          Before the red it PROVES (green) a
+         o a red is the app violating spec.d the JSON tile is reached — s
+       7 appId: com.example.buggy
+       9 - launchApp:
+      10     clearState: true
+     … +44 lines (ctrl+o to expand)
+
+⏺ Oba flow zapisane. Verify krok 2 — uruchamiam flow 01 solo. Oczekiwanie:
+  zielono aż do screenshotu (gate, czysty kafel, 5 ofert, re-pozycja na
+  BigTech), potem CZERWONO na .*Warsaw, Gdansk.* (= finding BUG-A). Twardy STOP,
+  gdyby padło wcześniej (to byłby problem mechaniki, nie finding).
+
+⏺ Bash(export
+      PATH="$HOME/.maestro/bin:$HOME/Library/Android/sdk/platform-tools:$PATH"
+      cd /Users/wx0000/AIAIAI/Claude/Errand…)
+  ⎿    Tap on ".*Confirm password input field.*"... COMPLETED
+       Input text ${CONFIRM}... COMPLETED
+       Hide Keyboard... COMPLETED
+     … +38 lines (ctrl+o to expand)
+
+⏺ Flow 01 wykonał się dokładnie jak zaprojektowano: zielono przez gate → czysty
+  kafel → 5 kotwic firm → scroll-back UP na BigTech → screenshot, potem CZERWONO
+  na .*Warsaw, Gdansk.* (= finding BUG-A). RED jest ostatni, po dowodzie
+  mechaniki — czyli app łamie spec, nie flow nie dojechał.
+
+  Teraz twardy warunek leada: muszę wzrokowo potwierdzić, że screenshot 01
+  kadruje węzeł Locations: WarsawGdansk, nie samą firmę BigTech. Oglądam
+  artefakt.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Screenshot 01 potwierdzony — warunek leada spełniony. Węzeł WarsawGdansk
+  (kafel BigTech / QA Automation Engineer) jest w pełni wykadrowany,
+  wyśrodkowany, nie przy krawędzi — z czystą salary 8000-12000 PLN obok, czyli
+  jednoznaczny dowód BUG-A. Scroll-back UP wylądował BigTech z pełnym
+  kontekstem. Reconciliacja niepotrzebna.
+
+  Verify krok 2 — flow 02 solo. Oczekiwanie: zielono → screenshot → CZERWONO na
+  .*Salary: 10000-15000.* (= finding BUG-C).
+
+⏺ Bash(export
+      PATH="$HOME/.maestro/bin:$HOME/Library/Android/sdk/platform-tools:$PATH"
+      cd /Users/wx0000/AIAIAI/Claude/Errand…)
+  ⎿    Tap on "Register"... COMPLETED
+     Run ../subflows/register-user.yaml... COMPLETED
+     Assert that ".*Job Offers.*" is visible... COMPLETED
+     … +19 lines (ctrl+o to expand)
+⏺ Flow 02 jak zaprojektowano: zielono → screenshot → CZERWONO na .*Salary: 
+  10000-15000.* (= finding BUG-C). Sprawdzam screenshot 02, żeby potwierdzić, że
+  kadruje węzeł salary-JSON (dowód adjudykacji).
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Screenshot 02 kadruje kafel QualityAssurance Ltd (Senior QA) z
+  WarsawBerlinLondonParis i salary-JSON {"min": 10000, "max": 15000} — w pełni
+  widoczny, dobry dowód BUG-C.
+
+  Oba flow zweryfikowane solo. Verify krok 4 — pełny suite (maestro test . wg
+  config glob). Oczekiwanie: 8 flow = 4 zielone (03, 06, 07, 08) + 4
+  czerwone-findingi (01, 02, 04, 05); czerwone 01/02 nie destabilizują
+  zielonych.
+
+⏺ Bash(export
+      PATH="$HOME/.maestro/bin:$HOME/Library/Android/sdk/platform-tools:$PATH"
+      cd /Users/wx0000/AIAIAI/Claude/Errand…)
+  ⎿  Interrupted · What should Claude do instead?
+
+❯ cd /Users/wx0000/AIAIAI/Claude/Errand                                         
+  /Users/wx0000/.maestro/bin/maestro test . 2>&1 | tee /tmp/_suite.log | tail   
+  -30                                                                           
+  echo "===== SUMMARY ====="                                                    
+  grep -iE 'passed|failed' /tmp/_suite.log | grep -ivE                          
+  'tap|assert|input|hide|launch|scroll|screenshot|wait|run '                    
+
+⏺ Słusznie — moja wersja uruchamiała suite dwa razy (raz pod grep, raz pod
+  tail), marnując pełny przebieg 8 flow. Twoja wersja robi to raz, tee do logu,
+  potem grep. Uruchamiam dokładnie to.
+
+⏺ Bash(cd /Users/wx0000/AIAIAI/Claude/Errand
+      /Users/wx0000/.maestro/bin/maestro test . 2>&1 | tee /tmp/_suite.log |
+      tail -30…)
+  ⎿  Running in the background (↓ to manage)
+
+⏺ Suite leci w tle (8 flow × rejestracja — kilka minut). Zerkam na bieżący
+  postęp.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Suite jeszcze się inicjalizuje (log pusty). To harness-tracked zadanie w tle —
+  zostanę powiadomiony po zakończeniu, więc czekam na pełny wynik 8 flow
+  zamiast odpytywać. Wrócę z raportem zielone/czerwone, gdy przebieg się
+  skończy.
+
+✻ Cooked for 2m 38s
+
+※ recap: Building P4 flows 01 (BUG-A) and 02 (BUG-C) for the offers list; both verified solo as expected green-then-red, with screenshot 01 correctly framing WarsawGdansk. Waiting on the full-suite run now, then closeout (SPEC-MATRIX, docs, local commit). (disable recaps in /config)
+
+⏺ Background command "Run full suite once, tee to log, grep pass/fail summary"
+completed (exit code 0)
+
+⏺ Suite zakończony. Czytam pełny wynik z logu.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Pełny suite — wynik dokładnie wg planu:
+
+  [Passed] 03-apply            [Failed] 01-offers-locations  (".*Warsaw,
+  Gdansk.*" not visible)
+  [Passed] 06-registration-…   [Failed] 02-offers-salary     (".*Salary:
+  10000-15000.*" not visible)
+  [Passed] 07-registration-…   [Failed] 04-history-no-salary (".*Applied job
+  salary.*" IS visible)
+  [Passed] 08-login-logout     [Failed] 05-history-salary-…  (".*Applied job
+  salary: 10000-15000.*" not visible)
+
+  8 flow = 4 zielone + 4 czerwone-findingi. Każda czerwień pada na asercji spec
+  (nie w mechanice), 01/02 nie ruszyły zielonych. Zgodne z przewidywaniem.
+
+  Verify krok 5 — flake ×3 ze szczególną uwagą na scroll-back UP w 01.
+  Uruchamiam 01 ×3 i 02 ×3 w tle, zbierając per-run dowód, że zielone kroki
+  (scroll, screenshot) COMPLETED, a czerwień pada konsekwentnie na tej samej
+  asercji spec.
+
+⏺ Bash(export
+      PATH="$HOME/.maestro/bin:$HOME/Library/Android/sdk/platform-tools:$PATH"
+      cd /Users/wx0000/AIAIAI/Claude/Errand…)
+  ⎿  Running in the background (↓ to manage)
+
+⏺ Flake leci w tle (6 przebiegów, ~5 min). W międzyczasie czytam pliki potrzebne
+  do closeout (read-only), żeby być gotowym — ale edycji nie tknę, dopóki flake
+  nie potwierdzi 0/0.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Znalazłem komórkę do edycji: | R1 | _TBD — P4_ | (linia 21) → 01, 02.
+  Anti-cases R1 (linie 92–94) już są — zgodnie z poleceniem: jedyna edycja
+  SPEC-MATRIX to ta komórka. Czytam jeszcze PROGRESS i indeks ai-history,
+  czekając na flake.
+
+  Read 2 files (ctrl+o to expand)
+
+⏺ Mam wszystko do closeout. Sprawdzam postęp flake'a.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Flake jeszcze leci (6 sekwencyjnych przebiegów, podsumowanie grep pojawia się
+  dopiero po ostatnim). Czekam na powiadomienie o zakończeniu — to
+  harness-tracked, więc wrócę automatycznie z wynikiem ×3 dla 01 i 02.
+
+✻ Churned for 1m 27s
+
+※ recap: Building P4: two Maestro flows (01 BUG-A locations, 02 BUG-C salary) for the offers list. Both verified green-then-red as designed, full suite is 4 green + 4 red-findings. Next: confirm the flake ×3 run came back clean, then do closeout. (disable recaps in /config)
+
+⏺ Background command "Flake ×3 for flows 01 and 02; capture green-proof
+completion + spec red per run" completed (exit code 0)
+
+⏺ Flake zakończony. Czytam wynik.
+  Read 1 file (ctrl+o to expand)
+
+⏺ Flake ×3 — CZYSTE, 0/0. Wszystkie 3 przebiegi 01 i wszystkie 3 przebiegi 02:
+  - 01: Scrolling UP … BigTech … COMPLETED → Assert BigTech … COMPLETED → Take 
+  screenshot … COMPLETED → Warsaw, Gdansk … FAILED. Scroll-back UP (ryzyko
+  flagowane przez leada) stabilny 3/3.
+  - 02: Scrolling DOWN … QualityAssurance … COMPLETED → assert → screenshot →
+  Salary: 10000-15000 … FAILED. 3/3.
+
+  Zielona mechanika niezawodna, czerwień deterministycznie na asercji spec. (01
+  i 02 łącznie po 5 przebiegów każdy — solo + suite + ×3 — bez flaka.)
+
+  Wszystkie twarde warunki leada spełnione. Przechodzę do closeout. Najpierw
+  inwentaryzacja docs/runs/ i docs/ai-history/, by dorobić dowody hierarchy dla
+  01/02 w parytecie z P3 (R3 ma zrzuty w docs/runs/hierarchy/).
+
+⏺ Bash(cd /Users/wx0000/AIAIAI/Claude/Errand
+      echo "== docs/runs/ tree ==" ; ls -1 docs/runs/ 2>&1; echo "-- hierarchy
+      --"; ls -1 docs/runs/hierarchy/ 2>&1; echo "-- sc…)
+  ⎿  == docs/runs/ tree ==
+     hierarchy
+     screens
+     … +40 lines (ctrl+o to expand)
+
+⏺ Inwentaryzacja jasna. Trzy rzeczy:
+  1. docs/runs/hierarchy/ ma 04+05 (CSV --compact) → dorobię 01 + 02 w parytecie
+  (dowód hierarchy do adjudykacji, którego lead oczekuje w raporcie).
+  2. Pełny suite nadpisał screenshoty P3 (03×2, 04, 05 = M) — to incydentalne
+  re-captures, nie deliverable P4 → przywracam je, żeby commit P4 był czysty
+  (tylko 01/02 + flows + docs).
+  3. Nowe: flows 01/02 + screenshoty 01/02 — deliverable P4.
+
+  Przywracam screenshoty P3 i ląduję ponownie na liście, by zrzucić hierarchię.
+
+⏺ Bash(export
+      PATH="$HOME/.maestro/bin:$HOME/Library/Android/sdk/platform-tools:$PATH"
+      cd /Users/wx0000/AIAIAI/Claude/Errand…)
+  ⎿  == restore incidental P3 screenshot overwrites ==
+     ?? docs/runs/screens/01-offers-locations.png
+     ?? docs/runs/screens/02-offers-salary.png
+     … +7 lines (ctrl+o to expand)
+
+⏺ Screenshoty P3 przywrócone — git status pokazuje teraz tylko 4 deliverable P4.
+  Generuję dwa zrzuty hierarchii (--compact, parytet z 04/05) w stanach asercji
+  01 i 02.
+
+⏺ Bash(export
+      PATH="$HOME/.maestro/bin:$HOME/Library/Android/sdk/platform-tools:$PATH"
+      cd /Users/wx0000/AIAIAI/Claude/Errand…)
+  ⎿  == 01 dump: contains BUG-A node? must NOT contain comma form ==
+       WarsawGdansk present : 1
+       'Warsaw, Gdansk' (spec, must be 0): 0
+     … +7 lines (ctrl+o to expand)
+
+⏺ Dwa sygnały do sprawdzenia: (a) 02 zgłosił JSON-salary = 0 — podejrzewam
+  artefakt escapowania CSV (--compact cytuje inaczej niż JSON), nie brak; (b)
+  oba zrzuty mają 98 linii — bo obie flow KOŃCZĄ na dole listy (01 scrolluje UP
+  do BigTech, 02 DOWN do QualityAssurance — oba lądują na widoku ofert 2–5, stąd
+  identyczne screenshoty). Weryfikuję realną zawartość 02.
+
+⏺ Bash(cd /Users/wx0000/AIAIAI/Claude/Errand
+      echo "== 02 dump — salary lines & QualityAssurance (real CSV content)
+      =="…)
+  ⎿  == 02 dump — salary lines & QualityAssurance (real CSV content) ==
+     26:21,14,"accessibilityText=Salary: 5000-8000 PLN
+     36:28,14,"accessibilityText=Locations: WarsawGdansk
+     … +13 lines (ctrl+o to expand)
+
+⏺ Potwierdzone: 02 linia 62 ma accessibilityText=Salary: {""min"": 10000, 
+  ""max"": 15000} — JSON salary jest (escapowanie CSV "", mój wcześniejszy grep
+  użył formy JSON \" — artefakt wzorca, nie brak). Negatyw 10000-15000 = 0. 01
+  ma WarsawGdansk bez formy Warsaw, Gdansk. Oba zrzuty różnią się (jitter
+  scrolla), oba zawierają swój finding, oba zgodne ze swoimi screenshotami
+  (widok ofert 2–5). Dowody hierarchy gotowe.
+
+  Teraz edycje closeout. SPEC-MATRIX — jedyna edycja: komórka Flow R1.
+
+⏺ Update(docs/SPEC-MATRIX.md)
+  ⎿  Added 1 line, removed 1 line
+      18  
+      19  | Req | Flow | Expected per spec | Actual (from recon) | Verdic
+          t (PASS/BUG) |
+      20  |-----|------|-------------------|---------------------|-------
+          -------------|
+      21 -| R1  | _TBD — P4_ | **Offers list — tile data.** Each tile sho
+         -ws title, company, location, salary range. Location: single = o
+         -ne value; multiple = comma-separated. Salary: present → range s
+         -hown; **absent → the salary element does not exist at all** (no
+         - placeholder, no "no data"). | "Job Offers" list, **5 offers**.
+         - Multi-location values are concatenated **without separators**:
+         - `WarsawBerlinLondon`, `WarsawGdansk`, `WarsawBerlinLondonParis
+         -`. No-salary offer renders a salary element: `Salary: not speci
+         -fied` + value `null` (Senior QA Engineer). One salary rendered 
+         -as raw JSON: `{"min": 10000, "max": 15000}` (Senior QA / Qualit
+         -yAssurance). Normal ranges fine (`5000-8000 PLN`). Single-locat
+         -ion fine (`Krakow`). Evidence: `docs/recon/hierarchy/02-offers-
+         -list-top.txt` + `02-offers-list-bottom.txt`; `docs/recon/screen
+         -s/02-offers-top.png` + `02-offers-bottom.png`. → candidates **C
+         -1–C3** | **BUG** — C1→BUG-A, C2→BUG-B (list), C3→BUG-C (list) |
+      21 +| R1  | 01, 02 | **Offers list — tile data.** Each tile shows t
+         +itle, company, location, salary range. Location: single = one v
+         +alue; multiple = comma-separated. Salary: present → range shown
+         +; **absent → the salary element does not exist at all** (no pla
+         +ceholder, no "no data"). | "Job Offers" list, **5 offers**. Mul
+         +ti-location values are concatenated **without separators**: `Wa
+         +rsawBerlinLondon`, `WarsawGdansk`, `WarsawBerlinLondonParis`. N
+         +o-salary offer renders a salary element: `Salary: not specified
+         +` + value `null` (Senior QA Engineer). One salary rendered as r
+         +aw JSON: `{"min": 10000, "max": 15000}` (Senior QA / QualityAss
+         +urance). Normal ranges fine (`5000-8000 PLN`). Single-location 
+         +fine (`Krakow`). Evidence: `docs/recon/hierarchy/02-offers-list
+         +-top.txt` + `02-offers-list-bottom.txt`; `docs/recon/screens/02
+         +-offers-top.png` + `02-offers-bottom.png`. → candidates **C1–C3
+         +** | **BUG** — C1→BUG-A, C2→BUG-B (list), C3→BUG-C (list) |    
+      22  | R2  | 03 | **Apply from the list.** Apply directly via an "Ap
+          ply" button on the tile, **without opening the offer detail**. 
+          Confirmation **snackbar contains the offer title AND the applie
+          d location** (both, not title alone). Multi-location offer: "Ap
+          ply" **first opens a location-picker popup**; after choosing, t
+          he application is saved for the chosen location and the snackba
+          r shows title + that chosen location. | "Apply" sits **on each 
+          tile** (no detail screen). Single-loc (Junior Flutter Developer
+          ): snackbar `Applied to Junior Flutter Developer - Krakow` (tit
+          le + location). Multi-loc (QA Automation Engineer): Apply opens
+           a **modal popup** `Select Location for QA Automation Engineer`
+           with separate options `Warsaw` / `Gdansk`; choosing Gdansk → s
+          nackbar `Applied to QA Automation Engineer - Gdansk` (title + c
+          hosen location). Picker splits locations correctly (contrast C1
+          ). Evidence: `docs/recon/screens/03-apply-single-snackbar.png`,
+           `04a-apply-multi-picker.png`, `04b-apply-multi-snackbar.png`; 
+          `docs/recon/hierarchy/04-apply-multi-picker.txt`. No candidate 
+          observed in recon (human adjudicates). | **PASS** |
+      23  | R3  | 04 + 05 | **Application history.** Reached from the pro
+          file (header profile icon); lists the offers applied to. Entry 
+          = **4 lines**: (1) title, (2) company, (3) chosen location, (4)
+           salary range. No-salary offer → **no salary line** (consistent
+           with the list). | Profile button (header) → "Profile" with "Us
+          er Information" (email) + "Application History". Entry = title 
+          / company / **chosen location** / salary; chosen location persi
+          sts correctly (`Warsaw`, `Krakow`, `London`). Salaried entry fi
+          ne (`5000-8000 PLN`). **No-salary entry STILL shows a salary li
+          ne** rendered `—` (a11y `Applied job salary: not specified`) → 
+          **C4**. **Raw-JSON salary leaks into history**: `{"min": 10000,
+           "max": 15000}` (Senior QA / QualityAssurance) → **C5**. Eviden
+          ce: `docs/recon/hierarchy/09-history.txt`; `docs/recon/screens/
+          09-history.png`. | **BUG** — C4→BUG-B (history), C5→BUG-C (hist
+          ory) |
+      24  | R4  | 06 + 07 | **Registration.** Successful registration **s
+          aves the user and auto-logs them in**. Validation: email basic 
+          format; password **≥ 8 characters**; confirm-password **must eq
+          ual** the password. Validation error messages rendered **ABOVE 
+          the relevant field (not below)**. | **Auto-login confirmed** (v
+          alid register → lands on "Job Offers", no separate login). All 
+          3 validations present; each error rendered **ABOVE** its field 
+          (objective: error top-y < input top-y, + visual): email `Please
+           enter a valid email address` (936 < 1002); password `Password 
+          must be at least 8 characters` (1135 < 1201); confirm `Password
+          s do not match` (1335 < 1401). Evidence: `docs/recon/hierarchy/
+          06-reg-email-error.txt`, `07-reg-pwd-error.txt`, `08-reg-confir
+          m-error.txt`; `docs/recon/screens/06/07/08-reg-*-error.png` (06
+           shows the red error above the Email box). **No candidate obser
+          ved** (human adjudicates). | **PASS** |
+
+⏺ Dowody hierarchy gotowe i zweryfikowane. Teraz commit lokalny (bez push,
+  decyzja człowieka), w osobnych jednostkach logicznych jak w P3. Najpierw feat
+  — dwa flow + ich red-run evidence (screenshoty + hierarchy). To dodaje nowe
+  pliki R1; bez trailerów atrybucji (reguła CLAUDE.md).
+
+⏺ Bash(cd /Users/wx0000/AIAIAI/Claude/Errand
+      git add flows/01-offers-locations.yaml flows/02-offers-salary.yaml \…)
+  ⎿  == staged ==
+     docs/runs/hierarchy/01-offers-locations.txt
+     docs/runs/hierarchy/02-offers-salary.txt
+     … +16 lines (ctrl+o to expand)
+
+⏺ Feat commit: 5474ef5. (Uwaga: pojawił się nieśledzony .idea/ — IDE-folder, nie
+  commituję; zgłoszę leadowi jako kandydata do .gitignore, ale to nie P4.)
+
+  Aktualizuję CLAUDE.md — Current Status (P4 done, pełne pokrycie R1–R5, P5 jako
+  next) i wpis Session Log.
+
+⏺ Update(CLAUDE.md)
+  ⎿  File must be read first
+
+⏺ Muszę najpierw odczytać CLAUDE.md w tej sesji przed edycją. Czytam sekcję
+  Current Status + początek Session Log.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Teraz edytuję Current Status:
+
+⏺ Update(CLAUDE.md)
+  ⎿  Added 17 lines, removed 16 lines
+      144  
+      145  ## Current Status
+      146  
+      147 -- **Phase:** **P3 — DONE** (apply + history; pushed). **+4 sui
+          -te files** — subflow `apply-to-offer`                         
+      148 -  (tap-only, param `OFFER`) + flows `03-apply` (R2), `04-histo
+          -ry-no-salary` (R3/C4),                                        
+      149 -  `05-history-salary-format` (R3/C5). Suite = **6 flows: 4 gre
+          -en + 2 red-findings** (R3 reds are the                        
+      150 -  correct result, adjudicated on `docs/runs/` artifacts). Also
+          - hardened `register-user` (IME                                
+      151 -  focus-race → `hideKeyboard` between fields); suite **3× / 0 
+          -flake**. Commits `c8c90a6` (fix),                             
+      152 -  `4664018` (feat), `8a61dcb` (docs) — pushed to `origin/main`
+          -.                                                             
+      153 -- **Next task:** **P4 — offers list (R1).** R1 = **BUG** (list
+          - surface of the same cluster as R3):                          
+      154 -  C1→BUG-A (multi-loc no separator), C2→BUG-B (no-salary `null
+          -`), C3→BUG-C (raw JSON). Expect                               
+      155 -  **red = findings**; assert SPEC (comma-separated locations, 
+          -no salary element when absent,                                
+      156 -  formatted range), do not bend. The R1 anti-case rows (BUG-A,
+          - BUG-B-list, BUG-C-list) are                                  
+      157 -  **already in `docs/SPEC-MATRIX.md`** → don't re-add; the flo
+          -ws build against them. **Flow count =                         
+      158 -  plan-mode decision:** 3 distinct findings + Maestro's first-
+          -failure abort imply 3 flows, but only                         
+      159 -  `01`+`02` are free in the 01–08 scheme → reconcile with the 
+          -lead (extend numbering vs accept masking).                    
+      160 -- **R1–R5 coverage:** **R2 → flow 03** (PASS, green ✓), **R3 →
+          - flows 04+05** (BUG, red = findings ✓),                       
+      161 -  **R4 → flows 06+07** (PASS, green ✓), **R5 → flow 08** (PASS
+          -, green ✓). Still unassigned: **R1**                          
+      162 -  (offers list, BUG) → P4 (flows 01+02).                      
+      147 +- **Phase:** **P4 — DONE** (R1 offers list; local commits, **n
+          +ot pushed**). **+2 flows** —                                  
+      148 +  `01-offers-locations` (R1/C1→BUG-A: multi-loc concat) + `02-
+          +offers-salary` (R1/C3→BUG-C: raw-JSON                         
+      149 +  salary). Both **read-only on the list** (reuse `register-use
+          +r`; no new subflow). Suite = **8 flows:                       
+      150 +  4 green + 4 red-findings** (R1 reds 01/02 + R3 reds 04/05 ar
+          +e the correct result; human adjudicates                       
+      151 +  on `docs/runs/` screenshot + hierarchy). Flake **3× / 0** (i
+          +ncl. 01's scroll-back UP). Feat commit                        
+      152 +  `5474ef5`; docs + plan-archive commits this session — local 
+          +only (push = human's call).                                   
+      153 +- **Lead decisions (P4):** 2 flows in the 01–08 scheme (**no r
+          +enumber**); BUG-A target = **BigTech                          
+      154 +  (`WarsawGdansk`)** — the only tile carrying *just* BUG-A (cl
+          +ean salary) → cleanest single-finding                         
+      155 +  screenshot; **BUG-B on the LIST = accepted documented gap** 
+          +(root defect already red in `04`                              
+      156 +  history + the SPEC-MATRIX anti-case; the human-facing gap no
+          +te → **README at P5**). Screenshot 01                         
+      157 +  verified to frame the `Locations: WarsawGdansk` node (not ju
+          +st the company line).                                         
+      158 +- **Next task:** **P5 — stabilization + delivery.** Full suite
+          + 3× stability; finalize `docs/BUGS.md`                        
+      159 +  (link the P2–P4 red-run artifacts); `TEST_PLAN`; `README` cl
+          +ean-clone bring-up **+ the BUG-B-on-list                      
+      160 +  documented-gap note**; fresh-clone verification; STRATEGIA s
+          +ection-10 sync; orphaned-decision audit.                      
+      161 +- **R1–R5 coverage — ALL ASSIGNED:** **R1 → flows 01+02** (BUG
+          +, red = findings ✓), **R2 → flow 03**                         
+      162 +  (PASS ✓), **R3 → flows 04+05** (BUG, red = findings ✓), **R4
+          + → flows 06+07** (PASS ✓), **R5 → flow                        
+      163 +  08** (PASS ✓).                                              
+      164  
+      165  ## Session Log
+      166  
+
+⏺ Dodaję wpis Session Log P4 na górze (nad wpisem P3):
+
+⏺ Update(CLAUDE.md)
+  ⎿  Added 31 lines
+      166  
+      167  > Newest entries at the top. Each entry: date, phase, what was
+            done, decisions, judgment moments.
+      168  
+      169 +### 2026-06-16 — P4 — build                                   
+      170 +                                                              
+      171 +- **Done:** built P4 from the plan-mode design (archived `p4-r
+          +1-offers.md`) → flows                                         
+      172 +  `01-offers-locations` (R1/C1→BUG-A) + `02-offers-salary` (R1
+          +/C3→BUG-C). Both read-only on the list,                       
+      173 +  reuse `register-user`, no new subflow. R1 **red = findings**
+          + (list concatenates multi-location as                         
+      174 +  `WarsawGdansk`, and leaks raw JSON `{"min":10000,"max":15000
+          +}` for the object salary). Full suite =                       
+      175 +  **8 flows: 4 green + 4 red-findings**; flake **3× / 0** (inc
+          +l. 01's scroll-back UP). SPEC-MATRIX R1                       
+      176 +  `Flow` cell → `01, 02` (only edit). Feat commit `5474ef5`; d
+          +ocs + plan-archive commits local                              
+      177 +  (**not pushed**). Evidence: `docs/runs/screens` + `docs/runs
+          +/hierarchy` 01/02.                                            
+      178 +- **Decisions (lead-directed):** 2 flows in the 01–08 scheme (
+          +no renumber); BUG-A target = **BigTech                        
+      179 +  (`WarsawGdansk`)** — only tile with *just* BUG-A (clean sala
+          +ry) → cleanest screenshot evidence; the                       
+      180 +  5-offer green proof scrolls past it, so a `scrollUntilVisibl
+          +e direction: UP` re-positions before the                      
+      181 +  red. **BUG-B on the LIST = accepted documented gap** (Maestr
+          +o aborts on first failure → can't share                       
+      182 +  01/02 without masking; root defect already red in `04` + ant
+          +i-case; gap note → README at P5).                             
+      183 +  `01` asserts `.*Warsaw, Gdansk.*` (spec comma form), `02` as
+          +serts `.*Salary: 10000-15000.*` (spec                         
+      184 +  range) — never the run-together string or the JSON (anti-cas
+          +e).                                                           
+      185 +- **Judgment moments:**                                       
+      186 +  1. **Re-confirmed ground-truth before writing assertions (ha
+          +rd STOP discipline).** Fresh                                  
+      187 +     `maestro hierarchy` vs the 2026-06-14 dumps: all per-tile
+          + strings matched, and the spec forms                          
+      188 +     (`Warsaw, Gdansk`, `10000-15000`) were absent everywhere 
+          +— so the reds are genuine spec                                
+      189 +     violations, not selector misses. Two first-pass grep "mis
+          +ses" were JSON/CSV escaping artifacts,                        
+      190 +     proven on the raw lines — not a divergence, so no false S
+          +TOP.                                                          
+      191 +  2. **Verified the screenshot framing the lead flagged, on th
+          +e real run.** The scroll-back UP could                        
+      192 +     have left `WarsawGdansk` at the viewport edge; inspected 
+          +`01-offers-locations.png` and confirmed                       
+      193 +     the location node is fully framed (BigTech centred, clean
+          + salary beside it) — no reconcile needed.                     
+      194 +  3. **Flagged BUG-B-on-list as a real (narrow) coverage gap r
+          +ather than silently accepting.** Surfaced                     
+      195 +     it to the lead with the masking constraint; took the "acc
+          +ept + document" call only after the lead                      
+      196 +     ruled. Mechanic-proof precedes every red, so each red is 
+          +the app violating spec, not a drive miss.                     
+      197 +  4. **Kept the commit clean.** The full-suite run overwrote P
+          +2/P3 screenshots (03/04/05); restored                         
+      198 +     them (`git checkout`) so the P4 commit carries only P4 de
+          +liverables. Left untracked `.idea/` out.                      
+      199 +                                                              
+      200  ### 2026-06-15 — P3 — build
+      201  
+      202  - **Done:** built P3 from the plan-mode design (archived `p3-a
+           pply-history.md`) → subflow
+⏺ Aktualizuję PROGRESS.md — odhaczam P4 i dodaję wpis Session Log.
+
+⏺ Update(PROGRESS.md)
+  ⎿  Added 8 lines, removed 2 lines
+      35    - [x] Hardened `register-user` (IME focus-race → `hideKeyboar
+          d` between fields); full suite **3× green/red
+      36          as expected, 0 flake** (18 register invocations clean)
+      37  
+      38 -- [ ] **P4 — Offers list**                                     
+      39 -  - [ ] Offers list flow(s)                                    
+      38 +- [x] **P4 — Offers list** — **BUILD DONE; R1 findings = red, h
+         +uman adjudicates on artifacts**                                
+      39 +  - [x] Offers-list flows `01-offers-locations` (R1/C1→BUG-A: m
+         +ulti-loc concat) + `02-offers-salary`                          
+      40 +        (R1/C3→BUG-C: raw-JSON salary) — **red = findings**; re
+         +ad-only on the list (reuse                                     
+      41 +        `register-user`, no new subflow). Suite **8 flows: 4 gr
+         +een + 4 red**; flake **3× / 0**.                               
+      42 +  - [x] SPEC-MATRIX R1 `Flow` cell → `01, 02` (only edit). Evid
+         +ence: `docs/runs/screens` +                                    
+      43 +        `docs/runs/hierarchy` 01/02. Feat commit `5474ef5`; loc
+         +al only (not pushed).                                          
+      44 +  - [x] Lead: 2 flows (no renumber); BUG-A target = BigTech (`W
+         +arsawGdansk`); **BUG-B-on-list =                               
+      45 +        accepted documented gap** (root defect red in `04` + an
+         +ti-case; gap note → README at P5)                              
+      46  
+      47  - [ ] **P5 — Stabilization + delivery**
+      48    - [ ] Run the full suite 3× (stability)
+
+⏺ Dodaję wpis Session Log w PROGRESS.md (format Done/Decisions/Drift):
+
+⏺ Update(PROGRESS.md)
+  ⎿  Added 14 lines
+      62  > Newest entries at the top. Format:
+      63  > `### YYYY-MM-DD — <phase> — <role>` then bullets: **Done**, *
+          *Decisions**, **Drift**.
+      64  
+      65 +### 2026-06-16 — P4 — build                                    
+      66 +                                                               
+      67 +- **Done:** flows `01-offers-locations` (R1/C1→BUG-A) + `02-off
+         +ers-salary` (R1/C3→BUG-C), read-only                           
+      68 +  on the list, reuse `register-user`. R1 **red = findings**; fu
+         +ll suite **8 flows: 4 green + 4 red**;                         
+      69 +  flake **3× / 0** (incl. 01's scroll-back UP). Ground-truth re
+         +-confirmed vs the 2026-06-14 dumps (no                         
+      70 +  divergence). SPEC-MATRIX R1 `Flow` → `01, 02`. Feat commit `5
+         +474ef5`; docs + plan-archive local                             
+      71 +  (not pushed). Plan `p4-r1-offers.md` archived to `docs/ai-his
+         +tory/`.                                                        
+      72 +- **Decisions (lead):** 2 flows in the 01–08 scheme (no renumbe
+         +r); BUG-A target = BigTech                                     
+      73 +  (`WarsawGdansk`, only tile with just BUG-A → cleanest evidenc
+         +e); **BUG-B-on-list = accepted                                 
+      74 +  documented gap** (Maestro first-failure abort → can't share 0
+         +1/02 without masking; root defect red                          
+      75 +  in `04` + anti-case; gap note → README at P5).               
+      76 +- **Drift:** none vs the approved plan. All R1–R5 now have flow
+         +s; remaining work is P5 (stabilization                         
+      77 +  + delivery docs).                                            
+      78 +                                                               
+      79  ### 2026-06-15 — P3 — build
+      80  
+      81  - **Done:** subflow `apply-to-offer` + flows `03` (R2 green/PAS
+          S), `04`+`05` (R3 **red = findings**,
+
+⏺ Archiwizuję plan (krok bezwarunkowy CLAUDE.md) i aktualizuję indeks
+  ai-history. Kopiuję plan z .claude/plans/ (gitignored) do
+  docs/ai-history/p4-r1-offers.md.
+
+⏺ Bash(cd /Users/wx0000/AIAIAI/Claude/Errand
+      cp /Users/wx0000/.claude/plans/p4-r1-offers-stateless-sloth.md
+      docs/ai-history/p4-r1-offers.md…)
+  ⎿  == archived plan (head) ==
+     # P4 — R1 offers list (flows 01 + 02)
+     … +3 lines (ctrl+o to expand)
+
+⏺ Aktualizuję indeks docs/ai-history/README.md — wiersz planu P4 + wiersz
+  transkryptu build (z notą /export, zgodnie z konwencją).
+
+⏺ Update(docs/ai-history/README.md)
+  ⎿  Added 2 lines
+      29  | — | P2 | planning | `p2-subflows-reg-login.md` | Archived P2 
+          plan — decision layer (subflow boundaries, selector map, `regis
+          ter-user` signature, the env-default reconcile). |
+      30  | 2026-06-15 | P3 | build | `2026-06-15-p3-build.txt` | apply (
+          R2 green) + history (R3 C4/BUG-B + C5/BUG-C findings, adjudicat
+          ed on artifacts) + `register-user` IME-flake fix; suite 3× clea
+          n; commits `c8c90a6`, `4664018`. **Create via `/export` before 
+          the commit.** |
+      31  | — | P3 | planning | `p3-apply-history.md` | Archived P3 plan 
+          — decision layer (`apply-to-offer` tap-only, R2 single+multi in
+           one flow, two isolated R3 finding flows, anti-case table). |
+      32 +| 2026-06-16 | P4 | build | `2026-06-16-p4-build.txt` | R1 offe
+         +rs-list flows 01 (BUG-A) + 02 (BUG-C); suite 8 flows = 4 green 
+         ++ 4 red; flake 3×/0; feat commit `5474ef5` (local, not pushed).
+         + **Create via `/export` before the commit.** |                 
+      33 +| — | P4 | planning | `p4-r1-offers.md` | Archived P4 plan — de
+         +cision layer (2 flows no-renumber, BUG-A→BigTech, BUG-B-on-list
+         + accepted documented gap, scroll-back-UP framing + masking auto
+         +atak). |                                                       
+      34  | — | P1+P2 | judgment-log | `WORKING-WITH-AI.md` | Running jud
+          gment-moments log (P1 + P2; consolidate at closeout). |
+
+⏺ Indeks zaktualizowany. Commit 2 — docs closeout (SPEC-MATRIX R1 flow +
+  CLAUDE.md Current Status/Session Log + PROGRESS). Stażuję tylko te trzy pliki
+  (nie .idea/, nie scratch).
+
+⏺ Bash(cd /Users/wx0000/AIAIAI/Claude/Errand
+      git add docs/SPEC-MATRIX.md CLAUDE.md PROGRESS.md…)
+  ⎿  == staged ==
+     CLAUDE.md
+     PROGRESS.md
+     … +4 lines (ctrl+o to expand)
+
+⏺ Commit 3 — docs(ai-history) archiwum planu P4 + indeks.
+
+⏺ Bash(cd /Users/wx0000/AIAIAI/Claude/Errand
+      git add docs/ai-history/p4-r1-offers.md docs/ai-history/README.md…)
+  ⎿  Interrupted · What should Claude do instead?

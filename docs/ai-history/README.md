@@ -29,4 +29,6 @@ of each session (see `CLAUDE.md` → End-of-Session Cycle, step 5).
 | — | P2 | planning | `p2-subflows-reg-login.md` | Archived P2 plan — decision layer (subflow boundaries, selector map, `register-user` signature, the env-default reconcile). |
 | 2026-06-15 | P3 | build | `2026-06-15-p3-build.txt` | apply (R2 green) + history (R3 C4/BUG-B + C5/BUG-C findings, adjudicated on artifacts) + `register-user` IME-flake fix; suite 3× clean; commits `c8c90a6`, `4664018`. **Create via `/export` before the commit.** |
 | — | P3 | planning | `p3-apply-history.md` | Archived P3 plan — decision layer (`apply-to-offer` tap-only, R2 single+multi in one flow, two isolated R3 finding flows, anti-case table). |
+| 2026-06-16 | P4 | build | `2026-06-16-p4-build.txt` | R1 offers-list flows 01 (BUG-A) + 02 (BUG-C); suite 8 flows = 4 green + 4 red; flake 3×/0; feat commit `5474ef5` (local, not pushed). **Create via `/export` before the commit.** |
+| — | P4 | planning | `p4-r1-offers.md` | Archived P4 plan — decision layer (2 flows no-renumber, BUG-A→BigTech, BUG-B-on-list accepted documented gap, scroll-back-UP framing + masking autoatak). |
 | — | P1+P2 | judgment-log | `WORKING-WITH-AI.md` | Running judgment-moments log (P1 + P2; consolidate at closeout). |
