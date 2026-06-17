@@ -1,0 +1,2471 @@
+ ▐▛███▜▌   Claude Code v2.1.173
+▝▜█████▛▘  Opus 4.8 · Claude Max
+  ▘▘ ▝▝    ~/AIAIAI/Claude/Errand
+
+
+❯ P5 = closeout + delivery. P4 wypchniete na origin/main (5474ef5 feat /        
+  3bce036                                                                       
+  docs / 746cdc6 ai-history); R1-R5 maja flow, suite 8 = 4 zielone + 4          
+  red-findingi,                                                                 
+  wszystkie findingi zaadjudykowane.                                            
+                                                                                
+  PLAN MODE: zaprojektuj P5, zapisz plan do .claude/plans/, STOP na review      
+  leada.                                                                        
+  NIE buduj.                                                                    
+                                                                                
+  Zakres P5 (nic poza tym - reszta = future work w README):                     
+  - README: overview z zasada naczelna (test assertuje spec, czerwony na        
+  defekcie                                                                      
+    to poprawny wynik); co testuje / czego SWIADOMIE nie; How to run (primary   
+  macOS                                                                         
+    + troubleshooting ABI); architektura (flows + subflows, konwencje           
+  selektorow);                                                                  
+    design decisions & trade-offs (wybor Maestro, odrzucone Appium/Patrol);     
+    known limitations - W TYM nota o luce BUG-B-na-liscie (root defect red w 04 
+  +                                                                             
+    anti-case, brak osobnego flow na liscie); example output; future work       
+    (rozwazone-i-odrzucone: CI, JUnit, tagi, iOS, Appium, perf, visual).        
+  - TEST_PLAN/TESTING: macierz R1-R5 + anty-przypadki + reczna procedura        
+    weryfikacji ~2 min. Parafraza SPEC-MATRIX, nie pisz od zera.                
+  - BUGS.md: finalizacja - podlinkuj czerwone artefakty P2-P4 (docs/runs        
+  screens +                                                                     
+    hierarchy) pod BUG-A/B/C.                                                   
+  - Full suite 3x (stabilnosc); clean-machine check (swiezy klon, README krok   
+  po                                                                            
+    kroku, primary path realnie wstaje); finalna higiena IP (zero APK/PDF w     
+  repo                                                                          
+    I w historii commitow); .gitignore dla .idea/.                              
+                                                                                
+  Higiena: wymagania WYLACZNIE parafraza (zero tresci PDF do repo). Commit      
+  lokalny                                                                       
+  osobnymi jednostkami; push = decyzja czlowieka.                               
+                                                                                
+  Start: PROGRESS.md -> CLAUDE.md (Current Status + konwencje + Cardinal rule)  
+  ->                                                                            
+  docs/SPEC-MATRIX.md -> docs/BUGS.md.                                          
+
+⏺ I'll start by exploring the repo state to design P5 accurately. Let me launch
+  parallel Explore agents to map the current deliverables, docs, and artifacts.
+
+⏺ 3 Explore agents finished (ctrl+o to expand)
+   ├ Map repo structure and progress docs · 0 tool uses
+   │ ⎿  Done
+   ├ Read SPEC-MATRIX and BUGS docs · 0 tool uses
+   │ ⎿  Done
+   └ Map flows subflows and conventions · 0 tool uses
+     ⎿  Done
+
+⏺ I have a thorough picture. Let me read the key decision-layer files directly
+  to nail exact wording and the run command, since this is documentation work
+  where precision matters.
+
+  Read 6 files (ctrl+o to expand)
+
+⏺ I have a complete picture of the repo state, deliverables, and the exact P5
+  checklist. Before finalizing the plan, I need to resolve one genuine scope
+  conflict.
+
+  Your stated P5 scope was explicitly bounded ("nic poza tym"), but PROGRESS.md
+  lists two extra items under P5, and docs/ai-history/WORKING-WITH-AI.md carries
+  a "consolidate at closeout" note. These are housekeeping/meta tasks, not part
+  of the suite deliverable — so whether they belong in this delivery build is
+  genuinely your call, and dropping them silently would leave unchecked P5 boxes
+  in PROGRESS.md.
+
+⏺ User declined to answer questions
+  ⎿  · PROGRESS.md lists three closeout meta-tasks beyond your enumerated P5 
+     scope. Which should THIS delivery build include? (Unselected = defer; I'll 
+     mark them deferred/out-of-scope in PROGRESS.md so it stays consistent at 
+     'P5 DONE'.) (WORKING-WITH-AI consolidation / Orphaned-decision audit / 
+     STRATEGIA section-10 sync)
+
+⏺ You'd like to clarify before answering — go ahead, what's on your mind about
+  these three meta-tasks (or anything else in the P5 scope)?
+
+  For context, here's where each stands so you have the full picture:
+
+  - WORKING-WITH-AI.md consolidation — docs/ai-history/WORKING-WITH-AI.md
+  currently holds judgment-moment stubs for P1+P2 only, with an explicit "Stubs 
+  — consolidate at project closeout" note in the file itself. P3/P4/P5 moments
+  aren't in it yet. It's part of the ai-history deliverable layer (the "how/why"
+  of the suite), so it's the one of the three that most plausibly belongs in
+  this delivery build.
+  - Orphaned-decision audit — a sweep across the whole project's conversations
+  for decisions that were made but never written into any doc. It's a
+  project-wide quality pass, broader than the suite itself, and its output (if
+  any) would land in CLAUDE.md/PROGRESS/SPEC-MATRIX, not in a reviewer-facing
+  file.
+  - STRATEGIA section-10 sync — a two-way merge between an external
+  STRATEGIA-PROJEKT.md (section 10) and the live project "instructions" field.
+  That file does not exist in this repo — it lives elsewhere — so it touches
+  nothing the reviewer clones. It's the most clearly "outside this repo's
+  delivery" of the three.
+
+  My instinct: your "nic poza tym" cleanly defers the audit and the STRATEGIA
+  sync (neither touches the deliverable), while WORKING-WITH-AI consolidation is
+  a borderline call since it is a committed doc. But tell me what you're
+  weighing and I'll reframe.
+
+✻ Cogitated for 4m 40s
+
+❯ Zaden z tych trzech do repo-build - wszystkie to robota leada/Desktop w P5:   
+  - WORKING-WITH-AI consolidation: finalny plik generuje lead po angielsku, nie 
+  Code.                                                                         
+  - orphaned-decision audit: osad nad rozmowami projektu, Desktop.              
+  - STRATEGIA sek.10 sync: plik poza tym repo.                                  
+                                                                                
+  W PROGRESS.md NIE oznaczaj ich "deferred/out-of-scope" - beda zrobione, tylko 
+  przez                                                                         
+  leada. Oznacz "lead/Desktop-owned, realizowane w P5 poza repo-build". I NIE   
+  oznaczaj                                                                      
+  calego P5 jako DONE - tylko repo-build czesc (README, TEST_PLAN, BUGS.md      
+  linkowanie,                                                                   
+  suite 3x, clean-machine, IP, .gitignore). Pelne P5 DONE = repo-build (Ty) +   
+  Desktop                                                                       
+  closeout (lead). Wracaj do planu po naniesieniu.                              
+
+⏺ Got it — clear and recorded. The three meta-tasks are lead/Desktop-owned, 
+  executed in P5 but outside the repo-build; in PROGRESS.md they get that label
+  (not "deferred/out-of-scope"), and P5 is NOT marked fully DONE — only the
+  repo-build slice is, with full P5 = repo-build (me) + Desktop closeout (lead).
+  Writing the plan now.
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Plan written to .claude/plans/p5-closeout-eager-kahan.md. It covers only the
+  repo-build slice you scoped, with the three meta-tasks parked as
+  lead/Desktop-owned and P5 deliberately not marked fully DONE. Presenting for
+  your review — no build until you approve.
+
+⏺ User approved Claude's plan
+  ⎿  Plan saved to: ~/.claude/plans/p5-closeout-eager-kahan.md · /plan to edit
+     P5 — Stabilization + Delivery (repo-build slice)
+
+     Context
+
+     The suite is functionally complete: 8 flows (4 green + 4 red-findings), 5 
+     subflows, all
+     R1–R5 covered, every finding human-adjudicated, P4 pushed to origin/main.
+     What is missing is
+     the reviewer-facing delivery layer and a stability + hygiene pass so the
+     suite comes up
+     clean from a fresh clone on the reviewer's machine (macOS / M2 / Android
+     ARM64 emulator over adb).
+
+     P5 adds no new flows. It is documentation + verification + hygiene only:
+     - README.md is a 9-byte stub (# Errand) → full clean-clone bring-up.
+     - TEST_PLAN does not exist → R1–R5 matrix + anti-cases + a ~2-min manual
+     procedure.
+     - BUGS.md links only the P1 recon evidence → finalize by linking the P2–P4
+     red-run artifacts.
+     - Suite stability (3×), fresh-clone check, IP hygiene (zero APK/PDF in tree
+     and history), ignore .idea/.
+
+     Cardinal rule carries through every doc: a test asserts the SPECIFICATION;
+     a red on a defect is
+     the correct result — a finding, not a test bug. No assertion is ever bent
+     to match the buggy app.
+
+     Scope boundary (per lead, "nic poza tym")
+
+     IN — repo-build (this build, Code): README · TEST_PLAN · BUGS.md
+     run-artifact linking ·
+     full-suite 3× stability · clean-machine / fresh-clone check · IP hygiene ·
+     .gitignore for .idea/.
+
+     OUT — lead/Desktop-owned, executed in P5 outside the repo-build (NOT this 
+     build):
+     - WORKING-WITH-AI.md consolidation — final English file generated by the
+     lead, not Code.
+     - Orphaned-decision audit — sweep over the project conversations, on
+     Desktop.
+     - STRATEGIA-PROJEKT.md section-10 sync — the file lives outside this repo.
+
+     → In PROGRESS.md these three are labelled "lead/Desktop-owned — done in P5 
+     outside the
+     repo-build" (English, per the all-files-English convention; lead's Polish
+     intent rendered in English,
+     the P1-adjudication precedent). They are NOT marked deferred/out-of-scope.
+     → P5 is NOT marked fully DONE. Only the repo-build slice is checked off.
+     Full P5 DONE =
+     repo-build (Code) + Desktop closeout (lead).
+
+     Everything else = README "Future work" (considered-and-rejected, one-line
+     why each).
+
+     Hygiene constraint (binding): requirements appear only as paraphrase — the
+     source is the
+     already-paraphrased docs/SPEC-MATRIX.md. Zero PDF content enters the repo.
+     Commits are local,
+     separate logical units; push is the human's call. No Co-Authored-By /
+     "Generated with" trailers.
+
+     ---
+     Tasks (ordered; A gates the rest)
+
+     Task A — Full-suite 3× stability run  (FIRST — produces the README example 
+     output + verifies artifacts)
+
+     - Run 3×: maestro test . (root config.yaml scopes discovery to flows/*.yaml
+     → all 8 flows).
+     - Expected deterministic result EVERY run (this is "stable", NOT
+     all-green):
+       - 4 PASS — 03-apply (R2), 06-registration-validation (R4),
+     07-registration-autologin (R4), 08-login-logout (R5).
+       - 4 RED = findings — 01-offers-locations (R1/BUG-A), 02-offers-salary
+     (R1/BUG-C), 04-history-no-salary (R3/BUG-B), 05-history-salary-format
+     (R3/BUG-C).
+       - "Stable" = identical 4-pass/4-red split, 0 flake across the 3 runs.
+     - Capture the real console output of one run (trimmed) for the README
+     "Example output" section.
+     - Running regenerates docs/runs/screens/ for 01,02,03,04,05. Verify each 
+     still frames its finding
+     (esp. 01 framing the Locations: WarsawGdansk node, 02/05 the raw JSON, 04
+     the — line).
+     If a run clobbers an unrelated screenshot, git checkout-restore it so the
+     P5 commit carries only
+     intended changes (the P4 precedent).
+     - Self-validation guards: paste real maestro output, never fabricate; if
+     the emulator/app is not
+     up, the run errors before asserting → STOP and report ("env not up"), do
+     not narrate a
+     4/4 result that didn't run. Precondition: ARM64 emulator running +
+     buggy.apk installed (adb install).
+
+     Task B — Finalize docs/BUGS.md (link the red-run artifacts)
+
+     Add the docs/runs/ red-run links under each defect, alongside the existing
+     docs/recon/ P1 links
+     (both are evidence). Map each defect → its flow(s):
+     - BUG-A (R1 list) → flow 01: docs/runs/screens/01-offers-locations.png +
+     docs/runs/hierarchy/01-offers-locations.txt.
+     - BUG-B (R1 list + R3 history) → flow 04:
+     docs/runs/screens/04-history-no-salary.png +
+     docs/runs/hierarchy/04-history-no-salary.txt. Note: the list manifestation
+     (C2) has no dedicated red flow → cross-link the documented gap (Task D §6).
+     - BUG-C (R1 list + R3 history) → flow 02 (list): 02-offers-salary.{png,txt}
+     and flow 05 (history): 05-history-salary-format.{png,txt}.
+     - Fulfils the existing BUGS.md header promise ("when the P2–P4 flows run,
+     we link the Maestro artifacts from the red run").
+
+     Task C — docs/TEST_PLAN.md (paraphrase SPEC-MATRIX, do not rewrite from 
+     scratch)
+
+     - Strategy: assert the spec, not the app; red on a defect = correct result
+     (cardinal rule, one paragraph).
+     - Coverage matrix: R1–R5 → flow(s) → expected (PASS / RED-finding) →
+     bug-id. Condensed from the
+     SPEC-MATRIX Req | Flow | Expected columns:
+     R1→01,02 (RED, BUG-A/C) · R2→03 (PASS) · R3→04,05 (RED, BUG-B/C) · R4→06,07
+     (PASS) · R5→08 (PASS).
+     - Anti-cases: paraphrase the 5 SPEC-MATRIX anti-cases (what we deliberately
+     do NOT assert, and why
+     — concatenated locations, salary placeholder, raw-JSON salary, title-only
+     snackbar, restart persistence).
+     - Manual verification procedure (~2 min): prerequisites → maestro test . →
+     expect 4 pass / 4 red
+     → open docs/runs/screens/{01,02,04,05}.png to eyeball each finding →
+     cross-ref BUGS.md / SPEC-MATRIX.md.
+     - Co-located with SPEC-MATRIX/BUGS under docs/; README links to it
+     prominently.
+
+     Task D — README.md (replace the stub) — sections per lead's enumeration
+
+     1. Overview + cardinal rule — what the suite is; tests assert the spec; a
+     red on a defect is the
+     correct result (a finding, not a test bug); the human issues BUG/PASS
+     verdicts.
+     2. What it tests / what it consciously does NOT — covers R1–R5;
+     deliberately out of scope:
+     restart-persistence (spec silent → asserting it reads app behaviour),
+     network (offline app, no
+     INTERNET perm), and the BUG-B-on-list dedicated assertion (→ Known
+     limitations).
+     3. How to run — primary macOS path — prerequisites (JDK 21, Maestro 2.6.1,
+     Android ARM64
+     emulator via adb, app installed); buggy.apk is NOT in the repo (company IP)
+     → reviewer supplies
+     it and adb installs it; then maestro test . → expect 4 pass / 4 red; note
+     the run exits
+     non-zero by design (4 findings). Troubleshooting ABI: must be arm64-v8a on
+     M2; common
+     emulator/adb gotchas (wrong ABI image, device not listed, app not
+     installed).
+     4. Architecture — flows/ (numbered 01–08 = the suite; config.yaml scopes
+     the run) + subflows/
+     (5 reusable fragments via runFlow: register-user, login, logout,
+     open-profile, apply-to-offer;
+     single-responsibility, each asserts only its readiness gate) + selector 
+     conventions (anchored
+     DOTALL regex on the full "label\nvalue" node text; tap the clickable Button
+     not the wrapper;
+     -e/subflow-env precedence; hideKeyboard between fields; snackbar =
+     transient → screenshot).
+     Point to CLAUDE.md "Maestro / selector conventions" + recon.yaml comments
+     as canonical (paraphrase,
+     don't duplicate wholesale).
+     5. Design decisions & trade-offs — Maestro chosen (declarative YAML, fast
+     bring-up, black-box
+     against a release Flutter APK, no app source needed); rejected Appium
+     (heavy driver/server +
+     WebDriver boilerplate) and Patrol (needs app source / instrumentation — we
+     have only a release
+     APK). One-flow-per-finding isolation (Maestro aborts on first failed
+     assertion → isolate R1/R3
+     findings so one red never masks another). Subflows assert no outcome
+     (caller owns the verdict).
+     6. Known limitations — incl. the BUG-B-on-list documented gap: Maestro's
+     first-failure abort
+     means flows 01/02 can't also assert the list null placeholder without
+     masking their own BUG-A/C
+     findings; the root defect is already red in flow 04 (history surface) +
+     captured as a
+     SPEC-MATRIX anti-case + in BUGS.md → covered transitively, no dedicated 
+     list flow by design.
+     Also: needs a live ARM64 emulator + a supplied APK; offline app;
+     emulator-only (no physical-device run).
+     7. Example output — the trimmed real maestro test . console output from
+     Task A (4 pass / 4 red).
+     8. Future work (considered-and-rejected, one-line why each) — CI (no hosted
+     ARM64 emulator + offline
+     app + APK not committable) · JUnit/report export · selective-run tags: ·
+     iOS · revisit Appium/Patrol
+     · performance · visual / screenshot-diff regression.
+
+     Task E — IP hygiene + .gitignore
+
+     - Add .idea/ to .gitignore (currently untracked IDE dir).
+     - Prove zero APK/PDF in the working tree and full history — paste the real
+     results:
+       - tree: git ls-files | grep -iE 'apk|pdf' → expect empty.
+       - history: git log --all --diff-filter=A --name-only | grep -iE 
+     '\.(apk|pdf|aab|apks)$' → expect empty.
+       - If anything is found → STOP (history rewrite is a human decision, not
+     silent).
+     - Before each commit, git status shows only real deliverables — no scratch,
+     no /tmp dumps.
+
+     Task F — Clean-machine / fresh-clone verification
+
+     - Fresh git clone into a temp dir; follow the README "How to run" step by 
+     step; confirm the
+     primary path actually comes up (emulator + supplied APK + maestro test . →
+     4 pass / 4 red).
+     - This validates the README has no missing step. APK is supplied
+     out-of-band (gitignored by design).
+     - Record the result verbatim; if a step is missing/ambiguous, fix the
+     README and re-verify.
+
+     Task G — Local commits (separate logical units; push = human's call)
+
+     Conventional commits, one logical unit each, no squash:
+     - docs(bugs): link P2–P4 red-run artifacts under BUG-A/B/C
+     - docs(test-plan): R1–R5 matrix + anti-cases + ~2-min manual verification
+     - docs(readme): clean-clone bring-up, architecture, design decisions, known
+     limitations (BUG-B-list gap), future work
+     - chore(gitignore): ignore .idea/
+     - docs: P5 repo-build closeout — Current Status + Session Log + PROGRESS 
+     check-offs
+     - No push without explicit consent. No Co-Authored-By / "Generated with
+     Claude Code" trailers.
+
+     ---
+     End-of-Session Cycle (CLAUDE.md, run in order)
+
+     1. Suite result — the Task-A 3× result, reported.
+     2. CLAUDE.md — Current Status → "P5 — repo-build DONE; Desktop closeout 
+     (lead) pending"; add a
+     2026-06-17 — P5 — build Session Log entry (done / decisions / judgment
+     moments).
+     3. PROGRESS.md — check off the repo-build P5 items; label the 3 meta-tasks
+     "lead/Desktop-owned —
+     done in P5 outside the repo-build"; do NOT mark all of P5 DONE (note: full
+     P5 = repo-build + Desktop closeout).
+     4. /export this session → docs/ai-history/2026-06-17-p5-build.txt (+
+     -planning if split).
+     5. Archive this plan — copy .claude/plans/p5-closeout-eager-kahan.md →
+     docs/ai-history/p5-closeout.md (unconditional).
+     6. Index — add the new transcript + plan to docs/ai-history/README.md.
+     7. Commits — Task G (local only).
+     8. Handoff prompt — what's done (repo-build), what's left (lead/Desktop
+     closeout: WORKING-WITH-AI
+     consolidation, orphaned-decision audit, STRATEGIA §10 sync), what to watch,
+     read-first file + effort note.
+
+     Verification (P5 repo-build is done when)
+
+     - Suite 3× stable — 4 pass / 4 red, 0 flake (real maestro output pasted).
+     - BUGS.md links resolve to existing files under docs/runs/ (01,02,04,05)
+     and docs/recon/.
+     - README fresh-clone primary path comes up (Task F) — 4 pass / 4 red on a
+     clean clone.
+     - Git clean of APK/PDF in tree + history (real grep output pasted); .idea/
+     ignored.
+     - TEST_PLAN R1–R5 matrix + anti-cases + ~2-min procedure present;
+     paraphrased, zero PDF content.
+
+     Risks / guards
+
+     - Mechanics-red vs app-finding — if the 3× run shows anything other than
+     the known 4 red, treat it as
+     a possible harness flake (the P2/P3 precedent), prove the cause on an
+     artifact before touching anything;
+     never bend an assertion, never relabel a drive miss as a finding.
+     - Don't narrate un-run results — if the emulator/app isn't up, STOP and say
+     so.
+     - No scratch in commits — confirm git status before every commit.
+
+⏺ Plan approved. Starting Task A — but first I must verify the precondition the
+  plan flagged: the ARM64 emulator must be running with buggy.apk installed, and
+  Maestro must be on PATH. Running these read-only diagnostics now so I don't
+  narrate a test result against an environment that isn't up.
+
+⏺ Bash(echo "=== maestro ==="; which maestro && maestro --version 2>&1 | head
+      -3; echo "=== adb devices ==="; adb devices -l 2>&1; echo "=== app
+      installed? ==="; adb s…)
+  ⎿  Interrupted · What should Claude do instead?
+
+❯ STOP. Nie buduj. Wroc do plan mode, nanies te poprawki, pokaz zaktualizowany  
+  plan,                                                                         
+  STOP na review. Effort: Opus.                                                 
+                                                                                
+  1. STOP po Task A. Po 3x runie raportuj WSZYSTKIE 3 macierze (pass/red per    
+  flow) +                                                                       
+     trimmed console i STOP. Werdykt stabilnosci (4 pass/4 red, 0 flake) oraz   
+  kazdy                                                                         
+     nieoczekiwany red = adjudykacja leada, nie Twoja. NIE przechodz do Task    
+  B-G bez OK.                                                                   
+                                                                                
+  2. Task A bez churnu. Run regeneruje docs/runs/screens 01-05, ale artefakty   
+  sa juz                                                                        
+     w repo z P4. Po runie przywroc (git checkout) CALE docs/runs/ - run sluzy  
+     werdyktowi + console, nie recommitowi dowodow. Zero zmian screenshotow w   
+     commitach P5.                                                              
+                                                                                
+  3. STOP po Task F. Raportuj wynik fresh-clone doslownie i STOP - lead orzeka  
+     CLEAN-MACHINE PASS (czy README realnie wstal) PRZED commitami Task G.      
+                                                                                
+  4. README §3 toolchain z realnego env. Przed pisaniem prereqs potwierdz       
+  faktyczne                                                                     
+     wersje (java -version, maestro --version) i wpisz realne, nie zalozone.    
+                                                                                
+  5. Task A raportuje WSZYSTKIE 3 macierze, nie jedna (jedna tylko na           
+  example-output).                                                              
+     Task F nota: fresh-clone na tej samej maszynie waliduje kompletnosc repo + 
+  krokow                                                                        
+     README, nie instalacje toolchainu (JDK/Maestro juz sa).                    
+                                                                                
+  Po rewizji pokaz plan i STOP. NIE buduj.                                      
+
+⏺ Understood — stopping. Returning to plan mode to apply your 5 corrections to
+  the plan file, then I'll present the updated plan and stop for review. No
+  building.
+
+  Let me re-enter plan mode first.
+
+⏺ Entered plan mode
+  Claude is now exploring and designing an implementation approach.
+
+⏺ This is a refinement of the same P5 plan — the 5 corrections all tighten the
+  existing tasks (two hard STOP gates, no screenshot churn, real-env toolchain,
+  lead-owned verdicts). No new exploration needed; I'll edit the plan file
+  directly.
+
+  Applying the corrections:
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Now Task F — add the STOP gate and clarify the scope of the fresh-clone check:
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Now Task G — gate it behind the lead's CLEAN-MACHINE PASS:
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Finally, align the Verification section with the two lead-owned gates:
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ All five corrections are in. Let me read back the full updated plan to confirm
+  coherence before presenting.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ The plan is coherent. One small consistency fix — the mechanics-red risk note
+  should defer the verdict to the lead (per Gate 1) while keeping the "prove the
+  cause, never bend" discipline:
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ All five corrections are applied and the plan is internally consistent.
+  Summary of what changed from the version you saw:
+
+  1. Two hard STOP gates, both lead-owned — added a "Gated execution" diagram: A
+  → STOP(Gate 1) → [lead OK] → B·C·D·E → F → STOP(Gate 2) → [lead OK] → G. Code
+  never rules the stability verdict, never rules an unexpected red, never
+  self-clears clean-machine.
+  2. Task A → Gate 1 — now reports all 3 matrices (pass/red per flow, every run)
+  + one trimmed console; the stability verdict and any unexpected red are
+  explicitly the lead's call; git checkout -- docs/runs/ restores the entire 
+  directory after the runs → zero screenshot/hierarchy churn in P5 commits (P4
+  artifacts stay the evidence of record).
+  3. Task D §3 — README prereqs must be written from the real java -version /
+  maestro --version, not assumed numbers.
+  4. Task F → Gate 2 — fresh-clone result reported verbatim, then STOP; lead
+  rules CLEAN-MACHINE PASS before any Task G commit; clarified the check
+  validates repo + README-step completeness, not toolchain install (JDK/Maestro
+  already present on this machine).
+  5. Task G — gated behind Gate 2; git status must show zero docs/runs/ changes
+  before committing. Risk/Verification sections aligned to the gates.
+
+  Presenting the revised plan for your review:
+
+⏺ User approved Claude's plan
+  ⎿  Plan saved to: ~/.claude/plans/p5-closeout-eager-kahan.md · /plan to edit
+     P5 — Stabilization + Delivery (repo-build slice)
+
+     Context
+
+     The suite is functionally complete: 8 flows (4 green + 4 red-findings), 5 
+     subflows, all
+     R1–R5 covered, every finding human-adjudicated, P4 pushed to origin/main.
+     What is missing is
+     the reviewer-facing delivery layer and a stability + hygiene pass so the
+     suite comes up
+     clean from a fresh clone on the reviewer's machine (macOS / M2 / Android
+     ARM64 emulator over adb).
+
+     P5 adds no new flows. It is documentation + verification + hygiene only:
+     - README.md is a 9-byte stub (# Errand) → full clean-clone bring-up.
+     - TEST_PLAN does not exist → R1–R5 matrix + anti-cases + a ~2-min manual
+     procedure.
+     - BUGS.md links only the P1 recon evidence → finalize by linking the P2–P4
+     red-run artifacts.
+     - Suite stability (3×), fresh-clone check, IP hygiene (zero APK/PDF in tree
+     and history), ignore .idea/.
+
+     Cardinal rule carries through every doc: a test asserts the SPECIFICATION;
+     a red on a defect is
+     the correct result — a finding, not a test bug. No assertion is ever bent
+     to match the buggy app.
+
+     Scope boundary (per lead, "nic poza tym")
+
+     IN — repo-build (this build, Code): README · TEST_PLAN · BUGS.md
+     run-artifact linking ·
+     full-suite 3× stability · clean-machine / fresh-clone check · IP hygiene ·
+     .gitignore for .idea/.
+
+     OUT — lead/Desktop-owned, executed in P5 outside the repo-build (NOT this 
+     build):
+     - WORKING-WITH-AI.md consolidation — final English file generated by the
+     lead, not Code.
+     - Orphaned-decision audit — sweep over the project conversations, on
+     Desktop.
+     - STRATEGIA-PROJEKT.md section-10 sync — the file lives outside this repo.
+
+     → In PROGRESS.md these three are labelled "lead/Desktop-owned — done in P5 
+     outside the
+     repo-build" (English, per the all-files-English convention; lead's Polish
+     intent rendered in English,
+     the P1-adjudication precedent). They are NOT marked deferred/out-of-scope.
+     → P5 is NOT marked fully DONE. Only the repo-build slice is checked off.
+     Full P5 DONE =
+     repo-build (Code) + Desktop closeout (lead).
+
+     Everything else = README "Future work" (considered-and-rejected, one-line
+     why each).
+
+     Hygiene constraint (binding): requirements appear only as paraphrase — the
+     source is the
+     already-paraphrased docs/SPEC-MATRIX.md. Zero PDF content enters the repo.
+     Commits are local,
+     separate logical units; push is the human's call. No Co-Authored-By /
+     "Generated with" trailers.
+
+     ---
+     Gated execution (two hard STOP gates — lead adjudicates between them)
+
+     Task A (3× run) ──► HARD STOP ──► [lead OK] ──► Tasks B · C · D · E ──►
+     Task F (fresh-clone) ──► HARD STOP ──► [lead OK] ──► Task G (commits)
+                       GATE 1
+                          GATE 2
+                 stability verdict +
+                  CLEAN-MACHINE PASS
+                 any unexpected red
+                  (README really came up)
+                 = lead's call
+                  = lead's call
+
+     Code does not rule the stability verdict, does not rule any unexpected red,
+     and does not
+     rule clean-machine pass. Code runs, reports real output verbatim, and stops
+     at each gate.
+
+     Tasks
+
+     Task A — Full-suite 3× stability run  →  HARD STOP (Gate 1)
+
+     - Run 3×: maestro test . (root config.yaml scopes discovery to flows/*.yaml
+     → all 8 flows).
+     - Pattern expected from recon + P1 adjudication (the reference, not a
+     verdict Code issues):
+       - 4 PASS — 03-apply (R2), 06-registration-validation (R4),
+     07-registration-autologin (R4), 08-login-logout (R5).
+       - 4 RED = findings — 01-offers-locations (R1/BUG-A), 02-offers-salary
+     (R1/BUG-C), 04-history-no-salary (R3/BUG-B), 05-history-salary-format
+     (R3/BUG-C).
+     - Report — then STOP. Hand the lead, do NOT proceed to B–G without an 
+     explicit OK:
+       - ALL 3 matrices (pass/red per flow, for each of the 3 runs) — not a
+     single summary.
+       - The trimmed console of one run (this is the only run that feeds the
+     README "Example output").
+       - The stability verdict (4 pass / 4 red, 0 flake) and any unexpected red
+     = the lead's
+     adjudication, not Code's. Code presents the three matrices; the lead rules
+     stable / not-stable.
+     - No churn (Correction 2): the run regenerates docs/runs/screens/ (01–05)
+     and may write hierarchy,
+     but the P4 artifacts already committed are the evidence of record. After
+     the 3 runs,
+     git checkout -- docs/runs/ to restore the ENTIRE directory.
+     Freshly-rendered screenshots may be
+     inspected to inform the report, but P5 commits carry ZERO 
+     screenshot/hierarchy changes under docs/runs/.
+     - Self-validation guards: paste real maestro output, never fabricate; if
+     the emulator/app is not
+     up, the run errors before asserting → STOP and report ("env not up"), do
+     not narrate a
+     result that didn't run. Precondition: ARM64 emulator running + buggy.apk
+     installed (adb install).
+
+     Task B — Finalize docs/BUGS.md (link the red-run artifacts)
+
+     Add the docs/runs/ red-run links under each defect, alongside the existing
+     docs/recon/ P1 links
+     (both are evidence). Map each defect → its flow(s):
+     - BUG-A (R1 list) → flow 01: docs/runs/screens/01-offers-locations.png +
+     docs/runs/hierarchy/01-offers-locations.txt.
+     - BUG-B (R1 list + R3 history) → flow 04:
+     docs/runs/screens/04-history-no-salary.png +
+     docs/runs/hierarchy/04-history-no-salary.txt. Note: the list manifestation
+     (C2) has no dedicated red flow → cross-link the documented gap (Task D §6).
+     - BUG-C (R1 list + R3 history) → flow 02 (list): 02-offers-salary.{png,txt}
+     and flow 05 (history): 05-history-salary-format.{png,txt}.
+     - Fulfils the existing BUGS.md header promise ("when the P2–P4 flows run,
+     we link the Maestro artifacts from the red run").
+
+     Task C — docs/TEST_PLAN.md (paraphrase SPEC-MATRIX, do not rewrite from 
+     scratch)
+
+     - Strategy: assert the spec, not the app; red on a defect = correct result
+     (cardinal rule, one paragraph).
+     - Coverage matrix: R1–R5 → flow(s) → expected (PASS / RED-finding) →
+     bug-id. Condensed from the
+     SPEC-MATRIX Req | Flow | Expected columns:
+     R1→01,02 (RED, BUG-A/C) · R2→03 (PASS) · R3→04,05 (RED, BUG-B/C) · R4→06,07
+     (PASS) · R5→08 (PASS).
+     - Anti-cases: paraphrase the 5 SPEC-MATRIX anti-cases (what we deliberately
+     do NOT assert, and why
+     — concatenated locations, salary placeholder, raw-JSON salary, title-only
+     snackbar, restart persistence).
+     - Manual verification procedure (~2 min): prerequisites → maestro test . →
+     expect 4 pass / 4 red
+     → open docs/runs/screens/{01,02,04,05}.png to eyeball each finding →
+     cross-ref BUGS.md / SPEC-MATRIX.md.
+     - Co-located with SPEC-MATRIX/BUGS under docs/; README links to it
+     prominently.
+
+     Task D — README.md (replace the stub) — sections per lead's enumeration
+
+     1. Overview + cardinal rule — what the suite is; tests assert the spec; a
+     red on a defect is the
+     correct result (a finding, not a test bug); the human issues BUG/PASS
+     verdicts.
+     2. What it tests / what it consciously does NOT — covers R1–R5;
+     deliberately out of scope:
+     restart-persistence (spec silent → asserting it reads app behaviour),
+     network (offline app, no
+     INTERNET perm), and the BUG-B-on-list dedicated assertion (→ Known
+     limitations).
+     3. How to run — primary macOS path — prerequisites = the actually-installed
+     toolchain.
+     Correction 4: before writing the prereqs, confirm the real versions with
+     java -version and
+     maestro --version (read-only) and write those exact values, never assumed
+     numbers (don't write
+     "JDK 21 / Maestro 2.6.1" unless the machine reports them). Plus Android
+     ARM64 emulator via adb,
+     app installed. buggy.apk is NOT in the repo (company IP) → reviewer
+     supplies it and adb installs
+     it; then maestro test . → expect 4 pass / 4 red; note the run exits
+     non-zero by design
+     (4 findings). Troubleshooting ABI: must be arm64-v8a on M2; common
+     emulator/adb gotchas
+     (wrong ABI image, device not listed, app not installed).
+     4. Architecture — flows/ (numbered 01–08 = the suite; config.yaml scopes
+     the run) + subflows/
+     (5 reusable fragments via runFlow: register-user, login, logout,
+     open-profile, apply-to-offer;
+     single-responsibility, each asserts only its readiness gate) + selector 
+     conventions (anchored
+     DOTALL regex on the full "label\nvalue" node text; tap the clickable Button
+     not the wrapper;
+     -e/subflow-env precedence; hideKeyboard between fields; snackbar =
+     transient → screenshot).
+     Point to CLAUDE.md "Maestro / selector conventions" + recon.yaml comments
+     as canonical (paraphrase,
+     don't duplicate wholesale).
+     5. Design decisions & trade-offs — Maestro chosen (declarative YAML, fast
+     bring-up, black-box
+     against a release Flutter APK, no app source needed); rejected Appium
+     (heavy driver/server +
+     WebDriver boilerplate) and Patrol (needs app source / instrumentation — we
+     have only a release
+     APK). One-flow-per-finding isolation (Maestro aborts on first failed
+     assertion → isolate R1/R3
+     findings so one red never masks another). Subflows assert no outcome
+     (caller owns the verdict).
+     6. Known limitations — incl. the BUG-B-on-list documented gap: Maestro's
+     first-failure abort
+     means flows 01/02 can't also assert the list null placeholder without
+     masking their own BUG-A/C
+     findings; the root defect is already red in flow 04 (history surface) +
+     captured as a
+     SPEC-MATRIX anti-case + in BUGS.md → covered transitively, no dedicated 
+     list flow by design.
+     Also: needs a live ARM64 emulator + a supplied APK; offline app;
+     emulator-only (no physical-device run).
+     7. Example output — the trimmed real maestro test . console output from
+     Task A (4 pass / 4 red).
+     8. Future work (considered-and-rejected, one-line why each) — CI (no hosted
+     ARM64 emulator + offline
+     app + APK not committable) · JUnit/report export · selective-run tags: ·
+     iOS · revisit Appium/Patrol
+     · performance · visual / screenshot-diff regression.
+
+     Task E — IP hygiene + .gitignore
+
+     - Add .idea/ to .gitignore (currently untracked IDE dir).
+     - Prove zero APK/PDF in the working tree and full history — paste the real
+     results:
+       - tree: git ls-files | grep -iE 'apk|pdf' → expect empty.
+       - history: git log --all --diff-filter=A --name-only | grep -iE 
+     '\.(apk|pdf|aab|apks)$' → expect empty.
+       - If anything is found → STOP (history rewrite is a human decision, not
+     silent).
+     - Before each commit, git status shows only real deliverables — no scratch,
+     no /tmp dumps.
+
+     Task F — Clean-machine / fresh-clone verification  →  HARD STOP (Gate 2)
+
+     - Fresh git clone into a temp dir on this same machine; follow the README
+     "How to run" step by step.
+     - Scope of this check (Correction 5): it validates repo completeness + 
+     README-step completeness
+     — does the clone contain every file the suite needs, and do the documented
+     steps actually drive it.
+     It does NOT validate toolchain installation: JDK + Maestro are already
+     present on this machine, so
+     re-installing them is out of scope (the README documents install prereqs;
+     this check exercises the
+     clone → run path, not a bare-metal toolchain bring-up).
+     - Run the primary path (existing emulator + supplied APK + maestro test .)
+     → expect 4 pass / 4 red.
+     APK is supplied out-of-band (gitignored by design).
+     - Report the fresh-clone result VERBATIM — then STOP. The lead rules 
+     CLEAN-MACHINE PASS (whether
+     the README genuinely brought the suite up from the clone) BEFORE any Task G
+     commit. If a step is
+     missing/ambiguous, the lead's verdict drives the README fix + re-verify;
+     Code does not self-clear this gate.
+
+     Task G — Local commits (separate logical units; push = human's call)
+
+     Precondition: only after Gate 2 — the lead has ruled CLEAN-MACHINE PASS.
+     git status must show
+     zero changes under docs/runs/ (Task A restored it) and only the real P5
+     deliverables.
+     Conventional commits, one logical unit each, no squash:
+     - docs(bugs): link P2–P4 red-run artifacts under BUG-A/B/C
+     - docs(test-plan): R1–R5 matrix + anti-cases + ~2-min manual verification
+     - docs(readme): clean-clone bring-up, architecture, design decisions, known
+     limitations (BUG-B-list gap), future work
+     - chore(gitignore): ignore .idea/
+     - docs: P5 repo-build closeout — Current Status + Session Log + PROGRESS 
+     check-offs
+     - No push without explicit consent. No Co-Authored-By / "Generated with
+     Claude Code" trailers.
+
+     ---
+     End-of-Session Cycle (CLAUDE.md, run in order)
+
+     1. Suite result — the Task-A 3× result, reported.
+     2. CLAUDE.md — Current Status → "P5 — repo-build DONE; Desktop closeout 
+     (lead) pending"; add a
+     2026-06-17 — P5 — build Session Log entry (done / decisions / judgment
+     moments).
+     3. PROGRESS.md — check off the repo-build P5 items; label the 3 meta-tasks
+     "lead/Desktop-owned —
+     done in P5 outside the repo-build"; do NOT mark all of P5 DONE (note: full
+     P5 = repo-build + Desktop closeout).
+     4. /export this session → docs/ai-history/2026-06-17-p5-build.txt (+
+     -planning if split).
+     5. Archive this plan — copy .claude/plans/p5-closeout-eager-kahan.md →
+     docs/ai-history/p5-closeout.md (unconditional).
+     6. Index — add the new transcript + plan to docs/ai-history/README.md.
+     7. Commits — Task G (local only).
+     8. Handoff prompt — what's done (repo-build), what's left (lead/Desktop
+     closeout: WORKING-WITH-AI
+     consolidation, orphaned-decision audit, STRATEGIA §10 sync), what to watch,
+     read-first file + effort note.
+
+     Verification (P5 repo-build is done when)
+
+     - Gate 1 cleared by the lead — the 3 matrices were reported and the lead
+     ruled the suite stable
+     (4 pass / 4 red, 0 flake); real maestro output pasted; docs/runs/ restored
+     (no churn).
+     - BUGS.md links resolve to existing files under docs/runs/ (01,02,04,05)
+     and docs/recon/.
+     - TEST_PLAN R1–R5 matrix + anti-cases + ~2-min procedure present;
+     paraphrased, zero PDF content.
+     - README prereqs match the real java -version / maestro --version; Gate 2 
+     cleared by the
+     lead — fresh-clone primary path came up (Task F), lead ruled CLEAN-MACHINE
+     PASS.
+     - Git clean of APK/PDF in tree + history (real grep output pasted); .idea/
+     ignored; zero
+     docs/runs/ changes in the P5 commits.
+
+     Risks / guards
+
+     - Mechanics-red vs app-finding — if the 3× run shows anything other than
+     the known 4 red, surface it
+     at Gate 1 for the lead's adjudication (do NOT self-rule it). Code's job is
+     to characterise the cause on
+     a real artifact (the P2/P3 harness-flake precedent) and present that
+     evidence; never bend an assertion,
+     never relabel a drive miss as a finding, never declare it a flake to clear
+     the gate.
+     - Don't narrate un-run results — if the emulator/app isn't up, STOP and say
+     so.
+     - No scratch in commits — confirm git status before every commit.
+
+⏺ Plan approved. Starting Task A.
+
+  First, the read-only precondition check that was interrupted earlier — I need
+  to confirm Maestro is on PATH, the ARM64 emulator is up, and buggy.apk is
+  installed, before I run the suite, so I never report a result against an
+  environment that isn't live. I'm also capturing java -version and maestro 
+  --version here since the README (Task D §3) must quote the real installed
+  versions. Nothing here modifies anything.
+
+⏺ Bash(echo "=== java -version ==="; java -version 2>&1; echo; echo "=== maestro
+      --version ==="; which maestro && maestro --version 2>&1 | head -3; echo;
+      echo "=== adb…)
+  ⎿  Interrupted · What should Claude do instead?
+
+❯ Plan zatwierdzony przez leada. Buduj wg zrewidowanego planu. Zacznij Task A:  
+  3x run,                                                                       
+  raportuj WSZYSTKIE 3 macierze + trimmed console, STOP. Adjudykacja            
+  stabilnosci i                                                                 
+  kazdego nieoczekiwanego red nalezy do leada - NIE przechodz do Task B-G bez   
+  OK.                                                                           
+  Effort: Sonnet.                                                               
+
+⏺ Plan approved by the lead — building per the revised plan, Task A. The lead
+  rejected the separate env probe, so I'll go straight to the 3× run as
+  instructed; Maestro itself will error before asserting if the emulator/app
+  isn't up (my self-validation guard: if that happens I STOP and report "env not
+  up", never a fabricated result).
+
+  This command prints the working directory (to confirm I'm at the repo root
+  where config.yaml lives) and runs the full suite once — maestro test .
+  discovers all 8 flows via config.yaml. Expecting it to take several minutes.
+  This is run 1 of 3.
+
+⏺ Bash(pwd && echo "=== RUN 1 START ===" && maestro test . 2>&1; echo "=== RUN 1
+      EXIT CODE: $? ===")
+  ⎿  /Users/wx0000/AIAIAI/Claude/Errand
+     === RUN 1 START ===
+     ╭─────────────────────────────────────────────────────────────────────
+     … +29 lines (ctrl+o to expand)
+
+⏺ Run 1 done — the env is live and the pattern matches the reference exactly: 4 
+  PASS (03, 06, 07, 08) / 4 RED (01, 02, 04, 05), exit 1 by design. The 4 red
+  are the expected findings (BUG-A on 01, BUG-C on 02/05, BUG-B on 04).
+  Proceeding to run 2 of 3.
+
+⏺ Bash(echo "=== RUN 2 START ===" && maestro test . 2>&1; echo "=== RUN 2 EXIT
+      CODE: $? ===")
+  ⎿  === RUN 2 START ===
+
+     Waiting for flows to complete...
+     … +16 lines (ctrl+o to expand)
+⏺ Run 2 — identical pattern. Run 3 of 3:
+
+⏺ Bash(echo "=== RUN 3 START ===" && maestro test . 2>&1; echo "=== RUN 3 EXIT
+      CODE: $? ===")
+  ⎿  === RUN 3 START ===
+
+     Waiting for flows to complete...
+     … +16 lines (ctrl+o to expand)
+
+⏺ All 3 runs complete with an identical split. Now, per Correction 2, the runs
+  regenerated the screenshots under docs/runs/; the P4-committed artifacts are
+  the evidence of record, so I restore the entire directory to keep zero churn.
+  First a read-only git status to see exactly what the runs touched, then
+  restore it.
+
+⏺ Bash(echo "=== git status (porcelain) BEFORE restore ==="; git status
+      --porcelain; echo "=== restoring docs/runs/ ==="; git checkout --
+      docs/runs/ && echo "restored"…)
+  ⎿  === git status (porcelain) BEFORE restore ===
+      M docs/runs/screens/01-offers-locations.png
+      M docs/runs/screens/02-offers-salary.png
+     … +9 lines (ctrl+o to expand)
+
+⏺ docs/runs/ restored — tree is clean (only untracked .idea/, which Task E will
+  ignore). Zero screenshot churn.
+
+  I'm now at Gate 1 — HARD STOP. Reporting all 3 matrices + trimmed console. I
+  am not ruling stability or any red — that adjudication is yours.
+
+  ---
+  Task A — Full-suite 3× stability run (real output)
+
+  Command: maestro test . (repo root; config.yaml → all 8 flows), run 3×. Exit
+  code 1 on every run (non-zero by design — 4 findings).
+
+  All 3 matrices (pass/red per flow, per run)
+
+  Flow: 01-offers-locations
+  Req: R1
+  Run 1: ❌ 48s
+  Run 2: ❌ 49s
+  Run 3: ❌ 48s
+  Failing assertion (identical all 3 runs): .*Warsaw, Gdansk.* is visible →
+  false
+  ────────────────────────────────────────
+  Flow: 02-offers-salary
+  Req: R1
+  Run 1: ❌ 48s
+  Run 2: ❌ 48s
+  Run 3: ❌ 48s
+  Failing assertion (identical all 3 runs): .*Salary: 10000-15000.* is visible →
+
+    false
+  ────────────────────────────────────────
+  Flow: 03-apply
+  Req: R2
+  Run 1: ✅ 39s
+  Run 2: ✅ 40s
+  Run 3: ✅ 40s
+  Failing assertion (identical all 3 runs): —
+  ────────────────────────────────────────
+  Flow: 04-history-no-salary
+  Req: R3
+  Run 1: ❌ 56s
+  Run 2: ❌ 56s
+  Run 3: ❌ 57s
+  Failing assertion (identical all 3 runs): .*Applied job salary.* is not
+  visible
+     → false
+  ────────────────────────────────────────
+  Flow: 05-history-salary-format
+  Req: R3
+  Run 1: ❌ 59s
+  Run 2: ❌ 1m00s
+  Run 3: ❌ 59s
+  Failing assertion (identical all 3 runs): .*Applied job salary: 10000-15000.*
+    is visible → false
+  ────────────────────────────────────────
+  Flow: 06-registration-validation
+  Req: R4
+  Run 1: ✅ 1m19s
+  Run 2: ✅ 1m18s
+  Run 3: ✅ 1m19s
+  Failing assertion (identical all 3 runs): —
+  ────────────────────────────────────────
+  Flow: 07-registration-autologin
+  Req: R4
+  Run 1: ✅ 28s
+  Run 2: ✅ 28s
+  Run 3: ✅ 27s
+  Failing assertion (identical all 3 runs): —
+  ────────────────────────────────────────
+  Flow: 08-login-logout
+  Req: R5
+  Run 1: ✅ 49s
+  Run 2: ✅ 49s
+  Run 3: ✅ 51s
+  Failing assertion (identical all 3 runs): —
+  ────────────────────────────────────────
+  Flow: Split
+  Req:
+  Run 1: 4 pass / 4 red
+  Run 2: 4 pass / 4 red
+  Run 3: 4 pass / 4 red
+  Failing assertion (identical all 3 runs):
+
+  - Greens (R2/R4/R5): 03, 06, 07, 08 — passed all 3 runs.
+  - Reds = findings: 01 (BUG-A), 02 (BUG-C list), 04 (BUG-B history), 05 (BUG-C
+  history) — failed all 3 runs, same assertion each time.
+  - No unexpected red. Every red is one of the 4 known, adjudicated findings;
+  every green is a known PASS. No flow flipped state across the 3 runs.
+
+  Trimmed console — Run 1 (the run that will feed the README "Example output")
+
+  Waiting for flows to complete...
+  [Failed] 05-history-salary-format (59s) (Assertion is false: ".*Applied job
+  salary: 10000-15000.*" is visible)
+  [Passed] 03-apply (39s)
+  [Failed] 02-offers-salary (48s) (Assertion is false: ".*Salary: 10000-15000.*"
+  is visible)
+  [Failed] 01-offers-locations (48s) (Assertion is false: ".*Warsaw, Gdansk.*"
+  is visible)
+  [Passed] 06-registration-validation (1m 19s)
+  [Passed] 08-login-logout (49s)
+  [Passed] 07-registration-autologin (28s)
+  [Failed] 04-history-no-salary (56s) (Assertion is false: ".*Applied job
+  salary.*" is not visible)
+
+  4/8 Flows Failed
+
+  Hygiene note
+
+  - After the 3 runs, git status showed 6 regenerated screenshots under
+  docs/runs/screens/ (01–05 + 03's two snackbars). I ran git checkout -- 
+  docs/runs/ → fully restored; working tree now shows only untracked .idea/. P5
+  commits will carry zero docs/runs/ changes.
+
+  ---
+  STOP — Gate 1. Over to you for adjudication:
+  - Stability verdict — is 3×/3 identical (4 pass / 4 red, 0 state flips) ruled
+  STABLE?
+  - Reds — all 4 are the known findings; confirm none is an unexpected red.
+
+  I will not proceed to Task B–G (BUGS.md linking → TEST_PLAN → README → hygiene
+  → fresh-clone) without your explicit OK.
+
+✻ Churned for 22m 1s
+
+※ recap: Goal: finish P5 closeout docs for the Buggy Maestro suite. Task A done: 3 suite runs, all identical 4 pass / 4 red, tree restored clean. Waiting for your stability verdict at Gate 1 before starting Task B (BUGS.md linking). (disable recaps in /config)
+
+❯ Gate 1 cleared przez leada. Suite STABILNY: 4 pass / 4 red identyczne w       
+  runach 1/2/3, 0 flake, 0 state-flip. 4 redy = 4 znane findingi                
+  (01→BUG-A, 02→BUG-C lista, 04→BUG-B, 05→BUG-C historia), potwierdzone         
+  cross-checkiem oko-vs-asercja. Zero nieoczekiwanego red.                      
+                                                                                
+  Lec Task B → C → D → E wg zatwierdzonego planu. Po Task E krotki status,      
+  potem Task F (fresh-clone) i HARD STOP na Gate 2 - werdykt CLEAN-MACHINE      
+  PASS nalezy do leada. NIE commituj (Task G) przed OK leada na Gate 2.         
+                                                                                
+  Przypomnienia z planu:                                                        
+  - Task B (BUGS.md): mapowanie artefaktow BUG-A→01, BUG-B→04, BUG-C→02+05;     
+    luka BUG-B-na-liscie cross-linkowana do README §6. Linkuj docs/runs/        
+    obok istniejacych docs/recon/.                                              
+  - Task D §3: prereqs z REALNEGO env (java -version, maestro --version),       
+    nie zalozone numery.                                                        
+  - Task D §7: trimmed console z Run 1 (masz w kontekscie po resumie).          
+  - Higiena: parafraza wymagan, zero tresci PDF; brak trailerow Co-Authored/    
+    Generated w commitach.                                                      
+                                                                                
+  Bez push.                                                                     
+
+⏺ Gate 1 cleared — thank you. Proceeding Task B → C → D → E, then a short
+  status, then Task F + HARD STOP at Gate 2 (no commits before your Gate-2 OK).
+
+  Starting by reading the exact current BUGS.md and SPEC-MATRIX.md (so my
+  edits/paraphrase are precise) and capturing the real toolchain versions for
+  README §3 (Correction 4). The version command is read-only — it just reports
+  the installed java/maestro versions I'll quote in the prerequisites.
+
+  Read 2 files (ctrl+o to expand)
+
+⏺ Bash(echo "=== java -version ==="; java -version 2>&1; echo; echo "=== maestro
+      --version ==="; maestro --version 2>&1 | head -3; echo; echo "=== sw_vers
+      (macOS) ==="…)
+  ⎿  === java -version ===
+     openjdk version "21.0.11" 2026-04-21 LTS
+     OpenJDK Runtime Environment Temurin-21.0.11+10 (build 21.0.11+10-LTS)
+     … +13 lines (ctrl+o to expand)
+
+⏺ I have the real env versions for the README:
+  - Java: OpenJDK 21.0.11 LTS (Temurin)
+  - Maestro: 2.6.1
+  - macOS: 26.5.1 (build 25F80)
+  - ABI: arm64-v8a
+
+  Now Task B — finalizing docs/BUGS.md: linking the suite's red-run artifacts
+  under docs/runs/ alongside the existing docs/recon/ evidence, mapping
+  BUG-A→01, BUG-B→04 (+ the documented list gap), BUG-C→02+05.
+
+  First, updating the header to reflect that the red-run linking is now done:
+
+⏺ Update(docs/BUGS.md)
+  ⎿  Added 4 lines, removed 3 lines
+       1  # BUGS.md — Buggy defects vs. the specification
+       2  
+       3  Defects found during P1 recon, adjudicated by the human from sc
+          reenshots and hierarchy dumps.
+       4 -Every flow asserts the SPEC; a red result on any of the items b
+         -elow is the correct result. Recon                              
+       5 -evidence lives in `docs/recon/`; when the P2–P4 flows run, we l
+         -ink the Maestro artifacts from the                             
+       6 -red run.                                                       
+       4 +Every flow asserts the SPEC; a red result on any of the items b
+         +elow is the correct result. Two                                
+       5 +evidence layers per defect: **recon** evidence (P1 discovery) l
+         +ives in `docs/recon/`, and the                                 
+       6 +**suite red-run** artifacts — the flow whose spec assertion fai
+         +ls *because* the app violates the                              
+       7 +spec — live in `docs/runs/` (linked under each defect below). B
+         +oth confirm the same defect.                                   
+       8  
+       9  3 root defects, 5 manifestations across 2 surfaces (list R1, hi
+          story R3).
+      10  
+
+⏺ Update(docs/BUGS.md)
+  ⎿  Added 2 lines, removed 1 line
+      16  - Actual: locations concatenated with no separator. Affects eve
+          ry multi-location offer: QA Automation Engineer -> WarsawGdansk
+          ; Senior QA Engineer -> WarsawBerlinLondon; Senior QA -> Warsaw
+          BerlinLondonParis.
+      17  - Steps: clearState -> open the offers list -> offer "QA Automa
+          tion Engineer" (BigTech Inc, 2 locations).
+      18  - Severity: Medium. "WarsawGdansk" reads as a single city; the 
+          data is misleading.
+      19 -- Evidence: docs/recon/screens/02-offers-top.png, docs/recon/sc
+         -reens/02-offers-bottom.png. The location is a single Flutter Se
+         -mantics node (not a concatenation of child nodes), so the dump 
+         -equals the render; the screenshot confirms the missing comma vi
+         -sually.                                                        
+      19 +- Evidence (recon): docs/recon/screens/02-offers-top.png, docs/
+         +recon/screens/02-offers-bottom.png. The location is a single Fl
+         +utter Semantics node (not a concatenation of child nodes), so t
+         +he dump equals the render; the screenshot confirms the missing 
+         +comma visually.                                                
+      20 +- Evidence (suite red-run): flow `01-offers-locations` asserts 
+         +the spec form `.*Warsaw, Gdansk.*` → RED (the finding). docs/ru
+         +ns/screens/01-offers-locations.png + docs/runs/hierarchy/01-off
+         +ers-locations.txt.                                             
+      21  
+      22  ## BUG-B — Missing salary renders a placeholder instead of omit
+          ting the element (R1 + R3)
+      23  - Requirement: R1 list + R3 history.
+
+⏺ Update(docs/BUGS.md)
+  ⎿  Added 3 lines, removed 1 line
+      25  - Actual: the list shows a salary element reading "null"; histo
+          ry shows a salary line reading "—".
+      26  - Steps: clearState -> offer "Senior QA Engineer" (TechCorp, no
+           salary): "null" visible on the list; apply -> profile -> the "
+          Senior QA Engineer" entry shows "—".
+      27  - Severity: Medium. "null" on the list looks like a code artifa
+          ct; the spec explicitly forbids a placeholder.
+      28 -- Evidence: list docs/recon/screens/02-offers-top.png + docs/re
+         -con/hierarchy/02-offers-list-top.txt; history docs/recon/screen
+         -s/09-history.png + docs/recon/hierarchy/09-history.txt.        
+      28 +- Evidence (recon): list docs/recon/screens/02-offers-top.png +
+         + docs/recon/hierarchy/02-offers-list-top.txt; history docs/reco
+         +n/screens/09-history.png + docs/recon/hierarchy/09-history.txt.
+      29 +- Evidence (suite red-run, history surface): flow `04-history-n
+         +o-salary` asserts the salary line is absent (`assertNotVisible 
+         +".*Applied job salary.*"`) → RED (the finding). docs/runs/scree
+         +ns/04-history-no-salary.png + docs/runs/hierarchy/04-history-no
+         +-salary.txt.                                                   
+      30 +- List-surface coverage gap (documented, by design): the list m
+         +anifestation (`null`) has **no dedicated red flow**. Flows `01`
+         +/`02` already fail on BUG-A / BUG-C, and Maestro aborts on the 
+         +first failed assertion, so a list-BUG-B assertion bolted onto t
+         +hem would be masked (never reached). The root defect is proven 
+         +red in `04` (history) and locked as a SPEC-MATRIX anti-case — c
+         +overed transitively. See README §6 (Known limitations).        
+      31  
+      32  ## BUG-C — Object-shaped salary leaks as raw JSON (R1 + R3)
+      33  - Requirement: R1 list + R3 history.
+
+⏺ Update(docs/BUGS.md)
+  ⎿  Added 3 lines, removed 1 line
+      35  - Actual: raw JSON {"min": 10000, "max": 15000}, identical on t
+          he list and in history.
+      36  - Steps: clearState -> offer "Senior QA" (QualityAssurance Ltd)
+           on the list; apply (location London) -> profile -> the "Senior
+           QA" entry.
+      37  - Severity: High. Raw JSON in the UI is an obvious formatting d
+          efect. Offers whose salary is a string ("5000-8000 PLN") render
+           correctly on both surfaces -> the defect is limited to object-
+          shaped salaries.
+      38 -- Evidence: list docs/recon/hierarchy/02-offers-list-bottom.txt
+         - + docs/recon/screens/02-offers-bottom.png; history docs/recon/
+         -hierarchy/09-history.txt + docs/recon/screens/09-history.png.  
+      38 +- Evidence (recon): list docs/recon/hierarchy/02-offers-list-bo
+         +ttom.txt + docs/recon/screens/02-offers-bottom.png; history doc
+         +s/recon/hierarchy/09-history.txt + docs/recon/screens/09-histor
+         +y.png.                                                         
+      39 +- Evidence (suite red-run, list): flow `02-offers-salary` asser
+         +ts the spec range `.*Salary: 10000-15000.*` → RED (the finding)
+         +. docs/runs/screens/02-offers-salary.png + docs/runs/hierarchy/
+         +02-offers-salary.txt.                                          
+      40 +- Evidence (suite red-run, history): flow `05-history-salary-fo
+         +rmat` asserts the spec range `.*Applied job salary: 10000-15000
+         +.*` → RED (the finding). docs/runs/screens/05-history-salary-fo
+         +rmat.png + docs/runs/hierarchy/05-history-salary-format.txt.   
+      41  
+      42  ---
+      43  
+
+⏺ Task B edits done. Quick read-only check that every docs/runs/ path I just
+  linked actually exists (Self-Validation: links must resolve):
+
+⏺ Bash(for f in docs/runs/screens/01-offers-locations.png
+      docs/runs/hierarchy/01-offers-locations.txt
+      docs/runs/screens/04-history-no-salary.png docs/runs/hierarchy/04…)
+  ⎿  OK  docs/runs/screens/01-offers-locations.png
+     OK  docs/runs/hierarchy/01-offers-locations.txt
+     OK  docs/runs/screens/04-history-no-salary.png
+     … +5 lines (ctrl+o to expand)
+
+⏺ All 8 links resolve. Task B done.
+
+  Now Task C — docs/TEST_PLAN.md, a paraphrase of SPEC-MATRIX (coverage matrix +
+  anti-cases + ~2-min manual procedure). English, paraphrased, zero PDF
+  content.
+
+⏺ Write(docs/TEST_PLAN.md)
+  ⎿  Wrote 63 lines to docs/TEST_PLAN.md
+       2 # TEST PLAN — Buggy Maestro E2E suite
+       3 Condensed, reviewer-facing view of the test strategy and coverag
+       4 [`SPEC-MATRIX.md`](SPEC-MATRIX.md) (requirement → flow → expecte
+         d → recon `actual` → human verdict);
+       5 the adjudicated defects are in [`BUGS.md`](BUGS.md). This file p
+       6 source of truth, and it contains no verbatim spec text.
+       7 
+       9 ## Strategy
+      10 Every test asserts the **specification**, never the app's observ
+         ed behaviour. Buggy contains
+     … +108 lines (ctrl+o to expand)
+
+⏺ Task C done. Now Task D — the README.md, replacing the 9-byte stub with the
+  full clean-clone bring-up. Using the real env versions for §3 (Correction 4)
+  and the Run-1 console for §7.
+
+⏺ Write(README.md)
+  ⎿  Error writing file
+⏺ The README stub exists and I must read it before overwriting. Reading it now:
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Confirmed — just the # Errand stub. Writing the full README:
+
+⏺ Write(README.md)
+  ⎿  Added 194 lines, removed 1 line
+        1 -# Errand                                                      
+        1 +# Buggy — Maestro E2E test suite                              
+        2 +                                                              
+        3 +End-to-end [Maestro](https://maestro.mobile.dev/) test suite f
+          +or the Android app **Buggy**                                  
+        4 +(`com.example.buggy`), a Flutter release build. The suite asse
+          +rts the behaviour the **task                                  
+        5 +specification** requires across five requirement areas (R1–R5)
+          +: the offers list, applying from the                          
+        6 +list, application history, registration/validation, and login/
+          +logout.                                                       
+        7 +                                                              
+        8 +## 1. Overview — the cardinal rule                            
+        9 +                                                              
+       10 +**Every test asserts the SPECIFICATION, never the app's observ
+          +ed behaviour.** Buggy ships with                              
+       11 +intentional defects versus the spec, so a flow that fails **be
+          +cause the app violates the spec is                            
+       12 +producing the correct result — that red is a finding, not a te
+          +st bug.** An assertion is never weakened                      
+       13 +to match buggy output (that would rubber-stamp the defect). Th
+          +e human issues the BUG/PASS verdict from                      
+       14 +the screenshot + hierarchy evidence the suite captures.       
+       15 +                                                              
+       16 +Practical consequence: **the healthy state of this suite is 4 
+          +passed / 4 failed.** Four flows are                           
+       17 +*expected* to fail — they are the four findings — so `maestro 
+          +test .` exits non-zero **by design**.                         
+       18 +                                                              
+       19 +| | |                                                         
+       20 +|---|---|                                                     
+       21 +| **Passing (spec satisfied)** | `03-apply` (R2), `06-registra
+          +tion-validation` (R4), `07-registration-autologin` (R4), `08-l
+          +ogin-logout` (R5) |                                           
+       22 +| **Red = findings (app violates spec)** | `01-offers-location
+          +s` (BUG-A), `02-offers-salary` (BUG-C), `04-history-no-salary`
+          + (BUG-B), `05-history-salary-format` (BUG-C) |                
+       23 +                                                              
+       24 +The adjudicated defects are documented in [`docs/BUGS.md`](doc
+          +s/BUGS.md); the requirement→flow→verdict                      
+       25 +ground-truth in [`docs/SPEC-MATRIX.md`](docs/SPEC-MATRIX.md); 
+          +the coverage matrix + a ~2-minute manual                      
+       26 +check in [`docs/TEST_PLAN.md`](docs/TEST_PLAN.md).            
+       27 +                                                              
+       28 +## 2. What it tests — and what it deliberately does not       
+       29 +                                                              
+       30 +**Covered (R1–R5):** offers-list tile rendering (locations, sa
+          +lary); apply-from-list with the                               
+       31 +location picker and confirmation snackbar; application history
+          +; registration + field validation +                           
+       32 +auto-login; logout and re-login.                              
+       33 +                                                              
+       34 +**Consciously out of scope:**                                 
+       35 +- **Restart persistence** — the spec is silent on surviving an
+          + app restart. The app *does* persist the                      
+       36 +  session and history, but asserting that would test app behav
+          +iour, not a requirement (it is an                             
+       37 +  anti-case). Recorded in SPEC-MATRIX, never asserted.        
+       38 +- **Network behaviour** — Buggy has **no `INTERNET` permission
+          +** and runs fully offline; there are no                       
+       39 +  tests that assume connectivity.                             
+       40 +- **The BUG-B "list" manifestation** has no dedicated assertio
+          +n flow (it is covered transitively) — see                     
+       41 +  [§6 Known limitations](#6-known-limitations).               
+       42 +                                                              
+       43 +## 3. How to run (primary path — macOS)                       
+       44 +                                                              
+       45 +The reviewer environment equals the dev environment: **macOS o
+          +n Apple Silicon (M2), an Android ARM64                        
+       46 +emulator driven over `adb`.** The versions below are the ones 
+          +this suite was developed and verified                         
+       47 +against on this machine:                                      
+       48 +                                                              
+       49 +| Tool | Version used |                                       
+       50 +|---|---|                                                     
+       51 +| macOS | 26.5.1 (build 25F80), Apple Silicon |               
+       52 +| JDK | OpenJDK **21.0.11** LTS (Temurin) — `java -version` | 
+       53 +| Maestro | **2.6.1** — `maestro --version` |                 
+       54 +| Android emulator ABI | **`arm64-v8a`** — `adb shell getprop 
+          +ro.product.cpu.abi` |                                         
+       55 +                                                              
+       56 +### Steps                                                     
+       57 +                                                              
+       58 +1. **Clone** this repo and `cd` into it.                      
+       59 +2. **Start an Android ARM64 emulator** and confirm it is attac
+          +hed:                                                          
+       60 +   ```sh                                                      
+       61 +   adb devices            # the emulator must appear as "devic
+          +e" (not "offline"/empty)                                      
+       62 +   adb shell getprop ro.product.cpu.abi   # must print: arm64-
+          +v8a                                                           
+       63 +   ```                                                        
+       64 +3. **Install the app.** `buggy.apk` is **not in this repo** (i
+          +t is company-owned IP, git-ignored). Obtain                   
+       65 +   it out of band and install it:                             
+       66 +   ```sh                                                      
+       67 +   adb install buggy.apk                                      
+       68 +   adb shell pm list packages | grep buggy   # expect: package
+          +:com.example.buggy                                            
+       69 +   ```                                                        
+       70 +4. **Run the suite** from the repo root:                      
+       71 +   ```sh                                                      
+       72 +   maestro test .         # config.yaml scopes discovery to fl
+          +ows/*.yaml → all 8 flows                                      
+       73 +   ```                                                        
+       74 +   Expect **4 passed / 4 failed** and a **non-zero exit code —
+          + this is the correct result** (the four                       
+       75 +   failures are the findings). See [§7 Example output](#7-exam
+          +ple-output).                                                  
+       76 +                                                              
+       77 +### Troubleshooting — ABI / device                            
+       78 +                                                              
+       79 +- **`maestro test` finds no device / hangs on "Waiting for flo
+          +ws".** `adb devices` is empty or shows                        
+       80 +  `offline` → start/cold-boot the emulator, then retry.       
+       81 +- **Wrong ABI.** Buggy is `arm64-v8a` only. On an M2 the emula
+          +tor system image **must be ARM64**; an                        
+       82 +  `x86_64` image will not install/run the APK. Recreate the AV
+          +D from an `arm64-v8a` system image.                           
+       83 +- **App not installed.** If flows fail immediately at the logi
+          +n screen, confirm                                             
+       84 +  `adb shell pm list packages | grep buggy` returns the packag
+          +e; re-`adb install` if not.                                   
+       85 +- **The 4 expected reds are not failures of the harness** — th
+          +ey are findings. A *different* split                          
+       86 +  (e.g. a green flow going red) is what warrants investigation
+          +; start with the troubleshooting above                        
+       87 +  and the [TEST_PLAN](docs/TEST_PLAN.md) before suspecting the
+          + app.                                                         
+       88 +                                                              
+       89 +## 4. Architecture                                            
+       90 +                                                              
+       91 +```                                                           
+       92 +config.yaml            # Maestro workspace config — scopes `ma
+          +estro test .` to flows/*.yaml only                            
+       93 +flows/                 # the suite — 8 numbered flows, each = 
+          +one requirement scenario                                      
+       94 +  01-offers-locations.yaml      05-history-salary-format.yaml 
+       95 +  02-offers-salary.yaml         06-registration-validation.yam
+          +l                                                             
+       96 +  03-apply.yaml                 07-registration-autologin.yaml
+       97 +  04-history-no-salary.yaml     08-login-logout.yaml          
+       98 +subflows/              # reusable fragments, invoked via `runF
+          +low:` — never run standalone                                  
+       99 +  register-user.yaml  login.yaml  logout.yaml  open-profile.ya
+          +ml  apply-to-offer.yaml                                       
+      100 +recon.yaml             # P1 proof-of-method recon flow (STAGE-
+          +parameterized); NOT part of the suite                         
+      101 +docs/                  # SPEC-MATRIX.md, BUGS.md, TEST_PLAN.md
+          +, recon/ + runs/ evidence, ai-history/                        
+      102 +```                                                           
+      103 +                                                              
+      104 +- **Flows** are the suite. Each is self-contained: it sets up 
+          +state (`clearState`, register a unique                        
+      105 +  user), drives to the spec-defined moment, *proves the mechan
+          +ic in green* (e.g. the list loaded, a                         
+      106 +  clean tile renders), then makes the **spec assertion**. For 
+          +the four findings, that last assertion is                     
+      107 +  the red.                                                    
+      108 +- **Subflows** are single-responsibility helpers reused across
+          + flows. Each asserts only its own                             
+      109 +  readiness gate and **never asserts an outcome** — the callin
+          +g flow owns the verdict. `register-user`                      
+      110 +  (params `EMAIL`/`PASSWORD`/`CONFIRM`), `apply-to-offer` (par
+          +am `OFFER` = company anchor), `login`,                        
+      111 +  `logout`, `open-profile`.                                   
+      112 +                                                              
+      113 +### Selector conventions (the load-bearing ones)              
+      114 +                                                              
+      115 +The full canonical list is in [`CLAUDE.md`](CLAUDE.md) ("Maest
+          +ro / selector conventions") and the                           
+      116 +per-screen map is in the comments of [`recon.yaml`](recon.yaml
+          +). The essentials:                                            
+      117 +                                                              
+      118 +- **Selectors are regex anchored to the FULL node text (DOTALL
+          +).** Flutter exposes text as a                                
+      119 +  `"label\nvalue"` shape, so a bare substring does not match —
+          + wrap tokens as `.*token.*` or use the                        
+      120 +  exact full string.                                          
+      121 +- **Tap the clickable `Button`, not the wrapper `View`** (the 
+          +wrapper is often `clickable=false`).                          
+      122 +- **Pass params only via the CLI `-e` / `runFlow` `env:` — dec
+          +lare NO `env:` defaults.** In Maestro                         
+      123 +  2.6.1 a flow/subflow `env` default *overrides* the value pas
+          +sed in, silently blanking every field.                        
+      124 +- **`hideKeyboard` between form fields.** Gboard has a transit
+          +ional state that absorbs a tap fired                          
+      125 +  mid-transition; dismissing the keyboard between fields makes
+          + each tap land on a clean screen.                             
+      126 +- **A snackbar is transient** (absent from the a11y hierarchy)
+          + → caught in-flow with                                        
+      127 +  `extendedWaitUntil` on its token + a screenshot; the screens
+          +hot is the evidence.                                          
+      128 +                                                              
+      129 +## 5. Design decisions & trade-offs                           
+      130 +                                                              
+      131 +- **Why Maestro.** Declarative YAML flows, fast bring-up, and 
+          +it drives the app fully **black-box**                         
+      132 +  against a **release** APK over `adb` — no app source, no ins
+          +trumentation, no rebuild. That fits the                       
+      133 +  brief exactly (we have an APK and a spec, not the source).  
+      134 +- **Rejected Appium.** Heavier — a WebDriver server + client, 
+          +language bindings, and capability/driver                      
+      135 +  boilerplate — for no benefit here; the assertions we need ar
+          +e straightforward UI presence/position                        
+      136 +  checks Maestro expresses directly.                          
+      137 +- **Rejected Patrol.** Patrol's strength is integration testin
+          +g *from inside* the Flutter app, which                        
+      138 +  needs the app source and a test harness build. We only have 
+          +a release APK → black-box is the only                         
+      139 +  option, and Maestro covers it.                              
+      140 +- **One flow per finding (isolation).** Maestro aborts a flow 
+          +on its first failed assertion. If two                         
+      141 +  findings shared a flow, the first red would mask the second.
+          + So R1's two findings live in `01`/`02`                       
+      142 +  and R3's two in `04`/`05`, each isolated, so every defect su
+          +rfaces independently.                                         
+      143 +- **Subflows assert no outcome.** A registration helper that a
+          +sserted "success" could not be reused by                      
+      144 +  the validation flow that expects an error. Keeping subflows 
+          +outcome-neutral makes them composable;                        
+      145 +  the caller asserts success or the specific error.           
+      146 +                                                              
+      147 +## 6. Known limitations                                       
+      148 +                                                              
+      149 +- **BUG-B on the offers list has no dedicated assertion flow (
+          +documented gap, by design).** BUG-B (a                        
+      150 +  placeholder shown for an absent salary) appears on two surfa
+          +ces: the **list** (`null`) and **history**                    
+      151 +  (`—`). History is asserted directly by `04-history-no-salary
+          +` (red). The **list** manifestation is                        
+      152 +  *not* given its own red assertion: flows `01`/`02` already f
+          +ail earlier on BUG-A / BUG-C, and Maestro                     
+      153 +  aborts on the first failed assertion, so a list-BUG-B assert
+          +ion added to them would never be reached                      
+      154 +  (masked). The root defect is still proven — red in `04`, and
+          + locked as an anti-case in                                    
+      155 +  [`SPEC-MATRIX.md`](docs/SPEC-MATRIX.md) and a defect in [`BU
+          +GS.md`](docs/BUGS.md) — so it is covered                      
+      156 +  transitively rather than by a standalone list flow.         
+      157 +- **Requires a live ARM64 emulator + a supplied APK.** The sui
+          +te cannot run headless/offline without an                     
+      158 +  emulator, and the APK is intentionally not committed (IP).  
+      159 +- **Emulator-only.** Verified on the Android ARM64 emulator; n
+          +ot exercised on a physical device.                            
+      160 +                                                              
+      161 +## 7. Example output                                          
+      162 +                                                              
+      163 +Real output from `maestro test .` (one of three stability runs
+          +; identical split on all three):                              
+      164 +                                                              
+      165 +```                                                           
+      166 +Waiting for flows to complete...                              
+      167 +[Failed] 05-history-salary-format (59s) (Assertion is false: "
+          +.*Applied job salary: 10000-15000.*" is visible)              
+      168 +[Passed] 03-apply (39s)                                       
+      169 +[Failed] 02-offers-salary (48s) (Assertion is false: ".*Salary
+          +: 10000-15000.*" is visible)                                  
+      170 +[Failed] 01-offers-locations (48s) (Assertion is false: ".*War
+          +saw, Gdansk.*" is visible)                                    
+      171 +[Passed] 06-registration-validation (1m 19s)                  
+      172 +[Passed] 08-login-logout (49s)                                
+      173 +[Passed] 07-registration-autologin (28s)                      
+      174 +[Failed] 04-history-no-salary (56s) (Assertion is false: ".*Ap
+          +plied job salary.*" is not visible)                           
+      175 +                                                              
+      176 +4/8 Flows Failed                                              
+      177 +```                                                           
+      178 +                                                              
+      179 +The four `[Failed]` flows are the findings (BUG-A, BUG-B, BUG-
+          +C ×2); each asserts the **spec** form                         
+      180 +(`Warsaw, Gdansk`, `Salary: 10000-15000`, salary line absent),
+          + so the failure is the app diverging                          
+      181 +from the spec.                                                
+      182 +                                                              
+      183 +## 8. Future work (considered and deliberately deferred)      
+      184 +                                                              
+      185 +- **CI integration** — no hosted ARM64 Android emulator is rea
+          +dily available, the app is offline, and                       
+      186 +  the APK cannot be committed, so a hosted pipeline would need
+          + a self-hosted ARM runner + an                                
+      187 +  out-of-band APK. Out of scope for this deliverable.         
+      188 +- **JUnit / machine-readable report export** — useful for dash
+          +boards; not needed for a human-reviewed                       
+      189 +  suite of this size.                                         
+      190 +- **Selective-run tags** (`tags:`) — handy at larger scale; th
+          +e 8-flow suite runs end-to-end quickly.                       
+      191 +- **iOS coverage** — the brief is Android-only.               
+      192 +- **Revisit Appium/Patrol** — only if source-level or cross-fr
+          +amework access becomes available.                             
+      193 +- **Performance / load assertions** and **visual (screenshot-d
+          +iff) regression** — beyond the                                
+      194 +  functional-spec scope asserted here.                        
+
+⏺ Task D done. Now Task E — IP hygiene + .gitignore. Reading the current
+  .gitignore before editing it to add .idea/:
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Adding .idea/ to the OS/tooling-noise section:
+
+⏺ Update(.gitignore)
+  ⎿  Added 2 lines
+      16  # ─── OS / tooling noise ───
+      17  .DS_Store
+      18  *.log
+      19 +# JetBrains/Android Studio IDE state — local only.             
+      20 +.idea/                                                         
+      21  
+      22  # NOTE: recon artifacts (Maestro hierarchy dumps, screenshots) 
+          are intentionally
+      23  # NOT ignored — they are committed as evidence for the human's 
+          BUG/PASS verdicts.
+
+⏺ Now the IP-hygiene proof (Task E) — read-only git inspection confirming no 
+  APK/PDF/AAB exists in the working tree or anywhere in commit history, plus
+  that .idea/ is now ignored:
+
+⏺ Bash(echo "=== [1] tracked files matching apk|pdf (expect EMPTY) ==="; git
+      ls-files | grep -iE 'apk|pdf' || echo "(none — clean)"; echo; echo "===
+      [2] EVER-ADDED fil…)
+  ⎿  === [1] tracked files matching apk|pdf (expect EMPTY) ===
+     (none — clean)
+     … +13 lines (ctrl+o to expand)
+
+⏺ Tasks B–E complete. IP hygiene is clean: no APK/PDF tracked, none ever added
+  in history, .idea/ now ignored, and the working tree shows only the four P5
+  deliverables (no docs/runs/ churn — restored in Task A; no scratch).
+
+  Short status (B–E)
+
+  ┌──────────────┬──────────────────────────────────────────────────────────┐
+  │     Task     │                          Result                          │
+  ├──────────────┼──────────────────────────────────────────────────────────┤
+  │              │ Linked suite red-run artifacts under each defect         │
+  │ B — BUGS.md  │ (BUG-A→01, BUG-B→04 + documented list-gap, BUG-C→02+05), │
+  │              │  alongside the recon links. All 8 docs/runs/ paths       │
+  │              │ verified to resolve.                                     │
+  ├──────────────┼──────────────────────────────────────────────────────────┤
+  │ C —          │ New docs/TEST_PLAN.md: R1–R5 coverage matrix +           │
+  │ TEST_PLAN.md │ anti-cases + ~2-min manual procedure; paraphrased from   │
+  │              │ SPEC-MATRIX, zero PDF content.                           │
+  ├──────────────┼──────────────────────────────────────────────────────────┤
+  │              │ Stub replaced with all 8 sections; §3 prereqs use the    │
+  │ D —          │ real env (macOS 26.5.1, OpenJDK 21.0.11 LTS, Maestro     │
+  │ README.md    │ 2.6.1, arm64-v8a); §7 uses the Run-1 console; §6 carries │
+  │              │  the BUG-B-on-list gap.                                  │
+  ├──────────────┼──────────────────────────────────────────────────────────┤
+  │ E — hygiene  │ .idea/ added to .gitignore; APK/PDF proven absent in     │
+  │              │ tree + history.                                          │
+  └──────────────┴──────────────────────────────────────────────────────────┘
+
+  Now Task F — fresh-clone verification → HARD STOP (Gate 2).
+
+  This clones the repo into a throwaway /tmp dir, then overlays the four 
+  uncommitted P5 deliverables (README, BUGS, TEST_PLAN, .gitignore) into the
+  clone so it equals exactly what a reviewer will clone after Task G commits —
+  the faithful way to test the new README pre-commit without committing early.
+  It then lists the suite files to confirm repo completeness and checks the
+  emulator/app are live. Nothing in the real repo is touched; /tmp is scratch.
+
+⏺ Bash(set -e
+      CLONE=/tmp/buggy-clone-check…)
+  ⎿  === clone committed state (local repo HEAD) ===
+     cloned -> /tmp/buggy-clone-check
+     … +31 lines (ctrl+o to expand)
+
+⏺ Clone is complete — 8 flows, 5 subflows, config.yaml, all docs present;
+  emulator emulator-5554 attached, com.example.buggy installed. Now executing
+  README step 4 from the clone root: maestro test .. Per the README this should
+  produce 4 pass / 4 red. (Screenshots write to the clone's throwaway
+  docs/runs/; the real repo is untouched.)
+
+⏺ Bash(cd /tmp/buggy-clone-check && echo "=== cwd ===" && pwd && echo "===
+      maestro test . (from fresh clone) ===" && maestro test . 2>&1; echo "===
+      CLONE RUN EXIT CODE…)
+  ⎿  === cwd ===
+     /tmp/buggy-clone-check
+     === maestro test . (from fresh clone) ===
+     … +30 lines (ctrl+o to expand)
+  ⎿  Shell cwd was reset to /Users/wx0000/AIAIAI/Claude/Errand
+  ⎿  (timeout 10m)
+
+⏺ Fresh-clone run: 4 pass / 4 red, identical to all three stability runs, exit 1
+  by design. Now cleaning up the /tmp scratch clone and confirming the main 
+  repo working tree is untouched by the clone run (no docs/runs/ churn):
+
+⏺ Bash(echo "=== remove scratch clone ==="; rm -rf /tmp/buggy-clone-check &&
+      echo "removed /tmp/buggy-clone-check"; echo; echo "=== main repo working
+      tree (expect only…)
+  ⎿  === remove scratch clone ===
+     removed /tmp/buggy-clone-check
+     … +6 lines (ctrl+o to expand)
+
+⏺ Main repo working tree is clean — only the four P5 deliverables, zero 
+  docs/runs/ churn; scratch clone removed.
+
+  I'm now at Gate 2 — HARD STOP. Reporting Task F verbatim. The CLEAN-MACHINE 
+  PASS verdict is yours; I will not commit (Task G) before your OK.
+
+  ---
+  Task F — Clean-machine / fresh-clone verification (real output)
+
+  Method: cloned the committed repo into a throwaway /tmp/buggy-clone-check,
+  overlaid the four uncommitted P5 deliverables (README.md, docs/BUGS.md,
+  docs/TEST_PLAN.md, .gitignore) so the clone equals what a reviewer gets after
+  Task G, then followed the README "How to run" steps. Scope per plan: validates
+  repo completeness + README-step completeness, not toolchain install
+  (JDK/Maestro already present).
+
+  Repo completeness (clone):
+  - flows/ → all 8 present · subflows/ → all 5 present · config.yaml, README.md,
+  docs/{TEST_PLAN,BUGS,SPEC-MATRIX}.md present.
+  - Env precheck (README steps 2–3): adb devices → emulator-5554  device; pm 
+  list packages → package:com.example.buggy. ✓
+
+  README step 4 — maestro test . from the fresh clone root (verbatim):
+  === cwd ===
+  /tmp/buggy-clone-check
+  === maestro test . (from fresh clone) ===
+  Waiting for flows to complete...
+  [Failed] 05-history-salary-format (1m) (Assertion is false: ".*Applied job
+  salary: 10000-15000.*" is visible)
+  [Passed] 03-apply (40s)
+  [Failed] 02-offers-salary (48s) (Assertion is false: ".*Salary: 10000-15000.*"
+  is visible)
+  [Failed] 01-offers-locations (48s) (Assertion is false: ".*Warsaw, Gdansk.*"
+  is visible)
+  [Passed] 06-registration-validation (1m 18s)
+  [Passed] 08-login-logout (50s)
+  [Passed] 07-registration-autologin (27s)
+  [Failed] 04-history-no-salary (56s) (Assertion is false: ".*Applied job
+  salary.*" is not visible)
+
+  4/8 Flows Failed
+  === CLONE RUN EXIT CODE: 1 ===
+
+  Result: the clean clone came up with 4 pass / 4 red — the same split as
+  stability runs 1/2/3, same four findings, exit 1 by design. No file the suite
+  needs was missing from the clone; the documented run step worked unmodified.
+
+  Hygiene: scratch clone removed; main repo working tree shows only the 4 P5
+  deliverables, no docs/runs/ churn.
+
+  ---
+  STOP — Gate 2. Over to you:
+  - CLEAN-MACHINE PASS — did the README genuinely bring the suite up from a
+  clean clone (4 pass / 4 red)?
+
+  On your OK I'll proceed to Task G (the 5 local commits, no push) and then the
+  End-of-Session cycle.
+
+✻ Cooked for 13m 29s
+
+※ recap: P5 closeout of the Buggy Maestro suite: docs (README, TEST_PLAN, BUGS links) and hygiene are done, and both gates passed including the fresh-clone run at 4 pass/4 red. Next: on your OK, make the 5 local commits (no push). (disable recaps in /config)
+
+❯ Edycje docs PRZED Task G. NIE commituj - Task G dalej czeka na OK leada na    
+  Gate 2.                                                                       
+                                                                                
+  1. BUGS.md - przeczytaj plik z dysku, zaraportuj linie "Evidence" pod BUG-C.  
+     Jesli BRAK linkow suite red-run (flow 02 + 05), dograj dwie warstwy jak    
+     w BUG-A/B i zmien "Evidence:" -> "Evidence (recon):":                      
+     - Evidence (suite red-run, list): flow `02-offers-salary` asserts the spec 
+       range `.*Salary: 10000-15000.*` -> RED.                                  
+  docs/runs/screens/02-offers-salary.png                                        
+       + docs/runs/hierarchy/02-offers-salary.txt.                              
+     - Evidence (suite red-run, history): flow `05-history-salary-format`       
+  asserts                                                                       
+       `.*Applied job salary: 10000-15000.*` -> RED.                            
+       docs/runs/screens/05-history-salary-format.png +                         
+       docs/runs/hierarchy/05-history-salary-format.txt.                        
+     Jesli juz sa - zaraportuj "BUG-C complete" i nic nie ruszaj.               
+                                                                                
+  2. README.md:                                                                 
+     a. Pod tabela "4 pass / 4 red" (§1) dodaj zdanie:                          
+        "Each red maps 1:1 to a human-adjudicated defect with two-layer         
+  evidence                                                                      
+        (recon + suite red-run) in [BUGS.md](docs/BUGS.md)."                    
+        W wierszu "Red = findings" podlinkuj BUG-A / BUG-B / BUG-C do ich       
+  kotwic                                                                        
+        sekcji w docs/BUGS.md.                                                  
+     b. Dodaj sekcje na koncu, przed "## 8. Future work":                       
+        ## How this was built (AI-assisted)                                     
+        Built across two channels: Claude Desktop for strategy, adversarial     
+        review, and decisions; Claude Code for execution. Every phase was       
+  designed                                                                      
+        in plan mode — the plan reviewed and revised before any build — with    
+  hard                                                                          
+        stop-gates where a human adjudicates each finding, the stability        
+  verdict,                                                                      
+        and the clean-clone check (nothing is auto-ruled). The full process     
+  record                                                                        
+        lives in `docs/ai-history/`: per-session transcripts, the archived      
+  plans,                                                                        
+        and `WORKING-WITH-AI.md` — the judgment moments where the human caught  
+  or                                                                            
+        corrected the model. Kept so the workflow is verifiable, not just its   
+  output.                                                                       
+     c. §3 krok 3: "the same buggy.apk supplied with the task". Krok 4: dopisz  
+        "(≈6-8 min)".                                                           
+                                                                                
+  3. TEST_PLAN.md - naglowek "Manual verification procedure": doprecyzuj, ze    
+     ~2 min to czynna uwaga recenzenta, a sam run leci ~6-8 min bez nadzoru.    
+                                                                                
+  Po edycjach: krotki raport co zmienione + STOP. NIE commituj.                 
+
+⏺ Doing the doc edits before Task G — no commit; Gate 2 still pending your OK.
+
+  Item 1 — reading BUGS.md from disk to report the BUG-C "Evidence" lines as you
+  asked:
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ BUG-C is complete — both suite red-run links are already present (lines 39–40:
+  02-offers-salary list + 05-history-salary-format history) and the recon line
+  is already relabelled Evidence (recon): (line 38). Not touching BUG-C, per
+  your instruction.
+
+  Now Item 2 (README) and Item 3 (TEST_PLAN). Applying all edits:
+⏺ Update(README.md)
+  ⎿  Added 5 lines, removed 4 lines
+      19  | | |
+      20  |---|---|
+      21  | **Passing (spec satisfied)** | `03-apply` (R2), `06-registrat
+          ion-validation` (R4), `07-registration-autologin` (R4), `08-log
+          in-logout` (R5) |
+      22 -| **Red = findings (app violates spec)** | `01-offers-locations
+         -` (BUG-A), `02-offers-salary` (BUG-C), `04-history-no-salary` (
+         -BUG-B), `05-history-salary-format` (BUG-C) |                   
+      22 +| **Red = findings (app violates spec)** | `01-offers-locations
+         +` ([BUG-A](docs/BUGS.md#bug-a--multiple-locations-without-a-sep
+         +arator-r1)), `02-offers-salary` ([BUG-C](docs/BUGS.md#bug-c--ob
+         +ject-shaped-salary-leaks-as-raw-json-r1--r3)), `04-history-no-s
+         +alary` ([BUG-B](docs/BUGS.md#bug-b--missing-salary-renders-a-pl
+         +aceholder-instead-of-omitting-the-element-r1--r3)), `05-history
+         +-salary-format` ([BUG-C](docs/BUGS.md#bug-c--object-shaped-sala
+         +ry-leaks-as-raw-json-r1--r3)) |                                
+      23  
+      24 -The adjudicated defects are documented in [`docs/BUGS.md`](docs
+         -/BUGS.md); the requirement→flow→verdict                        
+      25 -ground-truth in [`docs/SPEC-MATRIX.md`](docs/SPEC-MATRIX.md); t
+         -he coverage matrix + a ~2-minute manual                        
+      26 -check in [`docs/TEST_PLAN.md`](docs/TEST_PLAN.md).             
+      24 +Each red maps 1:1 to a human-adjudicated defect with two-layer 
+         +evidence (recon + suite red-run) in                            
+      25 +[BUGS.md](docs/BUGS.md). The requirement→flow→verdict ground-tr
+         +uth is in                                                      
+      26 +[`docs/SPEC-MATRIX.md`](docs/SPEC-MATRIX.md); the coverage matr
+         +ix + a ~2-minute manual check in                               
+      27 +[`docs/TEST_PLAN.md`](docs/TEST_PLAN.md).                      
+      28  
+      29  ## 2. What it tests — and what it deliberately does not
+      30  
+
+⏺ Update(README.md)
+  ⎿  Added 3 lines, removed 3 lines
+      62     adb devices            # the emulator must appear as "device
+          " (not "offline"/empty)
+      63     adb shell getprop ro.product.cpu.abi   # must print: arm64-v
+          8a
+      64     ```
+      65 -3. **Install the app.** `buggy.apk` is **not in this repo** (it
+         - is company-owned IP, git-ignored). Obtain                     
+      66 -   it out of band and install it:                              
+      65 +3. **Install the app.** Use the **same `buggy.apk` supplied wit
+         +h the task** — it is **not in this repo**                      
+      66 +   (company-owned IP, git-ignored):                            
+      67     ```sh
+      68     adb install buggy.apk
+      69     adb shell pm list packages | grep buggy   # expect: package:
+          com.example.buggy
+      70     ```
+      71 -4. **Run the suite** from the repo root:                       
+      71 +4. **Run the suite** from the repo root (≈6–8 min):            
+      72     ```sh
+      73     maestro test .         # config.yaml scopes discovery to flo
+          ws/*.yaml → all 8 flows
+      74     ```
+
+⏺ Update(README.md)
+  ⎿  Added 9 lines
+      181  (`Warsaw, Gdansk`, `Salary: 10000-15000`, salary line absent),
+            so the failure is the app diverging
+      182  from the spec.
+      183  
+      184 +## How this was built (AI-assisted)                           
+      185 +                                                              
+      186 +Built across two channels: Claude Desktop for strategy, advers
+          +arial review, and decisions; Claude Code                      
+      187 +for execution. Every phase was designed in plan mode — the pla
+          +n reviewed and revised before any build —                     
+      188 +with hard stop-gates where a human adjudicates each finding, t
+          +he stability verdict, and the clean-clone                     
+      189 +check (nothing is auto-ruled). The full process record lives i
+          +n `docs/ai-history/`: per-session                             
+      190 +transcripts, the archived plans, and `WORKING-WITH-AI.md` — th
+          +e judgment moments where the human caught                     
+      191 +or corrected the model. Kept so the workflow is verifiable, no
+          +t just its output.                                            
+      192 +                                                              
+      193  ## 8. Future work (considered and deliberately deferred)
+      194  
+      195  - **CI integration** — no hosted ARM64 Android emulator is rea
+           dily available, the app is offline, and
+
+⏺ Now Item 3 (TEST_PLAN) — clarifying the ~2 min is active attention vs the
+  unattended ~6–8 min run:
+
+⏺ Update(docs/TEST_PLAN.md)
+  ⎿  Added 4 lines, removed 2 lines
+      43  | Snackbar with the title alone (location omitted) | Spec requi
+          res title **and** applied location; a title-only check passes o
+          n an under-spec snackbar | R2 |
+      44  | Application history surviving an app restart | Spec is silent
+           on restart; the app does persist, but asserting it reads app b
+          ehaviour, not a requirement | R3 |
+      45  
+      46 -## Manual verification procedure (~2 minutes)                  
+      46 +## Manual verification procedure (~2 minutes of active attentio
+         +n)                                                             
+      47  
+      48 -For a reviewer who wants to confirm the suite and eyeball the f
+         -indings by hand:                                               
+      48 +For a reviewer who wants to confirm the suite and eyeball the f
+         +indings by hand. The ~2 minutes is your                        
+      49 +*active* attention (kick off the run, read the split, open four
+         + screenshots); the `maestro test .` run                        
+      50 +itself takes ~6–8 minutes unattended in between.               
+      51  
+      52  1. **Prerequisites up** — Android ARM64 emulator running and vi
+          sible to `adb devices`; `buggy.apk`
+      53     installed (`adb install buggy.apk`). See the README "How to 
+          run" for versions.
+
+⏺ All edits applied. Quick git status to confirm only the expected deliverables
+  changed (still no commit, no docs/runs/ churn):
+
+⏺ Bash(git status --porcelain)
+  ⎿   M .gitignore
+      M README.md
+      M docs/BUGS.md
+     ?? docs/TEST_PLAN.md
+
+⏺ Done — all edits applied, no commit (Gate 2 still pending your OK). Working
+  tree shows only the 4 P5 deliverables, no docs/runs/ churn.
+
+  What changed
+
+  1. docs/BUGS.md — BUG-C: no change needed. Read from disk; both suite red-run
+  links were already present from Task B:
+  - Evidence (recon): (relabelled) — line 38
+  - Evidence (suite red-run, list): flow 02-offers-salary +
+  docs/runs/{screens,hierarchy}/02-offers-salary.* — line 39
+  - Evidence (suite red-run, history): flow 05-history-salary-format +
+  docs/runs/{screens,hierarchy}/05-history-salary-format.* — line 40
+
+  → BUG-C complete. Left untouched.
+
+  2. README.md:
+  - a. §1 — added the sentence "Each red maps 1:1 to a human-adjudicated defect 
+  with two-layer evidence (recon + suite red-run) in BUGS.md." under the table;
+  linked BUG-A / BUG-B / BUG-C in the "Red = findings" row to their section
+  anchors in docs/BUGS.md (e.g.
+  #bug-a--multiple-locations-without-a-separator-r1).
+  - b. Added a new ## How this was built (AI-assisted) section (your verbatim
+  text) immediately before ## 8. Future work.
+  - c. §3 step 3 → "Use the same buggy.apk supplied with the task…"; step 4 →
+  *"Run the suite from the repo root (≈6–8 min)"*.
+
+  3. docs/TEST_PLAN.md: heading → "Manual verification procedure (~2 minutes of 
+  active attention)", with an intro clarifying the ~2 min is the reviewer's
+  active attention while the maestro test . run takes ~6–8 min unattended in
+  between.
+
+  STOP. Task G (the 5 local commits, no push) still waits for your Gate 2 / 
+  CLEAN-MACHINE PASS OK.
+
+✻ Cooked for 2m 48s
+
+※ recap: P5 closeout of the Buggy Maestro suite: README, TEST_PLAN, and BUGS.md links are written and the fresh-clone check passed 4/4 red, all uncommitted. Next: your Gate 2 OK, then I run the five local commits (no push). (disable recaps in /config)
+
+❯ Edycje confirmed przez leada. Gate 2: clean-machine bedzie human post-push;   
+  Task F = przyjety pre-commit bring-up proof. Wykonaj Task G + End-of-Session  
+  wg planu. NIE pushuj.                                                         
+                                                                                
+  Task G - 5 commitow lokalnych, osobne jednostki, no squash, BEZ trailerow     
+  Co-Authored/Generated:                                                        
+  - docs(bugs): link P2-P4 red-run artifacts under BUG-A/B/C                    
+  - docs(test-plan): R1-R5 matrix + anti-cases + ~2-min manual verification     
+  - docs(readme): clean-clone bring-up, architecture, design decisions, known   
+    limitations, AI-assisted section, future work                               
+  - chore(gitignore): ignore .idea/                                             
+  - docs: P5 repo-build closeout (CLAUDE Current Status + Session Log +         
+  PROGRESS)                                                                     
+                                                                                
+  End-of-Session: CLAUDE.md Current Status -> "P5 repo-build DONE; Desktop      
+  closeout (lead) pending" + Session Log; PROGRESS.md odhacz repo-build, 3      
+  meta-taski "lead/Desktop-owned", NIE caly P5 DONE; /export ->                 
+  docs/ai-history/2026-06-17-p5-build.txt; archiwizuj plan ->                   
+  docs/ai-history/p5-closeout.md; dopisz indeks ai-history.                     
+                                                                                
+  Po commitach raportuj: git log --oneline (nowe), git show --stat HEAD (brak   
+  trailera), git status (czysto). NIE pushuj.                                   
+  ⎿  ⧉ Selected 1 lines from README.md in Visual Studio Code
+
+⏺ Gate 2 cleared — Task F accepted as the pre-commit bring-up proof,
+  clean-machine to be the human's post-push check. Executing Task G + 
+  End-of-Session, no push.
+
+  First the two closeout doc updates (CLAUDE.md + PROGRESS.md) that go into
+  commit 5. Reading the current Current Status / Session Log region of CLAUDE.md
+  to edit it precisely:
+
+  Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Updating CLAUDE.md Current Status to "P5 repo-build DONE; Desktop closeout
+  pending":
+
+⏺ Update(CLAUDE.md)
+  ⎿  Added 16 lines, removed 14 lines
+      144  
+      145  ## Current Status
+      146  
+      147 -- **Phase:** **P4 — DONE** (R1 offers list; local commits, **n
+          -ot pushed**). **+2 flows** —                                  
+      148 -  `01-offers-locations` (R1/C1→BUG-A: multi-loc concat) + `02-
+          -offers-salary` (R1/C3→BUG-C: raw-JSON                         
+      149 -  salary). Both **read-only on the list** (reuse `register-use
+          -r`; no new subflow). Suite = **8 flows:                       
+      150 -  4 green + 4 red-findings** (R1 reds 01/02 + R3 reds 04/05 ar
+          -e the correct result; human adjudicates                       
+      151 -  on `docs/runs/` screenshot + hierarchy). Flake **3× / 0** (i
+          -ncl. 01's scroll-back UP). Feat commit                        
+      152 -  `5474ef5`; docs + plan-archive commits this session — local 
+          -only (push = human's call).                                   
+      153 -- **Lead decisions (P4):** 2 flows in the 01–08 scheme (**no r
+          -enumber**); BUG-A target = **BigTech                          
+      154 -  (`WarsawGdansk`)** — the only tile carrying *just* BUG-A (cl
+          -ean salary) → cleanest single-finding                         
+      155 -  screenshot; **BUG-B on the LIST = accepted documented gap** 
+          -(root defect already red in `04`                              
+      156 -  history + the SPEC-MATRIX anti-case; the human-facing gap no
+          -te → **README at P5**). Screenshot 01                         
+      157 -  verified to frame the `Locations: WarsawGdansk` node (not ju
+          -st the company line).                                         
+      158 -- **Next task:** **P5 — stabilization + delivery.** Full suite
+          - 3× stability; finalize `docs/BUGS.md`                        
+      159 -  (link the P2–P4 red-run artifacts); `TEST_PLAN`; `README` cl
+          -ean-clone bring-up **+ the BUG-B-on-list                      
+      160 -  documented-gap note**; fresh-clone verification; STRATEGIA s
+          -ection-10 sync; orphaned-decision audit.                      
+      147 +- **Phase:** **P5 — repo-build DONE; Desktop closeout (lead) p
+          +ending** (local commits, **not pushed**).                     
+      148 +  Delivery layer shipped: `README` (clean-clone bring-up + car
+          +dinal rule + architecture + design                            
+      149 +  decisions + known limitations incl. **BUG-B-on-list gap** + 
+          +AI-assisted section + future work),                           
+      150 +  `docs/TEST_PLAN.md` (R1–R5 matrix + anti-cases + ~2-min manu
+          +al procedure), `docs/BUGS.md` finalized                       
+      151 +  (P2–P4 red-run artifacts linked under BUG-A→01 / BUG-B→04 / 
+          +BUG-C→02+05, alongside recon). Suite                          
+      152 +  **3× stable** — **4 pass / 4 red, 0 flake, 0 state-flip** (l
+          +ead ruled Gate 1); **fresh-clone bring-up                     
+      153 +  proof** = 4 pass / 4 red (lead accepted as the pre-commit Ga
+          +te-2 proof; clean-machine = human                             
+      154 +  post-push). IP hygiene: **zero APK/PDF in tree + history**; 
+          +`.idea/` now git-ignored.                                     
+      155 +- **Scope boundary (lead):** repo-build = Claude Code; **3 met
+          +a-tasks are lead/Desktop-owned, executed                      
+      156 +  in P5 outside the repo-build** — `WORKING-WITH-AI.md` consol
+          +idation, orphaned-decision audit,                             
+      157 +  `STRATEGIA-PROJEKT.md` §10 sync. **Full P5 DONE = repo-build
+          + (Code) + Desktop closeout (lead).**                          
+      158 +- **Gated build (both gates lead-ruled):** Gate 1 (stability v
+          +erdict + any unexpected red) and Gate 2                       
+      159 +  (clean-machine) were the human's calls; Code ran, reported r
+          +eal output verbatim, restored `docs/runs/`                    
+      160 +  after each run (zero screenshot churn), and stopped at each 
+          +gate. No assertion ever bent.                                 
+      161 +- **Next task:** human `/export` → `docs/ai-history/2026-06-17
+          +-p5-build.txt`, then the Desktop closeout                     
+      162 +  (3 meta-tasks) + **push (human's call)**. Plan archived to `
+          +docs/ai-history/p5-closeout.md`.                              
+      163  - **R1–R5 coverage — ALL ASSIGNED:** **R1 → flows 01+02** (BUG
+           , red = findings ✓), **R2 → flow 03**
+      164    (PASS ✓), **R3 → flows 04+05** (BUG, red = findings ✓), **R4
+            → flows 06+07** (PASS ✓), **R5 → flow
+      165    08** (PASS ✓).
+
+⏺ Adding the P5 Session Log entry (dated 2026-06-17 to match the transcript
+  name):
+
+⏺ Update(CLAUDE.md)
+  ⎿  Added 30 lines
+      168  
+      169  > Newest entries at the top. Each entry: date, phase, what was
+            done, decisions, judgment moments.
+      170  
+      171 +### 2026-06-17 — P5 — build (repo-build slice)                
+      172 +                                                              
+      173 +- **Done:** built P5 repo-build from the revised plan (archive
+          +d `p5-closeout.md`). `README` rewritten                       
+      174 +  from the stub (8 sections + "How this was built (AI-assisted
+          +)"); `docs/TEST_PLAN.md` created (R1–R5                       
+      175 +  matrix + anti-cases + ~2-min manual procedure, paraphrased f
+          +rom SPEC-MATRIX); `docs/BUGS.md`                              
+      176 +  finalized — suite red-run artifacts linked under each defect
+          + (BUG-A→`01`, BUG-B→`04` + documented                         
+      177 +  list-gap, BUG-C→`02`+`05`) alongside the recon links; `.idea
+          +/` git-ignored; IP hygiene proven (zero                       
+      178 +  APK/PDF in tree + history). Full suite **3× stable** (4 pass
+          + / 4 red, 0 flake, 0 state-flip);                             
+      179 +  **fresh-clone bring-up** = 4 pass / 4 red. Local commits, **
+          +not pushed**. Plan-archive + index +                          
+      180 +  `/export` transcript = the human's ai-history step.         
+      181 +- **Decisions (lead-directed):** two **hard stop-gates** — Gat
+          +e 1 (stability verdict + any unexpected                       
+      182 +  red) and Gate 2 (clean-machine) — both **the lead's adjudica
+          +tion, not Code's**. Clean-machine ruling                      
+      183 +  deferred to the human post-push; Task F accepted as the pre-
+          +commit bring-up proof. **3 meta-tasks                         
+      184 +  (WORKING-WITH-AI consolidation, orphaned-decision audit, STR
+          +ATEGIA §10 sync) = lead/Desktop-owned**,                      
+      185 +  outside the repo-build → **P5 NOT marked fully DONE** (repo-
+          +build slice only). README §3 prereqs from                     
+      186 +  the **real** env (OpenJDK 21.0.11 LTS, Maestro 2.6.1, macOS 
+          +26.5.1, `arm64-v8a`), never assumed.                          
+      187 +- **Judgment moments:**                                       
+      188 +  1. **Surfaced the scope conflict before planning.** PROGRESS
+          + listed 3 closeout meta-tasks the prompt's                    
+      189 +     "nic poza tym" excluded — asked rather than silently drop
+          +ping or doing them; took the lead's                           
+      190 +     "lead/Desktop-owned, P5-outside-repo-build" ruling and la
+          +belled them so PROGRESS stays consistent.                     
+      191 +  2. **Did NOT self-rule the verdicts.** Reported all 3 stabil
+          +ity matrices + the fresh-clone result                         
+      192 +     verbatim and **stopped at each gate**; the lead ruled sta
+          +ble / clean-machine. Cardinal rule held —                     
+      193 +     no assertion bent; the 4 reds are the app violating spec,
+          + confirmed eye-vs-assertion.                                  
+      194 +  3. **Zero evidence churn.** Every suite run (3× stability + 
+          +fresh-clone) regenerated `docs/runs/`                         
+      195 +     screenshots; restored the whole dir with `git checkout` a
+          +fter each so the runs produced                                
+      196 +     verdict + console evidence without re-committing the P4 a
+          +rtifacts of record.                                           
+      197 +  4. **Faithful pre-commit clean-clone test.** Couldn't commit
+          + before Gate 2, so overlaid the 4                             
+      198 +     uncommitted P5 docs into the throwaway clone to simulate 
+          +the post-commit state — disclosed the                         
+      199 +     overlay; the lead accepted it as the Gate-2 bring-up proo
+          +f.                                                            
+      200 +                                                              
+      201  ### 2026-06-16 — P4 — build
+      202  
+      203  - **Done:** built P4 from the plan-mode design (archived `p4-r
+           1-offers.md`) → flows
+
+⏺ Now PROGRESS.md — checking off the repo-build items, relabeling the 3
+  meta-tasks as lead/Desktop-owned, and keeping P5 not-fully-DONE. Replacing the
+  P5 block:
+
+⏺ Update(PROGRESS.md)
+  ⎿  Added 19 lines, removed 12 lines
+      44    - [x] Lead: 2 flows (no renumber); BUG-A target = BigTech (`W
+          arsawGdansk`); **BUG-B-on-list =
+      45          accepted documented gap** (root defect red in `04` + an
+          ti-case; gap note → README at P5)
+      46  
+      47 -- [ ] **P5 — Stabilization + delivery**                        
+      48 -  - [ ] Run the full suite 3× (stability)                      
+      49 -  - [ ] `BUGS.md` — **skeleton done in P1 adjudication** (3 roo
+         -t defects, commit `cd4bf26`); P5 finalizes it by linking the P2
+         -–P4 red-run Maestro artifacts                                  
+      50 -  - [ ] `TEST_PLAN`                                            
+      51 -  - [ ] `README` (clean-clone bring-up)                        
+      52 -  - [ ] Fresh-clone verification                               
+      53 -  - [ ] **Sync section 10 (instructions) of `STRATEGIA-PROJEKT.
+         -md`** — one-off merge of the live project                      
+      54 -        instructions (the project "instructions" field) with se
+         -ction 10. Two-way divergence: do **NOT**                       
+      55 -        overwrite blindly — each side holds content the other l
+         -acks. After the merge: master = the                            
+      56 -        "instructions" field; section 10 becomes a mirror stamp
+         -ed with the resync date.                                       
+      57 -  - [ ] **Orphaned-decision audit** — sweep the project convers
+         -ations for decisions that never landed                         
+      58 -        in any document.                                       
+      47 +- [ ] **P5 — Stabilization + delivery** — **repo-build slice DO
+         +NE (this session); Desktop closeout                            
+      48 +      (lead) pending.** Full P5 DONE = repo-build (Code) **+** 
+         +Desktop closeout (lead).                                       
+      49 +  - **Repo-build (Claude Code) — DONE; local commits, not pushe
+         +d:**                                                           
+      50 +    - [x] Run the full suite 3× (stability) — **4 pass / 4 red,
+         + 0 flake, 0 state-flip** (lead ruled Gate 1)                   
+      51 +    - [x] `BUGS.md` finalized — P2–P4 red-run artifacts linked 
+         +(BUG-A→`01`, BUG-B→`04` + documented                           
+      52 +          list-gap, BUG-C→`02`+`05`) alongside the recon eviden
+         +ce                                                             
+      53 +    - [x] `TEST_PLAN` — `docs/TEST_PLAN.md` (R1–R5 matrix + ant
+         +i-cases + ~2-min manual procedure)                             
+      54 +    - [x] `README` — clean-clone bring-up + cardinal rule + arc
+         +hitecture + design decisions + known                           
+      55 +          limitations (incl. **BUG-B-on-list gap**) + "How this
+         + was built (AI-assisted)" + future work                        
+      56 +    - [x] Fresh-clone verification — bring-up proof **4 pass / 
+         +4 red** (lead accepted as the pre-commit                       
+      57 +          Gate-2 proof; clean-machine = human post-push)       
+      58 +    - [x] IP hygiene — **zero APK/PDF in tree + history**; `.id
+         +ea/` git-ignored                                               
+      59 +  - **Lead/Desktop-owned — done in P5 OUTSIDE the repo-build (n
+         +ot this session):**                                            
+      60 +    - [ ] `docs/ai-history/WORKING-WITH-AI.md` consolidation — 
+         +final English file generated by the lead                       
+      61 +    - [ ] **`STRATEGIA-PROJEKT.md` section-10 sync** — two-way 
+         +merge of the live project "instructions"                       
+      62 +          field with section 10 (the file lives outside this re
+         +po). Do **NOT** overwrite blindly — each                       
+      63 +          side holds content the other lacks; after merge maste
+         +r = "instructions", §10 = mirror, resync-dated.                
+      64 +    - [ ] **Orphaned-decision audit** — sweep the project conve
+         +rsations for decisions that never landed                       
+      65 +          in any document.                                     
+      66  
+      67  ## Session Log
+      68  
+
+⏺ Adding the PROGRESS.md Session Log entry:
+
+⏺ Update(PROGRESS.md)
+  ⎿  Added 14 lines
+      69  > Newest entries at the top. Format:
+      70  > `### YYYY-MM-DD — <phase> — <role>` then bullets: **Done**, *
+          *Decisions**, **Drift**.
+      71  
+      72 +### 2026-06-17 — P5 — build (repo-build slice)                 
+      73 +                                                               
+      74 +- **Done:** P5 repo-build delivery — `README` (8 sections + "Ho
+         +w this was built (AI-assisted)"),                              
+      75 +  `docs/TEST_PLAN.md`, `docs/BUGS.md` red-run links, `.idea/` g
+         +it-ignored, IP hygiene proven. Suite                           
+      76 +  **3× stable** (4 pass / 4 red, 0 flake, 0 state-flip); **fres
+         +h-clone bring-up** 4 pass / 4 red. Five                        
+      77 +  repo-build/closeout commits + one ai-history commit (plan arc
+         +hive + index), local only (**not                               
+      78 +  pushed**). Plan archived → `docs/ai-history/p5-closeout.md`. 
+      79 +- **Decisions:** two lead-ruled stop-gates (stability, clean-ma
+         +chine); clean-machine deferred to the                          
+      80 +  human post-push (Task F = the pre-commit bring-up proof); 3 m
+         +eta-tasks = lead/Desktop-owned →                               
+      81 +  **P5 not marked fully DONE**, repo-build slice only; README p
+         +rereqs taken from the real env.                                
+      82 +- **Drift:** none vs the approved (revised) plan. The original 
+         +P5 closeout items (STRATEGIA §10 sync,                         
+      83 +  orphaned-decision audit) plus WORKING-WITH-AI consolidation w
+         +ere reclassified by the lead as                                
+      84 +  Desktop-owned and moved outside the repo-build; the `/export`
+         + transcript is the human's step.                               
+      85 +                                                               
+      86  ### 2026-06-16 — P4 — build
+      87  
+      88  - **Done:** flows `01-offers-locations` (R1/C1→BUG-A) + `02-off
+          ers-salary` (R1/C3→BUG-C), read-only
+⏺ Creating the plan archive (faithful copy of the approved plan) and then
+  updating the ai-history index:
+
+⏺ Bash(cp .claude/plans/p5-closeout-eager-kahan.md
+      docs/ai-history/p5-closeout.md && echo "archived ->
+      docs/ai-history/p5-closeout.md" && ls -la docs/ai-history/p5-clo…)
+  ⎿  Error: Exit code 1
+     cp: .claude/plans/p5-closeout-eager-kahan.md: No such file or directory
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ The plan file lives in the home ~/.claude/plans/, not the project .claude/.
+  Copying from the correct absolute path:
+
+⏺ Bash(cp /Users/wx0000/.claude/plans/p5-closeout-eager-kahan.md
+      docs/ai-history/p5-closeout.md && echo "archived ->
+      docs/ai-history/p5-closeout.md" && wc -l docs/ai-h…)
+  ⎿  archived -> docs/ai-history/p5-closeout.md
+          194 docs/ai-history/p5-closeout.md
+
+⏺ Plan archived (194 lines). Updating the ai-history index with the P5 build +
+  planning rows, and reflecting the lead-ownership of the WORKING-WITH-AI
+  consolidation:
+
+⏺ Update(docs/ai-history/README.md)
+  ⎿  Added 3 lines, removed 1 line
+      31  | — | P3 | planning | `p3-apply-history.md` | Archived P3 plan 
+          — decision layer (`apply-to-offer` tap-only, R2 single+multi in
+           one flow, two isolated R3 finding flows, anti-case table). |
+      32  | 2026-06-16 | P4 | build | `2026-06-16-p4-build.txt` | R1 offe
+          rs-list flows 01 (BUG-A) + 02 (BUG-C); suite 8 flows = 4 green 
+          + 4 red; flake 3×/0; feat commit `5474ef5` (local, not pushed).
+           **Create via `/export` before the commit.** |
+      33  | — | P4 | planning | `p4-r1-offers.md` | Archived P4 plan — de
+          cision layer (2 flows no-renumber, BUG-A→BigTech, BUG-B-on-list
+           accepted documented gap, scroll-back-UP framing + masking auto
+          atak). |
+      34 -| — | P1+P2 | judgment-log | `WORKING-WITH-AI.md` | Running jud
+         -gment-moments log (P1 + P2; consolidate at closeout). |        
+      34 +| 2026-06-17 | P5 | build | `2026-06-17-p5-build.txt` | P5 repo
+         +-build: README + TEST_PLAN + BUGS.md red-run links + IP hygiene
+         +; suite 3× stable + fresh-clone bring-up (4 pass / 4 red); loca
+         +l commits (not pushed). **Create via `/export` before the commi
+         +t.** |                                                         
+      35 +| — | P5 | planning | `p5-closeout.md` | Archived P5 plan — dec
+         +ision layer (two lead-ruled stop-gates, no-churn run policy, re
+         +al-env prereqs, BUG-B-on-list gap note, 3 meta-tasks lead/Deskt
+         +op-owned). |                                                   
+      36 +| — | P1+P2 | judgment-log | `WORKING-WITH-AI.md` | Running jud
+         +gment-moments log (P1 + P2; **consolidation = lead/Desktop-owne
+         +d, P5**). |                                                    
+
+⏺ All closeout docs updated. Checking the full working-tree state before
+  committing:
+
+⏺ Bash(git status --porcelain)
+  ⎿   M .gitignore
+      M CLAUDE.md
+      M PROGRESS.md
+     … +5 lines (ctrl+o to expand)
+
+⏺ Working tree is exactly the expected set — six modified/new deliverables, no
+  .idea/, no scratch, no docs/runs/ churn.
+
+  Now Task G — the commits. I'm making the 5 content/closeout commits the lead
+  enumerated, plus a 6th standard End-of-Session docs(ai-history) commit for the
+  plan archive + index (these must be committed for a clean tree, and the P4
+  precedent kept ai-history as its own unit — I'll flag this +1). Each stages
+  only its own files; plain -m messages, no trailers, no push.
+
+⏺ Bash(set -e
+      git add docs/BUGS.md…)
+  ⎿  Interrupted · What should Claude do instead?
+
+❯ "rób commity pojedynczo - jeden git commit, STOP po każdym". Wtedy każdy git  
+  commit to osobny approval.                                                    
+
+⏺ Understood — one git commit per call, stopping after each so every commit is
+  its own approval.
+
+  Commit 1 of 6 — stages only docs/BUGS.md (the red-run artifact links under
+  BUG-A/B/C) and commits it locally, no trailer, no push:
+
+⏺ Bash(git add docs/BUGS.md && git commit -m "docs(bugs): link P2-P4 red-run
+      artifacts under BUG-A/B/C")
+  ⎿  [main c475e9e] docs(bugs): link P2-P4 red-run artifacts under BUG-A/B/
+     C
+      1 file changed, 12 insertions(+), 6 deletions(-)
+
+⏺ Commit 1 done: c475e9e — docs/BUGS.md, 12 insertions / 6 deletions.
+
+  Commit 2 of 6 — stages only the new docs/TEST_PLAN.md and commits it:
+
+⏺ Bash(git add docs/TEST_PLAN.md && git commit -m "docs(test-plan): R1-R5 matrix
+      + anti-cases + ~2-min manual verification")
+  ⎿  [main f581d12] docs(test-plan): R1-R5 matrix + anti-cases + ~2-min man
+     ual verification
+      1 file changed, 65 insertions(+)
+      create mode 100644 docs/TEST_PLAN.md
+
+⏺ Commit 2 done: f581d12 — new docs/TEST_PLAN.md, 65 insertions.
+
+  Commit 3 of 6 — stages only README.md (the full clean-clone bring-up) and
+  commits it:
+
+⏺ Bash(git add README.md && git commit -m "docs(readme): clean-clone bring-up,
+      architecture, design decisions, known limitations, AI-assisted section,
+      future work")
+  ⎿  [main a58e53a] docs(readme): clean-clone bring-up, architecture, desig
+     n decisions, known limitations, AI-assisted section, future work
+      1 file changed, 204 insertions(+), 1 deletion(-)
+
+⏺ Commit 3 done: a58e53a — README.md, 204 insertions / 1 deletion (stub
+  replaced).
+
+  Commit 4 of 6 — stages only .gitignore (ignore .idea/) and commits it:
+
+⏺ Bash(git add .gitignore && git commit -m "chore(gitignore): ignore .idea/")
+  ⎿  [main d871b4f] chore(gitignore): ignore .idea/
+      1 file changed, 2 insertions(+)
+
+⏺ Commit 4 done: d871b4f — .gitignore, 2 insertions.
+
+  Commit 5 of 6 — stages CLAUDE.md + PROGRESS.md (the closeout: Current Status →
+  "P5 repo-build DONE; Desktop closeout pending", Session Log entries, PROGRESS
+  check-offs + meta-task relabeling) and commits them:
+
+⏺ Bash(git add CLAUDE.md PROGRESS.md && git commit -m "docs: P5 repo-build
+      closeout (CLAUDE Current Status + Session Log + PROGRESS)")
+  ⎿  [main f11357e] docs: P5 repo-build closeout (CLAUDE Current Status + S
+     ession Log + PROGRESS)
+      2 files changed, 79 insertions(+), 26 deletions(-)
+
+⏺ Commit 5 done: f11357e — CLAUDE.md + PROGRESS.md, 79 insertions / 26
+  deletions.
+
+  Commit 6 of 6 — the standard End-of-Session ai-history unit (the +1 beyond
+  your 5): stages the archived plan docs/ai-history/p5-closeout.md + the index
+  update docs/ai-history/README.md. The /export build transcript remains your
+  step (noted in the index row):
+⏺ Bash(git add docs/ai-history/p5-closeout.md docs/ai-history/README.md && git
+      commit -m "docs(ai-history): archive P5 plan + index entry (build
+      transcript via /export…)
+  ⎿  [main 6076b8a] docs(ai-history): archive P5 plan + index entry (build
+     transcript via /export)
+      2 files changed, 197 insertions(+), 1 deletion(-)
+      create mode 100644 docs/ai-history/p5-closeout.md
+
+⏺ All 6 commits landed. Running the verification you asked for — new commits,
+  no-trailer check on HEAD (and across all 6), and a clean tree:
+
+⏺ Bash(echo "=== git log --oneline (new P5 commits vs origin/main) ==="; git log
+      --oneline origin/main..HEAD; echo; echo "=== git show --stat HEAD (verify
+      no trailer)…)
+  ⎿  === git log --oneline (new P5 commits vs origin/main) ===
+     6076b8a docs(ai-history): archive P5 plan + index entry (build transcr
+     ipt via /export)
+     … +22 lines (ctrl+o to expand)
+
+⏺ All six commits verified clean:
+
+  Task G — committed (local only, not pushed)
+
+  6076b8a  docs(ai-history): archive P5 plan + index entry (build transcript via
+  /export)
+  f11357e  docs: P5 repo-build closeout (CLAUDE Current Status + Session Log +
+  PROGRESS)
+  d871b4f  chore(gitignore): ignore .idea/
+  a58e53a  docs(readme): clean-clone bring-up, architecture, design decisions,
+  known limitations, AI-assisted section, future work
+  f581d12  docs(test-plan): R1-R5 matrix + anti-cases + ~2-min manual
+  verification
+  c475e9e  docs(bugs): link P2-P4 red-run artifacts under BUG-A/B/C
+
+  - No trailers — git show --stat HEAD shows Author/Commit wx0000 only; a scan
+  across all 6 commit bodies found no Co-Authored-By / "Generated with" / Claude
+  lines.
+  - git status — ## main...origin/main [ahead 6], working tree clean (no .idea/,
+  no scratch, no docs/runs/ churn).
+  - Not pushed — ahead of origin/main by 6; push remains your call.
+
+  Note on count: I made the 5 commits you listed (1–5 above, bottom→up) plus a
+  6th docs(ai-history) unit (6076b8a) for the plan archive + index — they had to
+  be committed for a clean tree, and the P4 precedent kept ai-history as its
+  own commit. If you'd rather it be exactly 5, I can soft-reset and fold 6076b8a
+  into f11357e.
+
+  End-of-Session status
+
+  ┌──────────────────────────────────────────────────┬──────────────────────┐
+  │                       Step                       │        State         │
+  ├──────────────────────────────────────────────────┼──────────────────────┤
+  │                                                  │ ✅ Gate 1: 4 pass /  │
+  │ Suite green/red                                  │ 4 red, 0 flake (you  │
+  │                                                  │ ruled stable)        │
+  ├──────────────────────────────────────────────────┼──────────────────────┤
+  │ CLAUDE.md (Current Status + Session Log)         │ ✅ commit f11357e    │
+  ├──────────────────────────────────────────────────┼──────────────────────┤
+  │ PROGRESS.md (repo-build checked; 3 meta-tasks =  │ ✅ commit f11357e    │
+  │ lead/Desktop-owned; P5 not fully DONE)           │                      │
+  ├──────────────────────────────────────────────────┼──────────────────────┤
+  │ Plan archived → docs/ai-history/p5-closeout.md   │ ✅ commit 6076b8a    │
+  ├──────────────────────────────────────────────────┼──────────────────────┤
+  │ ai-history index updated                         │ ✅ commit 6076b8a    │
+  ├──────────────────────────────────────────────────┼──────────────────────┤
+  │ Local commits                                    │ ✅ 6 commits         │
+  ├──────────────────────────────────────────────────┼──────────────────────┤
+  │                                                  │ ⏳ your step (I      │
+  │ /export →                                        │ can't run /export);  │
+  │ docs/ai-history/2026-06-17-p5-build.txt          │ index row notes it   │
+  │                                                  │ pending              │
+  ├──────────────────────────────────────────────────┼──────────────────────┤
+  │ Push                                             │ ⏳ your call         │
+  └──────────────────────────────────────────────────┴──────────────────────┘
+
+  Handoff (next session / human)
+
+  1. /export this session to docs/ai-history/2026-06-17-p5-build.txt, then
+  commit it (the index already references it).
+  2. Push the 6 (or 7 with the transcript) commits to origin/main when ready.
+  3. Desktop closeout (lead/Desktop-owned): WORKING-WITH-AI.md consolidation ·
+  orphaned-decision audit · STRATEGIA-PROJEKT §10 sync. Only after these does
+  full P5 = DONE (repo-build + Desktop closeout).
+  4. Post-push clean-machine: the human-side fresh-clone check (Task F was
+  accepted as the pre-commit bring-up proof; the real clean-machine verdict is
+  post-push).
+  5. Read first next session: CLAUDE.md → Current Status, then PROGRESS.md P5
+  block.
+
+  Repo-build slice of P5 is complete and committed locally. Standing by.
+
+✻ Crunched for 1m 17s
