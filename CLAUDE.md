@@ -144,20 +144,22 @@ If a step does not apply, **say which and why — never skip silently.**
 
 ## Current Status
 
-- **Phase:** **P4 — DONE** (R1 offers list; local commits, **not pushed**). **+2 flows** —
-  `01-offers-locations` (R1/C1→BUG-A: multi-loc concat) + `02-offers-salary` (R1/C3→BUG-C: raw-JSON
-  salary). Both **read-only on the list** (reuse `register-user`; no new subflow). Suite = **8 flows:
-  4 green + 4 red-findings** (R1 reds 01/02 + R3 reds 04/05 are the correct result; human adjudicates
-  on `docs/runs/` screenshot + hierarchy). Flake **3× / 0** (incl. 01's scroll-back UP). Feat commit
-  `5474ef5`; docs + plan-archive commits this session — local only (push = human's call).
-- **Lead decisions (P4):** 2 flows in the 01–08 scheme (**no renumber**); BUG-A target = **BigTech
-  (`WarsawGdansk`)** — the only tile carrying *just* BUG-A (clean salary) → cleanest single-finding
-  screenshot; **BUG-B on the LIST = accepted documented gap** (root defect already red in `04`
-  history + the SPEC-MATRIX anti-case; the human-facing gap note → **README at P5**). Screenshot 01
-  verified to frame the `Locations: WarsawGdansk` node (not just the company line).
-- **Next task:** **P5 — stabilization + delivery.** Full suite 3× stability; finalize `docs/BUGS.md`
-  (link the P2–P4 red-run artifacts); `TEST_PLAN`; `README` clean-clone bring-up **+ the BUG-B-on-list
-  documented-gap note**; fresh-clone verification; STRATEGIA section-10 sync; orphaned-decision audit.
+- **Phase:** **P5 — repo-build DONE; Desktop closeout (lead) pending** (local commits, **not pushed**).
+  Delivery layer shipped: `README` (clean-clone bring-up + cardinal rule + architecture + design
+  decisions + known limitations incl. **BUG-B-on-list gap** + AI-assisted section + future work),
+  `docs/TEST_PLAN.md` (R1–R5 matrix + anti-cases + ~2-min manual procedure), `docs/BUGS.md` finalized
+  (P2–P4 red-run artifacts linked under BUG-A→01 / BUG-B→04 / BUG-C→02+05, alongside recon). Suite
+  **3× stable** — **4 pass / 4 red, 0 flake, 0 state-flip** (lead ruled Gate 1); **fresh-clone bring-up
+  proof** = 4 pass / 4 red (lead accepted as the pre-commit Gate-2 proof; clean-machine = human
+  post-push). IP hygiene: **zero APK/PDF in tree + history**; `.idea/` now git-ignored.
+- **Scope boundary (lead):** repo-build = Claude Code; **3 meta-tasks are lead/Desktop-owned, executed
+  in P5 outside the repo-build** — `WORKING-WITH-AI.md` consolidation, orphaned-decision audit,
+  `STRATEGIA-PROJEKT.md` §10 sync. **Full P5 DONE = repo-build (Code) + Desktop closeout (lead).**
+- **Gated build (both gates lead-ruled):** Gate 1 (stability verdict + any unexpected red) and Gate 2
+  (clean-machine) were the human's calls; Code ran, reported real output verbatim, restored `docs/runs/`
+  after each run (zero screenshot churn), and stopped at each gate. No assertion ever bent.
+- **Next task:** human `/export` → `docs/ai-history/2026-06-17-p5-build.txt`, then the Desktop closeout
+  (3 meta-tasks) + **push (human's call)**. Plan archived to `docs/ai-history/p5-closeout.md`.
 - **R1–R5 coverage — ALL ASSIGNED:** **R1 → flows 01+02** (BUG, red = findings ✓), **R2 → flow 03**
   (PASS ✓), **R3 → flows 04+05** (BUG, red = findings ✓), **R4 → flows 06+07** (PASS ✓), **R5 → flow
   08** (PASS ✓).
@@ -165,6 +167,36 @@ If a step does not apply, **say which and why — never skip silently.**
 ## Session Log
 
 > Newest entries at the top. Each entry: date, phase, what was done, decisions, judgment moments.
+
+### 2026-06-17 — P5 — build (repo-build slice)
+
+- **Done:** built P5 repo-build from the revised plan (archived `p5-closeout.md`). `README` rewritten
+  from the stub (8 sections + "How this was built (AI-assisted)"); `docs/TEST_PLAN.md` created (R1–R5
+  matrix + anti-cases + ~2-min manual procedure, paraphrased from SPEC-MATRIX); `docs/BUGS.md`
+  finalized — suite red-run artifacts linked under each defect (BUG-A→`01`, BUG-B→`04` + documented
+  list-gap, BUG-C→`02`+`05`) alongside the recon links; `.idea/` git-ignored; IP hygiene proven (zero
+  APK/PDF in tree + history). Full suite **3× stable** (4 pass / 4 red, 0 flake, 0 state-flip);
+  **fresh-clone bring-up** = 4 pass / 4 red. Local commits, **not pushed**. Plan-archive + index +
+  `/export` transcript = the human's ai-history step.
+- **Decisions (lead-directed):** two **hard stop-gates** — Gate 1 (stability verdict + any unexpected
+  red) and Gate 2 (clean-machine) — both **the lead's adjudication, not Code's**. Clean-machine ruling
+  deferred to the human post-push; Task F accepted as the pre-commit bring-up proof. **3 meta-tasks
+  (WORKING-WITH-AI consolidation, orphaned-decision audit, STRATEGIA §10 sync) = lead/Desktop-owned**,
+  outside the repo-build → **P5 NOT marked fully DONE** (repo-build slice only). README §3 prereqs from
+  the **real** env (OpenJDK 21.0.11 LTS, Maestro 2.6.1, macOS 26.5.1, `arm64-v8a`), never assumed.
+- **Judgment moments:**
+  1. **Surfaced the scope conflict before planning.** PROGRESS listed 3 closeout meta-tasks the prompt's
+     "nic poza tym" excluded — asked rather than silently dropping or doing them; took the lead's
+     "lead/Desktop-owned, P5-outside-repo-build" ruling and labelled them so PROGRESS stays consistent.
+  2. **Did NOT self-rule the verdicts.** Reported all 3 stability matrices + the fresh-clone result
+     verbatim and **stopped at each gate**; the lead ruled stable / clean-machine. Cardinal rule held —
+     no assertion bent; the 4 reds are the app violating spec, confirmed eye-vs-assertion.
+  3. **Zero evidence churn.** Every suite run (3× stability + fresh-clone) regenerated `docs/runs/`
+     screenshots; restored the whole dir with `git checkout` after each so the runs produced
+     verdict + console evidence without re-committing the P4 artifacts of record.
+  4. **Faithful pre-commit clean-clone test.** Couldn't commit before Gate 2, so overlaid the 4
+     uncommitted P5 docs into the throwaway clone to simulate the post-commit state — disclosed the
+     overlay; the lead accepted it as the Gate-2 bring-up proof.
 
 ### 2026-06-16 — P4 — build
 
