@@ -16,6 +16,8 @@ buggy.apk
 # ─── OS / tooling noise ───
 .DS_Store
 *.log
+# JetBrains/Android Studio IDE state — local only.
+.idea/
 
 # NOTE: recon artifacts (Maestro hierarchy dumps, screenshots) are intentionally
 # NOT ignored — they are committed as evidence for the human's BUG/PASS verdicts.
