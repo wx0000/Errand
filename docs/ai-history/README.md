@@ -31,4 +31,6 @@ of each session (see `CLAUDE.md` → End-of-Session Cycle, step 5).
 | — | P3 | planning | `p3-apply-history.md` | Archived P3 plan — decision layer (`apply-to-offer` tap-only, R2 single+multi in one flow, two isolated R3 finding flows, anti-case table). |
 | 2026-06-16 | P4 | build | `2026-06-16-p4-build.txt` | R1 offers-list flows 01 (BUG-A) + 02 (BUG-C); suite 8 flows = 4 green + 4 red; flake 3×/0; feat commit `5474ef5` (local, not pushed). **Create via `/export` before the commit.** |
 | — | P4 | planning | `p4-r1-offers.md` | Archived P4 plan — decision layer (2 flows no-renumber, BUG-A→BigTech, BUG-B-on-list accepted documented gap, scroll-back-UP framing + masking autoatak). |
-| — | P1+P2 | judgment-log | `WORKING-WITH-AI.md` | Running judgment-moments log (P1 + P2; consolidate at closeout). |
+| 2026-06-17 | P5 | build | `2026-06-17-p5-build.txt` | P5 repo-build: README + TEST_PLAN + BUGS.md red-run links + IP hygiene; suite 3× stable + fresh-clone bring-up (4 pass / 4 red); local commits (not pushed). **Create via `/export` before the commit.** |
+| — | P5 | planning | `p5-closeout.md` | Archived P5 plan — decision layer (two lead-ruled stop-gates, no-churn run policy, real-env prereqs, BUG-B-on-list gap note, 3 meta-tasks lead/Desktop-owned). |
+| — | P1+P2 | judgment-log | `WORKING-WITH-AI.md` | Running judgment-moments log (P1 + P2; **consolidation = lead/Desktop-owned, P5**). |
